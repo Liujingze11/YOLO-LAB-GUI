@@ -25,8 +25,8 @@
 ## 项目结构（简化）
 
 ```text
-code/
-├── dataset_tools/         # 数据划分与标签工具
+（仓库根目录，例如 yolo_lab_gui/）
+├── tools/dataset_tools/   # 数据划分与标签工具（默认指向 data/dataset）
 │   ├── create_empty_labels.py
 │   ├── split_images_only/
 │   │   ├── split_every_5th_images_only.py
@@ -37,18 +37,18 @@ code/
 │   └── split_train_val_test/
 │       └── split_random_with_labels.py
 ├── pretrained_models/     # 常用预训练权重（如 yolov8n.pt, yolov8n-seg.pt）
-├── result/                # 每次训练的结果目录
+├── outputs/results/       # 每次训练的结果目录
 ├── scripts/               # 训练、配置与日志脚本
 │   ├── config.py
 │   ├── paths.py
 │   ├── train_logger.py
 │   ├── train_segment.py
 │   └── predict_test.py
-├── train_logs/            # CSV 日志：train_log / result_summary / result_per_class
-├── data.yaml              # 数据集配置（类别、train/val 路径）
-├── data/                  # 原始与准备好的数据集（json_space, Source Data, datasets*）
-├── predict/               # 推理输出图像（overlay 示例）
-└── isat-sam/              # onnx 模型、类名等相关文件
+├── outputs/logs/          # CSV 日志：train_log / result_summary / result_per_class
+├── data.yaml              # 数据集配置（path 默认 data/dataset，与 scripts/paths.py 一致）
+├── data/dataset/          # YOLO 布局：images/{train,val,test}、labels/{train,val,test}
+├── outputs/predict/       # 推理输出图像（overlay 示例）
+└── isat-sam/              # onnx 模型、类名等相关文件（可选）
 ```
 
 ---
@@ -122,7 +122,7 @@ python scripts/train_segment.py
 
 ## 日志与验证
 
-项目会把三类 CSV 日志写入 `train_logs/`：
+项目会把三类 CSV 日志写入 `outputs/logs/`：
 
 - `train_log.csv`：训练流程记录（时间、模式、状态、路径、超参、保存位置等）
 - `result_summary_log.csv`：整体验证指标（图片/实例数、box/mask mAP、precision/recall）
@@ -134,10 +134,10 @@ python scripts/train_segment.py
 
 ## 推荐流程
 
-1. 使用 `dataset_tools/` 处理并检查数据集。
+1. 使用 `tools/dataset_tools/` 处理并检查数据集。
 2. 在 `scripts/config.py` 中设置新的 `experiment_name`（避免覆盖）。
 3. 运行 `python scripts/train_segment.py` 并选择合适模式。
-4. 训练结束后在 `result/` 查看 `best.pt`、`last.pt`，并检查 `train_logs/` 中的对应条目。
+4. 训练结束后在 `outputs/results/` 查看 `best.pt`、`last.pt`，并检查 `outputs/logs/` 中的对应条目。
 
 ---
 
@@ -150,20 +150,20 @@ python scripts/train_segment.py
 
 ---
 
-## dataset_tools 说明
+## tools/dataset_tools 说明
 
-`dataset_tools/` 提供数据准备与划分工具，便于将图片与标签组织到 train/val/test：
+`tools/dataset_tools/` 提供数据准备与划分工具，便于将图片与标签组织到 train/val/test：
 
 主要脚本：
 
-- `dataset_tools/create_empty_labels.py` — 为无标注图片生成空的 YOLO 标签文件（占位或伪标签用途）。
-- `dataset_tools/split_images_only/` — 仅划分图片：
+- `tools/dataset_tools/create_empty_labels.py` — 为无标注图片生成空的 YOLO 标签文件（占位或伪标签用途）。
+- `tools/dataset_tools/split_images_only/` — 仅划分图片：
   - `split_every_5th_images_only.py`：每隔 N 张抽样（周期性抽样）。
   - `split_random_images_only.py`：随机抽取指定比例。
-- `dataset_tools/split_train_val/` — 同时划分图片与标签：
+- `tools/dataset_tools/split_train_val/` — 同时划分图片与标签：
   - `split_every_5th_with_labels.py`：按间隔划分并移动对应标签。
   - `split_random_with_labels.py`：随机划分并保证图片/标签配对。
-- `dataset_tools/split_train_val_test/` — 支持三分（train/val/test），适用于需要独立测试集的场景。
+- `tools/dataset_tools/split_train_val_test/` — 支持三分（train/val/test），适用于需要独立测试集的场景。
 
 使用建议：备份原数据或先在副本上测试；脚本一般接受源目录/目标目录及比例/间隔参数，详见脚本顶部注释；划分后请确认 `data.yaml` 中的路径正确；若标签格式非 YOLO，请先转换。
 
@@ -219,6 +219,7 @@ names:
 
 ## 输出与日志保存位置
 
-- 每次实验结果：`results_dir/experiment_name/`（在 `scripts/config.py` 中设置）
+- 每次实验结果：`results_dir/experiment_name/`（在 `scripts/config.py` 中设置；默认根下 `outputs/results/`）
 - 检查点：`.../weights/last.pt` 和 `.../weights/best.pt`
-- CSV 日志：`train_logs/` 包含 `train_log.csv`、`result_summary_log.csv` 和 `result_per_class_log.csv`
+- CSV 日志：`outputs/logs/` 包含 `train_log.csv`、`result_summary_log.csv` 和 `result_per_class_log.csv`
+- 推理导出图：默认写入 `outputs/predict/`（见 `scripts/paths.py` 中 `PREDICT_DIR`）

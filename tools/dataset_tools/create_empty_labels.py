@@ -1,7 +1,10 @@
 import os
+from pathlib import Path
 
-image_dir = "图片"
-label_dir = "标签"
+# 默认与仓库 data.yaml（path: data/dataset）下 YOLO 布局一致；可改为任意图片/标签目录
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+image_dir = str(_REPO_ROOT / "data" / "dataset" / "images" / "train")
+label_dir = str(_REPO_ROOT / "data" / "dataset" / "labels" / "train")
 
 os.makedirs(label_dir, exist_ok=True)
 

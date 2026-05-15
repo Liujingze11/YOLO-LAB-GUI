@@ -1,10 +1,14 @@
 import os
 import random
 import shutil
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+_DATASET = _REPO_ROOT / "data" / "dataset"
 
 # ===== 参数与路径配置 =====
-train_dir = "请输入你的训练集地址"   # 训练集地址
-val_dir = "请输入你的测试集目标地址"       # 测试集/验证集目标地址
+train_dir = str(_DATASET / "images" / "train")  # 训练集图片（源目录）
+val_dir = str(_DATASET / "images" / "val")  # 验证集图片（目标目录）；可按需修改
 val_ratio = 0.20      # 比例，例如 20% 就写 0.20
 
 os.makedirs(val_dir, exist_ok=True)

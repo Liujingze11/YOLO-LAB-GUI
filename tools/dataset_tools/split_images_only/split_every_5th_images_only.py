@@ -1,9 +1,14 @@
 import os
 import shutil
+from pathlib import Path
+
+# 仓库根目录下的默认数据集布局（与根目录 data.yaml 中 path: data/dataset 一致）
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+_DATASET = _REPO_ROOT / "data" / "dataset"
 
 # ===== 参数与路径配置 =====
-train_dir = "请输入你的训练集地址"  # 训练集文件夹路径（源目录），包含所有图片
-val_dir = "请输入你的验证集目标地址"    # 验证集文件夹路径（目标目录），用于存放挑选出的图
+train_dir = str(_DATASET / "images" / "train")  # 训练集图片（源目录）
+val_dir = str(_DATASET / "images" / "val")  # 验证集图片（目标目录）；可按需改成任意路径
 times = 5   # 倍数
 
 # 创建目标文件夹

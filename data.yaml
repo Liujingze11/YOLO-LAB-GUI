@@ -1,0 +1,14 @@
+# Dataset root is relative to this file’s folder (the repo root): <repo>/data/dataset
+path: data/dataset
+train: images/train
+val: images/val
+
+names:
+  0:
+  1: milk
+  2: crisp
+  3: wawa
+  4: bottle
+  5: tissue
+  6: suitcase
+  7: projector

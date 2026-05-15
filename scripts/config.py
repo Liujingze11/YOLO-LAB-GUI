@@ -12,13 +12,12 @@ class TrainConfig:
     log_dir: str = LOG_DIR   # 日志保存目录
 
     # ===== 超参数 =====
-    epochs: int = 100   # 训练轮数
+    epochs: int = 150   # 训练轮数
     imgsz: int = 640    # 输入图片尺寸
-    batch: int = 8  # 每批次训练图片数量
-    device: int = 0 # 使用的设备，0 表示第1块 GPU
+    batch: int = 16  # 每批次训练图片数量
+    device: str = "0"  # 训练设备：如 "0"、"0,1"、"cpu"
 
-
-    experiment_name: str = "seg_dataset771_random__aug_e100"    # 当前实验名称
+    experiment_name: str = "seg_dataset_all_pro_random_aug_e150_b16"    # 当前实验名称
 
     # ===== 数据增强相关 =====
     use_augment: bool = True

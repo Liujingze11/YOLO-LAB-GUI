@@ -308,28 +308,56 @@ def log_validation_result(config, mode, notes=""):
 # =========================
 
 # # ===== 模式1：开启一个新的训练 =====
-def start_new_training(config):
-
-    if not ask_confirm_train("模式1 - 开始新训练", config.model_file, config):
-        return
-    
-    use_augment = ask_use_augment(config)
-    append_train_log(config, mode="new_train", status="started", notes=f"开始新训练，数据增强={'开启' if use_augment else '关闭'}")
-
+def execute_new_training(config, use_augment: bool) -> None:
+    """无终端交互的新训练（供 GUI 等调用）；失败时写日志后抛出异常。"""
+    append_train_log(
+        config,
+        mode="new_train",
+        status="started",
+        notes=f"开始新训练，数据增强={'开启' if use_augment else '关闭'}",
+    )
     try:
         model = YOLO(config.model_file)
         train_kwargs = build_train_kwargs(config, use_augment)
         model.train(**train_kwargs)
-
-        append_train_log(config, mode="new_train", status="finished", notes=f"训练完成，数据增强={'开启' if use_augment else '关闭'}")
+        append_train_log(
+            config,
+            mode="new_train",
+            status="finished",
+            notes=f"训练完成，数据增强={'开启' if use_augment else '关闭'}",
+        )
         log_validation_result(config, mode="new_train", notes="训练完成后的验证结果")
-
     except Exception as e:
         append_train_log(config, mode="new_train", status="failed", notes=str(e))
+        raise
+
+
+def start_new_training(config):
+
+    if not ask_confirm_train("模式1 - 开始新训练", config.model_file, config):
+        return
+
+    use_augment = ask_use_augment(config)
+    try:
+        execute_new_training(config, use_augment)
+    except Exception as e:
         print(f"\n训练失败：{e}")
 
 
 # # ===== 模式2：继续上次中断的训练 =====
+def execute_resume_training(config) -> None:
+    """无终端交互的续训；失败时写日志后抛出异常。"""
+    append_train_log(config, mode="resume_train", status="started", notes="继续上次训练")
+    try:
+        model = YOLO(config.last_pt)
+        model.train(resume=True)
+        append_train_log(config, mode="resume_train", status="finished", notes="继续训练完成")
+        log_validation_result(config, mode="resume_train", notes="继续训练后的验证结果")
+    except Exception as e:
+        append_train_log(config, mode="resume_train", status="failed", notes=str(e))
+        raise
+
+
 def resume_training(config):
     if not os.path.exists(config.last_pt):
         print(f"\n没有找到上次中断训练的权重文件：{config.last_pt}")
@@ -344,20 +372,44 @@ def resume_training(config):
     if not ask_confirm_train("继续上次训练", config.last_pt, config):
         return
 
-    append_train_log(config, mode="resume_train", status="started", notes="继续上次训练")
-
     try:
-        model = YOLO(config.last_pt)
-        model.train(resume=True)
-
-        append_train_log(config, mode="resume_train", status="finished", notes="继续训练完成")
-        log_validation_result(config, mode="resume_train", notes="继续训练后的验证结果")
-
+        execute_resume_training(config)
     except Exception as e:
-        append_train_log(config, mode="resume_train", status="failed", notes=str(e))
         print(f"\n继续训练失败：{e}")
 
 # # ===== 模式3：基于历史实验的 best.pt 开启新训练 =====
+def execute_train_from_previous_best(config, selected_exp: str, use_augment: bool) -> None:
+    """selected_exp 为 results_dir 下的实验文件夹名；无终端交互。"""
+    selected_best_pt = os.path.join(config.results_dir, selected_exp, "weights", "best.pt")
+    if not os.path.exists(selected_best_pt):
+        raise FileNotFoundError(f"该实验下没有找到 best.pt：{selected_best_pt}")
+
+    append_train_log(
+        config,
+        mode="train_from_best",
+        status="started",
+        notes=f"基于历史实验 {selected_exp} 开始训练，数据增强={'开启' if use_augment else '关闭'}",
+    )
+    try:
+        model = YOLO(selected_best_pt)
+        train_kwargs = build_train_kwargs(config, use_augment)
+        model.train(**train_kwargs)
+        append_train_log(
+            config,
+            mode="train_from_best",
+            status="finished",
+            notes=f"基于历史实验 {selected_exp} 的训练完成，数据增强={'开启' if use_augment else '关闭'}",
+        )
+        log_validation_result(
+            config,
+            mode="train_from_best",
+            notes=f"基于历史实验 {selected_exp} 的验证结果",
+        )
+    except Exception as e:
+        append_train_log(config, mode="train_from_best", status="failed", notes=str(e))
+        raise
+
+
 def train_from_previous_best(config):
     folders = list_experiments(config.results_dir)
 
@@ -394,38 +446,9 @@ def train_from_previous_best(config):
 
     use_augment = ask_use_augment(config)
 
-    append_train_log(
-        config,
-        mode="train_from_best",
-        status="started",
-        notes=f"基于历史实验 {selected_exp} 开始训练，数据增强={'开启' if use_augment else '关闭'}"
-    )
-
     try:
-        model = YOLO(selected_best_pt)
-        train_kwargs = build_train_kwargs(config, use_augment)
-        model.train(**train_kwargs)
-
-        append_train_log(
-            config,
-            mode="train_from_best",
-            status="finished",
-            notes=f"基于历史实验 {selected_exp} 的训练完成，数据增强={'开启' if use_augment else '关闭'}"
-        )
-
-        log_validation_result(
-            config,
-            mode="train_from_best",
-            notes=f"基于历史实验 {selected_exp} 的验证结果"
-        )
-
+        execute_train_from_previous_best(config, selected_exp, use_augment)
     except Exception as e:
-        append_train_log(
-            config,
-            mode="train_from_best",
-            status="failed",
-            notes=str(e)
-        )
         print(f"\n训练失败：{e}")
 
 

@@ -1,11 +1,15 @@
 import os
 import shutil
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+_DATASET = _REPO_ROOT / "data" / "dataset"
 
 # ===== 参数与路径配置 =====
-images_train_dir = "请输入你的训练集地址"    # 图片训练集地址
-images_val_dir = "请输入你的验证集目标地址"    # 图片测试集/验证集目标地址
-labels_train_dir = "请输入你的训练集地址"    # 图片训练集地址
-labels_val_dir = "请输入你的验证集目标地址"    # 图片测试集/验证集目标地址
+images_train_dir = str(_DATASET / "images" / "train")
+images_val_dir = str(_DATASET / "images" / "val")
+labels_train_dir = str(_DATASET / "labels" / "train")
+labels_val_dir = str(_DATASET / "labels" / "val")
 times = 5
 
 # 创建目标文件夹

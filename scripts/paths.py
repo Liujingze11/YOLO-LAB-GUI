@@ -1,8 +1,25 @@
-DATA_YAML = "data.yaml 的文件路径"
-MODEL_FILE = "预训练模型 yolov8n.pt 的文件路径"
-RESULTS_DIR = "训练结果保存文件夹路径"
-LOG_DIR = "训练日志保存文件夹路径"
+"""
+All paths are derived from the repository root (parent of scripts/).
+Works on any machine after you clone or move the project.
+"""
+from pathlib import Path
 
-PREDICT_DIR = "预测结果保存文件夹路径"
-BEST_SEG_MODEL = "最佳分割模型 best.pt 的文件路径"
-TEST_IMAGES_DIR = "测试图片文件夹路径"
+# Repository root: .../yolo_lab_gui
+REPO_ROOT = Path(__file__).resolve().parent.parent
+
+DATA_YAML = str(REPO_ROOT / "data.yaml")
+MODEL_FILE = str(REPO_ROOT / "pretrained_models" / "yolov8n-seg.pt")
+RESULTS_DIR = str(REPO_ROOT / "outputs" / "results")
+LOG_DIR = str(REPO_ROOT / "outputs" / "logs")
+
+PREDICT_DIR = str(REPO_ROOT / "outputs" / "predict")
+# Default “best” checkpoint for inference demos; change if you prefer another run.
+BEST_SEG_MODEL = str(
+    REPO_ROOT
+    / "outputs"
+    / "results"
+    / "seg_dataset_all_pro_random__aug_e150_b16"
+    / "weights"
+    / "best.pt"
+)
+TEST_IMAGES_DIR = str(REPO_ROOT / "data" / "dataset" / "images" / "test")

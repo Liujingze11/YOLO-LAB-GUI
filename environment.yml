@@ -1,0 +1,10 @@
+name: yolo
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pip
+  - pyyaml>=6
+  - pip:
+      - ultralytics>=8.0.0
+      - PySide6>=6.5.0

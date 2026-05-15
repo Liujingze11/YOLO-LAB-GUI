@@ -1,9 +1,11 @@
 import os
 import random
 import shutil
+from pathlib import Path
 
-# ===== 路径配置 =====
-base_dir = "/home/liubohan/lbh/Jingze_yolo_project/data/Source Data/datasets_all_pro"   # 数据集文件夹路径（源目录），包含所有图片与标签
+# ===== 路径配置（与根目录 data.yaml 中 path: data/dataset 一致）=====
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+base_dir = str(_REPO_ROOT / "data" / "dataset")
 
 images_train_dir = os.path.join(base_dir, "images", "train")
 images_val_dir   = os.path.join(base_dir, "images", "val")

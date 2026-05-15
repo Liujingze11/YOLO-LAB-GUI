@@ -27,8 +27,8 @@ A small project built on Ultralytics YOLO for image segmentation training. The r
 ## Project structure (simplified)
 
 ```text
-code/
-├── dataset_tools/         # data splitting and label utilities
+(repository root, e.g. yolo_lab_gui/)
+├── tools/dataset_tools/         # data splitting and label helpers (defaults: data/dataset)
 │   ├── create_empty_labels.py
 │   ├── split_images_only/
 │   │   ├── split_every_5th_images_only.py
@@ -39,18 +39,18 @@ code/
 │   └── split_train_val_test/
 │       └── split_random_with_labels.py
 ├── pretrained_models/     # common pretrained weights (e.g. yolov8n.pt, yolov8n-seg.pt)
-├── result/                # per-experiment result folders
+├── outputs/results/             # per-experiment result folders
 ├── scripts/               # training, config and logging scripts
 │   ├── config.py
 │   ├── paths.py
 │   ├── train_logger.py
 │   ├── train_segment.py
 │   └── predict_test.py
-├── train_logs/            # CSV logs: train_log / result_summary / result_per_class
-├── data.yaml              # dataset config (classes, train/val paths)
-├── data/                  # raw and prepared datasets (json_space, Source Data, datasets*)
-├── predict/               # inference output images (overlay examples)
-└── isat-sam/              # onnx models, class names and related files
+├── outputs/logs/                # CSV logs: train_log / result_summary / result_per_class
+├── data.yaml              # dataset config (default path: data/dataset; matches scripts/paths.py)
+├── data/dataset/          # YOLO layout: images/{train,val,test}, labels/{train,val,test}
+├── outputs/predict/             # inference output images (overlay examples)
+└── isat-sam/              # onnx models, class names, etc. (optional)
 ```
 
 ---
@@ -136,7 +136,7 @@ Before training starts the script prints key parameters and asks whether to enab
 
 ## Logs and validation
 
-The project writes three CSV logs to `train_logs/`:
+The project writes three CSV logs to `outputs/logs/`:
 
 - `train_log.csv`: training process records (time, mode, status, paths, hyperparams, save locations, etc.)
 - `result_summary_log.csv`: overall validation metrics (images/instances, box/mask mAP, precision/recall)
@@ -148,10 +148,10 @@ After training, validation runs automatically and results are appended to logs. 
 
 ## Recommended workflow
 
-1. Prepare and check your dataset using `dataset_tools/`.
+1. Prepare and check your dataset using `tools/dataset_tools/`.
 2. Set a new `experiment_name` in `scripts/config.py` to avoid collisions.
 3. Run `python scripts/train_segment.py` and choose the appropriate mode.
-4. After training, inspect `result/` for `best.pt` and `last.pt`, and review corresponding entries in `train_logs/`.
+4. After training, inspect `outputs/results/` for `best.pt` and `last.pt`, and review corresponding entries in `outputs/logs/`.
 
 ---
 
@@ -164,20 +164,20 @@ After training, validation runs automatically and results are appended to logs. 
 
 ---
 
-## dataset_tools
+## tools/dataset_tools
 
-`dataset_tools/` contains utilities for preparing and splitting datasets so images and labels are organized for train/val/test workflows.
+`tools/dataset_tools/` contains utilities for preparing and splitting datasets so images and labels are organized for train/val/test workflows.
 
 Main scripts and purpose:
 
-- `dataset_tools/create_empty_labels.py` — generate empty YOLO-style label files for images without annotations (useful for placeholders or pseudo-labeling).
-- `dataset_tools/split_images_only/` — split images only:
+- `tools/dataset_tools/create_empty_labels.py` — generate empty YOLO-style label files for images without annotations (useful for placeholders or pseudo-labeling).
+- `tools/dataset_tools/split_images_only/` — split images only:
   - `split_every_5th_images_only.py`: sample every N-th image into val/test (periodic sampling).
   - `split_random_images_only.py`: randomly sample a proportion of images into val/test.
-- `dataset_tools/split_train_val/` — split images and corresponding labels into train/val:
+- `tools/dataset_tools/split_train_val/` — split images and corresponding labels into train/val:
   - `split_every_5th_with_labels.py`: interval-based split and move matching label files.
   - `split_random_with_labels.py`: random split while keeping image/label pairs intact.
-- `dataset_tools/split_train_val_test/` — support three-way splits (train/val/test), e.g. `split_random_with_labels.py` for independent test sets.
+- `tools/dataset_tools/split_train_val_test/` — support three-way splits (train/val/test), e.g. `split_random_with_labels.py` for independent test sets.
 
 Usage tips:
 
@@ -230,4 +230,4 @@ Ensure the `train` and `val` paths match your dataset layout (they may be absolu
 
 - Per-experiment results: `results_dir/experiment_name/` (set in `scripts/config.py`)
 - Checkpoints: `.../weights/last.pt` and `.../weights/best.pt`
-- CSV logs: `train_logs/` contains `train_log.csv`, `result_summary_log.csv` and `result_per_class_log.csv`
+- CSV logs: `outputs/logs/` contains `train_log.csv`, `result_summary_log.csv` and `result_per_class_log.csv`

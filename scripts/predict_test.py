@@ -5,6 +5,9 @@ import json
 from ultralytics import YOLO
 from paths import PREDICT_DIR, BEST_SEG_MODEL, TEST_IMAGES_DIR
 
+_SCRIPTS_DIR = Path(__file__).resolve().parent
+_DEFAULT_TASK_PARAMS = _SCRIPTS_DIR / "infer_task_params.json"
+
 
 # =========================
 # 只改这里：通用参数
@@ -18,8 +21,8 @@ class InferConfig:
     conf: float = 0.406
     imgsz: int = 640
 
-    # 外置任务参数文件
-    task_param_file: str = "infer_task_params.json"
+    # 外置任务参数文件（与脚本同目录，避免从其它 cwd 运行时找不到）
+    task_param_file: str = str(_DEFAULT_TASK_PARAMS)
 
     # 输出文件后缀
     out_suffix: str = "_overlay.jpg"
@@ -115,14 +118,15 @@ class YOLOInferencer:
 
 
 if __name__ == "__main__":
+    _sd = Path(__file__).resolve().parent
     cfg = InferConfig(
         model_path=BEST_SEG_MODEL,
         source=TEST_IMAGES_DIR,
-        save_dir=str(Path(PREDICT_DIR) / "seg_dataset_all_pro_random__aug_e150_b16_mask_overlay2"),
+        save_dir=str(Path(PREDICT_DIR) / "overlay_run_v2"),
         conf=0.406,
         imgsz=640,
-        task_param_file="infer_task_params.json",
-        out_suffix="_overlay.jpg"
+        task_param_file=str(_sd / "infer_task_params.json"),
+        out_suffix="_overlay.jpg",
     )
 
     inferencer = YOLOInferencer(cfg)
