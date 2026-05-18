@@ -33,6 +33,7 @@ from PySide6.QtWidgets import (
 )
 
 from gui.config import TrainConfig
+from gui.device import get_available_devices, get_default_device
 from gui.train_engine import list_experiments
 
 from gui.styles import (
@@ -43,6 +44,7 @@ from gui.styles import (
     COLOR_LOG_BG,
     COLOR_TEXT,
     COLOR_TEXT_MUTED,
+    COMBO_STYLE,
     FONT_FAMILIES,
     FONT_SIZE,
     RADIO_STYLE,
@@ -172,7 +174,10 @@ class MainWindow(QWidget):
         self.tr_epochs = spinner(1, 100000, 150, 100)
         self.tr_imgsz  = spinner(32, 4096, 640, 100)
         self.tr_batch  = spinner(1, 1024, 16, 100)
-        self.tr_device = input_(default="0", min_width=100)
+        self.tr_device = QComboBox()
+        self.tr_device.setEditable(True)
+        self.tr_device.setMinimumWidth(100)
+        self.tr_device.setStyleSheet(COMBO_STYLE)
 
         grid = QHBoxLayout()
         grid.setSpacing(28)
@@ -342,7 +347,20 @@ class MainWindow(QWidget):
             subprocess.Popen(["xdg-open", path])
 
     def _load_train_defaults(self):
+        self._refresh_devices()
         self._apply_config(TrainConfig())
+
+    def _refresh_devices(self):
+        """刷新 Device 下拉框的可用设备列表。"""
+        current = self.tr_device.currentText().strip()
+        self.tr_device.clear()
+        self.tr_device.addItems(get_available_devices())
+        if current:
+            idx = self.tr_device.findText(current)
+            if idx >= 0:
+                self.tr_device.setCurrentIndex(idx)
+            else:
+                self.tr_device.setCurrentText(current)
 
     def _apply_config(self, c):
         self.tr_data_yaml.setCurrentText(c.data_yaml)
@@ -352,7 +370,7 @@ class MainWindow(QWidget):
         self.tr_epochs.setValue(int(c.epochs))
         self.tr_imgsz.setValue(int(c.imgsz))
         self.tr_batch.setValue(int(c.batch))
-        self.tr_device.setText(str(c.device))
+        self.tr_device.setCurrentText(str(c.device))
         self.tr_exp.setText(c.experiment_name)
         self.tr_augment.setChecked(bool(c.use_augment))
         self._refresh_history()
@@ -380,7 +398,7 @@ class MainWindow(QWidget):
             "epochs": self.tr_epochs.value(),
             "imgsz": self.tr_imgsz.value(),
             "batch": self.tr_batch.value(),
-            "device": self.tr_device.text().strip(),
+            "device": self.tr_device.currentText().strip(),
             "experiment_name": self.tr_exp.text().strip(),
             "use_augment": self.tr_augment.isChecked(),
         }
@@ -393,7 +411,7 @@ class MainWindow(QWidget):
         self.tr_epochs.setValue(d.get("epochs", 150))
         self.tr_imgsz.setValue(d.get("imgsz", 640))
         self.tr_batch.setValue(d.get("batch", 16))
-        self.tr_device.setText(d.get("device", "0"))
+        self.tr_device.setCurrentText(d.get("device", get_default_device()))
         self.tr_exp.setText(d.get("experiment_name", ""))
         self.tr_augment.setChecked(d.get("use_augment", True))
         self._refresh_history()
@@ -505,7 +523,7 @@ class MainWindow(QWidget):
         c.epochs = int(self.tr_epochs.value())
         c.imgsz = int(self.tr_imgsz.value())
         c.batch = int(self.tr_batch.value())
-        c.device = self.tr_device.text().strip() or "0"
+        c.device = self.tr_device.currentText().strip() or get_default_device()
         c.experiment_name = self.tr_exp.text().strip() or c.experiment_name
         c.use_augment = self.tr_augment.isChecked()
         return c

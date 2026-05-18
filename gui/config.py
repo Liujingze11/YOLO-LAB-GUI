@@ -1,6 +1,7 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import os
 from gui.paths import DATA_YAML, MODEL_FILE, RESULTS_DIR, LOG_DIR
+from gui.device import get_default_device
 
 @dataclass
 class TrainConfig:
@@ -15,7 +16,7 @@ class TrainConfig:
     epochs: int = 150   # 训练轮数
     imgsz: int = 640    # 输入图片尺寸
     batch: int = 16  # 每批次训练图片数量
-    device: str = "0"  # 训练设备：如 "0"、"0,1"、"cpu"
+    device: str = field(default_factory=get_default_device)  # 自动检测：GPU → CPU
 
     experiment_name: str = "seg_dataset_all_pro_random_aug_e150_b16"    # 当前实验名称
 
