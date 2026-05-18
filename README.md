@@ -37,13 +37,13 @@ yolo_lab_gui/
 │   ├── styles.py               # 颜色 & 样式常量
 │   ├── widgets.py              # 控件工厂函数
 │   ├── workers.py              # 后台训练/推理线程
-│   └── presets.json            # 用户预设（运行时生成）
-├── scripts/                    # 训练 & 推理逻辑
 │   ├── config.py               # TrainConfig 训练配置数据类
 │   ├── paths.py                # 路径定义
-│   ├── train_segment.py        # 训练编排（3 种模式）
+│   ├── train_engine.py         # 训练编排（3 种模式）
 │   ├── train_logger.py         # CSV 日志
-│   └── predict_test.py         # 推理脚本
+│   ├── infer_engine.py         # 推理引擎
+│   ├── infer_task_params.json  # 推理任务参数
+│   └── presets.json            # 用户预设（运行时生成）
 ├── tools/dataset_tools/        # 数据集分割 & 标签工具
 ├── data.yaml                   # 数据集配置
 ├── setup.sh                    # 一键环境搭建
@@ -91,23 +91,6 @@ names:
   1: milk
   2: crisp
   ...
-```
-
-## 命令行模式（无 GUI）
-
-训练脚本也支持命令行直接调用：
-
-```bash
-python scripts/train_segment.py --no-interactive --mode 1 \
-    --data-yaml data.yaml --epochs 150 --batch 16 --device 0 \
-    --name my_experiment
-```
-
-推理脚本：
-
-```bash
-python scripts/predict_test.py \
-    --model yolov8n-seg.pt --source data/test_images --save-dir outputs/predict
 ```
 
 ## License

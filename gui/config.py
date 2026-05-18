@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 import os
-from paths import DATA_YAML, MODEL_FILE, RESULTS_DIR, LOG_DIR
+from gui.paths import DATA_YAML, MODEL_FILE, RESULTS_DIR, LOG_DIR
 
 @dataclass
 class TrainConfig:

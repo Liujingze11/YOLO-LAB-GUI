@@ -12,7 +12,6 @@ from pathlib import Path
 from PySide6.QtCore import QThread, Signal
 
 ROOT = Path(__file__).resolve().parent.parent
-SCRIPTS = ROOT / "scripts"
 
 
 class TrainWorker(QThread):

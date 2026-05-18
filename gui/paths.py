@@ -1,5 +1,5 @@
 """
-All paths are derived from the repository root (parent of scripts/).
+All paths are derived from the repository root (parent of gui/).
 Works on any machine after you clone or move the project.
 
 Pretrained base models (e.g. yolov8n-seg.pt) use short names so that

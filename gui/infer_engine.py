@@ -1,30 +1,29 @@
-from dataclasses import dataclass
-from pathlib import Path
+"""
+推理编排引擎 — 仅非交互模式，供 GUI 通过子进程调用。
+
+入口：python gui/infer_engine.py --model ... --source ... --save-dir ... --conf ... --imgsz ...
+"""
 import json
+import argparse
+from pathlib import Path
+from dataclasses import dataclass
 
 from ultralytics import YOLO
-from paths import PREDICT_DIR, BEST_SEG_MODEL, TEST_IMAGES_DIR
+
+from gui.paths import PREDICT_DIR, BEST_SEG_MODEL, TEST_IMAGES_DIR
 
 _SCRIPTS_DIR = Path(__file__).resolve().parent
 _DEFAULT_TASK_PARAMS = _SCRIPTS_DIR / "infer_task_params.json"
 
 
-# =========================
-# 只改这里：通用参数
-# =========================
 @dataclass
 class InferConfig:
     model_path: str = BEST_SEG_MODEL
     source: str = TEST_IMAGES_DIR
     save_dir: str = str(Path(PREDICT_DIR) / "predict_result")
-
     conf: float = 0.406
     imgsz: int = 640
-
-    # 外置任务参数文件（与脚本同目录，避免从其它 cwd 运行时找不到）
     task_param_file: str = str(_DEFAULT_TASK_PARAMS)
-
-    # 输出文件后缀
     out_suffix: str = "_overlay.jpg"
 
 
@@ -50,48 +49,29 @@ class YOLOInferencer:
         self.cfg = cfg
         self.model = YOLO(self.cfg.model_path)
         self.task_loader = TaskParamLoader(self.cfg.task_param_file)
-
         self.save_dir = Path(self.cfg.save_dir)
         self.save_dir.mkdir(parents=True, exist_ok=True)
-
-        # 自动识别模型任务
         self.task = self._detect_task()
-
-        # 读取这个任务对应的外置参数
         self.task_params = self.task_loader.get_task_params(self.task)
 
     def _detect_task(self) -> str:
-        """
-        自动读取模型任务类型
-        例如 detect / segment / classify / pose / obb
-        """
         task = getattr(self.model, "task", None)
         if not task:
             raise ValueError("无法从模型中识别 task")
         return task
 
     def _build_predict_kwargs(self) -> dict:
-        """
-        组装 predict 参数：
-        通用参数写在代码里；
-        任务特定参数从 JSON 里读取。
-        """
         kwargs = {
             "source": self.cfg.source,
             "imgsz": self.cfg.imgsz,
             "conf": self.cfg.conf,
-            "save": False
+            "save": False,
         }
-
         task_predict_kwargs = self.task_params.get("predict", {})
         kwargs.update(task_predict_kwargs)
-
         return kwargs
 
     def _build_plot_kwargs(self) -> dict:
-        """
-        组装保存可视化结果时的绘图参数
-        """
         return self.task_params.get("plot", {})
 
     def run(self):
@@ -110,23 +90,21 @@ class YOLOInferencer:
                 stem = Path(r.path).stem
             else:
                 stem = f"result_{i:05d}"
-
             out_path = self.save_dir / f"{stem}{self.cfg.out_suffix}"
             r.save(filename=str(out_path), **plot_kwargs)
 
         print(f"推理完成，共保存 {len(results)} 张结果到: {self.save_dir}")
 
 
-if __name__ == "__main__":
-    import argparse
+# ── 子进程入口 ────────────────────────────────────────────
 
-    _sd = Path(__file__).resolve().parent
-    parser = argparse.ArgumentParser(description="YOLO 推理脚本")
-    parser.add_argument("--model", default=BEST_SEG_MODEL, help="模型权重路径")
-    parser.add_argument("--source", default=TEST_IMAGES_DIR, help="输入源（图像/目录）")
-    parser.add_argument("--save-dir", default=str(Path(PREDICT_DIR) / "overlay_run_v2"), help="输出保存目录")
-    parser.add_argument("--conf", type=float, default=0.406, help="置信度阈值")
-    parser.add_argument("--imgsz", type=int, default=640, help="输入图像尺寸")
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="YOLO inference engine (non-interactive)")
+    parser.add_argument("--model", default=BEST_SEG_MODEL)
+    parser.add_argument("--source", default=TEST_IMAGES_DIR)
+    parser.add_argument("--save-dir", default=str(Path(PREDICT_DIR) / "predict_result"))
+    parser.add_argument("--conf", type=float, default=0.406)
+    parser.add_argument("--imgsz", type=int, default=640)
     args = parser.parse_args()
 
     cfg = InferConfig(
@@ -135,7 +113,7 @@ if __name__ == "__main__":
         save_dir=args.save_dir,
         conf=args.conf,
         imgsz=args.imgsz,
-        task_param_file=str(_sd / "infer_task_params.json"),
+        task_param_file=str(_SCRIPTS_DIR / "infer_task_params.json"),
         out_suffix="_overlay.jpg",
     )
 

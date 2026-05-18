@@ -11,11 +11,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SCRIPTS = ROOT / "scripts"
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
-if str(SCRIPTS) not in sys.path:
-    sys.path.insert(0, str(SCRIPTS))
 
 PRESET_FILE = ROOT / "gui" / "presets.json"
 
@@ -35,8 +32,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from config import TrainConfig
-from train_segment import list_experiments
+from gui.config import TrainConfig
+from gui.train_engine import list_experiments
 
 from gui.styles import (
     CHECKBOX_STYLE,
@@ -562,7 +559,7 @@ class MainWindow(QWidget):
         self._log_info(f"epochs={cfg.epochs}  imgsz={cfg.imgsz}  batch={cfg.batch}  device={cfg.device}")
 
         cmd = [
-            sys.executable, str(SCRIPTS / "train_segment.py"),
+            sys.executable, str(ROOT / "gui" / "train_engine.py"),
             "--no-interactive",
             "--mode", str(mode),
             "--data-yaml", cfg.data_yaml,
@@ -763,7 +760,7 @@ class MainWindow(QWidget):
         if self._infer_defaults_done:
             return
         self._infer_defaults_done = True
-        from paths import BEST_SEG_MODEL, PREDICT_DIR, TEST_IMAGES_DIR
+        from gui.paths import BEST_SEG_MODEL, PREDICT_DIR, TEST_IMAGES_DIR
         self.ir_model.setCurrentText(BEST_SEG_MODEL)
         self.ir_source.setCurrentText(TEST_IMAGES_DIR)
         self.ir_save.setCurrentText(str(Path(PREDICT_DIR) / "predict_result"))
@@ -796,7 +793,7 @@ class MainWindow(QWidget):
         self._log_info_ir(f"开始推理 — {model_path}")
 
         cmd = [
-            sys.executable, str(SCRIPTS / "predict_test.py"),
+            sys.executable, str(ROOT / "gui" / "infer_engine.py"),
             "--model", model_path,
             "--source", source,
             "--save-dir", save_dir,
