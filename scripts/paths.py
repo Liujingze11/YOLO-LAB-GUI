@@ -1,8 +1,12 @@
-DATA_YAML = "data.yaml 的文件路径"
-MODEL_FILE = "预训练模型 yolov8n.pt 的文件路径"
-RESULTS_DIR = "训练结果保存文件夹路径"
-LOG_DIR = "训练日志保存文件夹路径"
+from pathlib import Path
 
-PREDICT_DIR = "预测结果保存文件夹路径"
-BEST_SEG_MODEL = "最佳分割模型 best.pt 的文件路径"
-TEST_IMAGES_DIR = "测试图片文件夹路径"
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+DATA_YAML = str(PROJECT_ROOT / "data.yaml")
+MODEL_FILE = str(PROJECT_ROOT / "pretrained_models" / "yolov8n-seg.pt")
+RESULTS_DIR = str(PROJECT_ROOT / "result")
+LOG_DIR = str(PROJECT_ROOT / "train_logs")
+
+PREDICT_DIR = str(PROJECT_ROOT / "predict")
+BEST_SEG_MODEL = str(PROJECT_ROOT / "result" / "seg_dataset_all_pro_random__aug_e150_b16" / "weights" / "best.pt")
+TEST_IMAGES_DIR = str(PROJECT_ROOT / "data" / "Source Data" / "datasets_all_pro" / "images" / "test")

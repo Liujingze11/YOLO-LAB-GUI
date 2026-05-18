@@ -3,7 +3,10 @@ import random
 import shutil
 
 # ===== 路径配置 =====
-base_dir = "/home/liubohan/lbh/Jingze_yolo_project/data/Source Data/datasets_all_pro"   # 数据集文件夹路径（源目录），包含所有图片与标签
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+base_dir = str(PROJECT_ROOT / "data" / "Source Data" / "datasets_all_pro")   # 数据集文件夹路径（源目录），包含所有图片与标签
 
 images_train_dir = os.path.join(base_dir, "images", "train")
 images_val_dir   = os.path.join(base_dir, "images", "val")
