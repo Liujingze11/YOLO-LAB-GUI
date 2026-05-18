@@ -9,6 +9,10 @@ import tempfile
 import yaml
 import shutil
 import argparse
+from pathlib import Path
+
+# 子进程入口 — 确保项目根在 sys.path 中
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from ultralytics import YOLO
 

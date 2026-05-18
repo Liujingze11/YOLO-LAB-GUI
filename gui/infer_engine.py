@@ -4,16 +4,20 @@
 入口：python gui/infer_engine.py --model ... --source ... --save-dir ... --conf ... --imgsz ...
 """
 import json
+import sys
 import argparse
 from pathlib import Path
 from dataclasses import dataclass
+
+# 子进程入口 — 确保项目根在 sys.path 中
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from ultralytics import YOLO
 
 from gui.paths import PREDICT_DIR, BEST_SEG_MODEL, TEST_IMAGES_DIR
 
-_SCRIPTS_DIR = Path(__file__).resolve().parent
-_DEFAULT_TASK_PARAMS = _SCRIPTS_DIR / "infer_task_params.json"
+_ENGINE_DIR = Path(__file__).resolve().parent
+_DEFAULT_TASK_PARAMS = _ENGINE_DIR / "infer_task_params.json"
 
 
 @dataclass
@@ -113,7 +117,7 @@ if __name__ == "__main__":
         save_dir=args.save_dir,
         conf=args.conf,
         imgsz=args.imgsz,
-        task_param_file=str(_SCRIPTS_DIR / "infer_task_params.json"),
+        task_param_file=str(_ENGINE_DIR / "infer_task_params.json"),
         out_suffix="_overlay.jpg",
     )
 
