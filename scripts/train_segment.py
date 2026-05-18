@@ -142,7 +142,8 @@ def build_train_kwargs(config, use_augment):
         "batch": config.batch,
         "device": config.device,
         "project": config.results_dir,
-        "name": config.experiment_name
+        "name": config.experiment_name,
+        "plots": False  # 禁用内部绘图，防止触发 matplotlib FT2Font 字体加载错误
     }
 
     if use_augment:
