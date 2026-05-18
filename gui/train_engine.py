@@ -14,12 +14,20 @@ from pathlib import Path
 # 子进程入口 — 确保项目根在 sys.path 中
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-# matplotlib 子进程兼容：清除可能损坏的字体缓存 + 非交互后端
-_font_cache = os.path.expanduser("~/.cache/matplotlib")
-if os.path.exists(_font_cache):
-    shutil.rmtree(_font_cache, ignore_errors=True)
+# matplotlib 子进程兼容：非交互后端 + 防止损坏字体导致崩溃
 if "MPLBACKEND" not in os.environ:
     os.environ["MPLBACKEND"] = "Agg"
+
+import matplotlib.font_manager as _fm
+_original_addfont = _fm.FontManager.addfont
+
+def _safe_addfont(self, path):
+    try:
+        _original_addfont(self, path)
+    except RuntimeError:
+        pass  # 跳过 FreeType 无法解析的损坏字体文件
+
+_fm.FontManager.addfont = _safe_addfont
 
 from ultralytics import YOLO
 
