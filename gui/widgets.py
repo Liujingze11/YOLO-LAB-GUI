@@ -7,7 +7,6 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QComboBox,
     QGraphicsDropShadowEffect,
-    QHBoxLayout,
     QLabel,
     QLineEdit,
     QProgressBar,
@@ -36,7 +35,6 @@ from gui.styles import (
     SPINNER_STYLE,
     TINY_BTN_STYLE,
     COMBO_STYLE,
-    BTN_HEIGHT,
 )
 
 
@@ -175,15 +173,3 @@ def simple_combo(min_width: int = 120, font_size: int = 12,
     cb.setMinimumWidth(min_width)
     cb.setStyleSheet(COMBO_SIMPLE_STYLE.replace("font-size: 13px", f"font-size: {font_size}px"))
     return cb
-
-
-def action_button_row(widgets: list[QWidget], parent: QWidget | None = None) -> QHBoxLayout:
-    """标准操作按钮行布局。"""
-    row = QHBoxLayout()
-    row.setSpacing(10)
-    for w in widgets:
-        if isinstance(w, QPushButton):
-            w.setFixedHeight(BTN_HEIGHT)
-        row.addWidget(w)
-    row.addStretch()
-    return row

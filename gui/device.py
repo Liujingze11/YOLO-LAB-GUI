@@ -14,13 +14,16 @@ def get_default_device() -> str:
 
 
 def get_available_devices() -> list[str]:
-    """返回可用设备列表：['cpu'] 或 ['cpu', '0', '1', ...]."""
+    """返回可用设备列表，含显存信息：['cpu', 'cuda:0 (8.0G)', ...]."""
     devices = ["cpu"]
     try:
         import torch
         if torch.cuda.is_available():
             for i in range(torch.cuda.device_count()):
-                devices.append(str(i))
+                name = torch.cuda.get_device_name(i)
+                total_mem = torch.cuda.get_device_properties(i).total_mem
+                mem_gb = total_mem / (1024 ** 3)
+                devices.append(f"{i} — {name} ({mem_gb:.1f}G)")
     except ImportError:
         pass
     return devices

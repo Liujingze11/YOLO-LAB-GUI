@@ -189,3 +189,57 @@ SCROLL_AREA_STYLE = (
     % (COLOR_BG, SCROLLBAR_WIDTH, SCROLLBAR_RADIUS,
        SCROLLBAR_WIDTH, SCROLLBAR_RADIUS)
 )
+
+# ── 深色模式全局样式 ──────────────────────────────────────────
+
+DARK_STYLE = """
+QWidget {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+}
+QTabWidget::pane {
+    background-color: #1e1e1e;
+    border: none;
+}
+QTabBar::tab {
+    color: #8e8e93;
+}
+QTabBar::tab:selected {
+    color: #4da6ff;
+    border-bottom: 2px solid #4da6ff;
+}
+QComboBox, QSpinBox, QLineEdit {
+    background-color: #2d2d2d;
+    border: 1px solid #444;
+    color: #e0e0e0;
+}
+QComboBox::drop-down, QSpinBox::up-button, QSpinBox::down-button {
+    background-color: #2d2d2d;
+}
+QComboBox QAbstractItemView {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+    selection-background-color: #444;
+}
+QScrollBar:vertical, QScrollBar:horizontal {
+    background: #1e1e1e;
+}
+QScrollBar::handle:vertical, QScrollBar::handle:horizontal {
+    background: #555;
+    border-radius: 4px;
+}
+QProgressBar {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+}
+QCheckBox, QRadioButton {
+    color: #e0e0e0;
+}
+"""
+
+DARK_TOGGLE_STYLE = (
+    "QPushButton { background: transparent; color: %s; border: none; "
+    "font-size: 16px; padding: 2px 8px; }"
+    "QPushButton:hover { color: %s; }"
+    % (COLOR_TEXT_MUTED, COLOR_ACCENT)
+)

@@ -17,7 +17,7 @@ if str(ROOT) not in sys.path:
 PRESET_FILE = ROOT / "gui" / "presets.json"
 
 from PySide6.QtCore import Qt, Slot
-from PySide6.QtGui import QFont, QTextCursor
+from PySide6.QtGui import QFont, QKeySequence, QShortcut, QTextCursor
 from PySide6.QtWidgets import (
     QApplication,
     QCheckBox,
@@ -26,7 +26,10 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
     QMessageBox,
+    QPushButton,
     QRadioButton,
+    QSpinBox,
+    QStackedWidget,
     QTabWidget,
     QVBoxLayout,
     QWidget,
@@ -38,17 +41,13 @@ from gui.train_engine import list_experiments
 
 from gui.styles import (
     CHECKBOX_STYLE,
-    COLOR_ACCENT,
-    COLOR_BG,
-    COLOR_CARD_BG,
-    COLOR_LOG_BG,
-    COLOR_TEXT,
-    COLOR_TEXT_MUTED,
     COMBO_STYLE,
+    DARK_STYLE,
+    DARK_TOGGLE_STYLE,
     FONT_FAMILIES,
     FONT_SIZE,
     RADIO_STYLE,
-    SCROLL_AREA_STYLE,
+    SPINNER_STYLE,
     TAB_WIDGET_STYLE,
 )
 from gui.widgets import (
@@ -67,7 +66,7 @@ from gui.widgets import (
     spinner,
     tiny_btn,
 )
-from gui.workers import InferWorker, TrainWorker
+from gui.workers import InferWorker, ToolWorker, TrainWorker
 
 
 # ── 预设管理 ──────────────────────────────────────────────
@@ -100,20 +99,32 @@ class MainWindow(QWidget):
 
         self._train_worker: TrainWorker | None = None
         self._infer_worker: InferWorker | None = None
+        self._tool_worker: ToolWorker | None = None
         self._infer_defaults_done = False
         self._presets = load_presets()
         self._path_history: dict[str, list[str]] = {}
 
-        tabs = QTabWidget()
-        tabs.setStyleSheet(TAB_WIDGET_STYLE)
-        tabs.addTab(self._build_train_tab(), "训练")
-        tabs.addTab(self._build_infer_tab(), "推理")
+        self._tabs = QTabWidget()
+        self._tabs.setStyleSheet(TAB_WIDGET_STYLE)
+        self._tabs.addTab(self._build_train_tab(), "训练")
+        self._tabs.addTab(self._build_infer_tab(), "推理")
+        self._tabs.addTab(self._build_tools_tab(), "工具")
+        self._tabs.addTab(self._build_log_viewer_tab(), "日志 & 结果")
+
+        self._dark_mode = False
+        dark_btn = QPushButton("☀")
+        dark_btn.setStyleSheet(DARK_TOGGLE_STYLE)
+        dark_btn.setFixedSize(32, 32)
+        dark_btn.clicked.connect(self._toggle_dark_mode)
+        self._tabs.setCornerWidget(dark_btn)
 
         root = QVBoxLayout(self)
         root.setContentsMargins(0, 0, 0, 0)
-        root.addWidget(tabs)
+        root.addWidget(self._tabs)
 
         self._load_train_defaults()
+
+        QShortcut(QKeySequence("Ctrl+Return"), self, self._on_ctrl_enter)
 
     # ═══════════════════════════════════════════════════════
     #  训练页
@@ -131,6 +142,9 @@ class MainWindow(QWidget):
         header1 = QHBoxLayout()
         header1.addWidget(section_label("路径"))
         header1.addStretch()
+        scan_models_btn = tiny_btn("扫描模型")
+        scan_models_btn.clicked.connect(self._scan_trained_models)
+        header1.addWidget(scan_models_btn)
         edit_yaml_btn = tiny_btn("编辑 data.yaml")
         edit_yaml_btn.clicked.connect(self._open_data_yaml)
         header1.addWidget(edit_yaml_btn)
@@ -284,6 +298,389 @@ class MainWindow(QWidget):
 
         return scroll_area(w)
 
+    # ═══════════════════════════════════════════════════════
+    #  工具页
+    # ═══════════════════════════════════════════════════════
+
+    def _build_tools_tab(self):
+        w = QWidget()
+        w.setMinimumSize(560, 580)
+        outer = QVBoxLayout(w)
+        outer.setContentsMargins(24, 16, 24, 24)
+        outer.setSpacing(10)
+
+        # ── 数据集目录卡片 ──
+        card1, lay1 = card()
+        lay1.addWidget(section_label("数据集目录"))
+        lay1.addSpacing(14)
+
+        self._path_history.setdefault("tool_dataset", [])
+        self.tool_dataset = path_combo(default=str(ROOT / "data" / "dataset"),
+                                       history=self._path_history["tool_dataset"])
+        row = QHBoxLayout()
+        row.setSpacing(10)
+        row.addWidget(self.tool_dataset, 1)
+        b = btn("浏览", primary=False)
+        b.setFixedWidth(60)
+        b.clicked.connect(lambda: self._browse(self.tool_dataset, True, None, "tool_dataset"))
+        row.addWidget(b)
+        lay1.addLayout(row)
+        outer.addWidget(card1)
+
+        # ── 工具选择卡片 ──
+        card2, lay2 = card()
+        lay2.addWidget(section_label("工具"))
+        lay2.addSpacing(14)
+
+        self.tool_selector = QComboBox()
+        self.tool_selector.setStyleSheet(COMBO_STYLE)
+        self.tool_selector.addItems([
+            "创建空标签文件",
+            "随机分割 train/val（含标签）",
+            "随机分割 train/val/test（含标签）",
+            "每 N 张分割 train/val（含标签）",
+            "随机分割 train/val（仅图片）",
+            "每 N 张分割 train/val（仅图片）",
+        ])
+        self.tool_selector.currentIndexChanged.connect(self._on_tool_changed)
+        lay2.addWidget(self.tool_selector)
+        lay2.addSpacing(16)
+
+        # ── 参数区域（QStackedWidget）──
+        self.tool_params = QStackedWidget()
+        self._tool_param_spinners: list[dict[str, QSpinBox]] = []
+        param_specs = [
+            [],                                          # 0: 创建空标签
+            [("验证集比例 %", "val_ratio", 20, 1, 99)],   # 1: 随机 train/val
+            [("验证集比例 %", "val_ratio", 20, 1, 99),    # 2: 随机 train/val/test
+             ("测试集比例 %", "test_ratio", 10, 1, 99)],
+            [("间隔 N (每 N 张取 1 张)", "interval", 5, 1, 100)],  # 3: 每N张含标签
+            [("验证集比例 %", "val_ratio", 20, 1, 99)],   # 4: 随机仅图片
+            [("间隔 N (每 N 张取 1 张)", "interval", 5, 1, 100)],  # 5: 每N张仅图片
+        ]
+        for specs in param_specs:
+            page = QWidget()
+            pl = QVBoxLayout(page)
+            pl.setContentsMargins(0, 0, 0, 0)
+            pl.setSpacing(8)
+            spinner_map = {}
+            for label_text, name, default, min_v, max_v in specs:
+                r = QHBoxLayout()
+                r.setSpacing(10)
+                r.addWidget(field_label(label_text))
+                spin = QSpinBox()
+                spin.setRange(min_v, max_v)
+                spin.setValue(default)
+                spin.setMinimumWidth(80)
+                spin.setStyleSheet(SPINNER_STYLE)
+                r.addWidget(spin)
+                r.addStretch()
+                pl.addLayout(r)
+                spinner_map[name] = spin
+            pl.addStretch()
+            self.tool_params.addWidget(page)
+            self._tool_param_spinners.append(spinner_map)
+
+        lay2.addWidget(self.tool_params)
+        outer.addWidget(card2)
+
+        # ── 操作按钮 ──
+        btn_row = QHBoxLayout()
+        btn_row.setSpacing(10)
+
+        self.btn_tool_run = btn("执行工具")
+        self.btn_tool_run.setFixedHeight(38)
+        self.btn_tool_run.clicked.connect(self._on_run_tool)
+        btn_row.addWidget(self.btn_tool_run)
+
+        self.btn_tool_stop = danger_btn("停止")
+        self.btn_tool_stop.setFixedHeight(38)
+        self.btn_tool_stop.setEnabled(False)
+        self.btn_tool_stop.clicked.connect(self._on_stop_tool)
+        btn_row.addWidget(self.btn_tool_stop)
+
+        btn_row.addStretch()
+        outer.addLayout(btn_row)
+
+        # ── 输出 ──
+        outer.addWidget(field_label("输出"))
+        self.tool_log = log_area()
+        outer.addWidget(self.tool_log, 1)
+
+        return scroll_area(w)
+
+    def _on_tool_changed(self, idx):
+        self.tool_params.setCurrentIndex(idx)
+
+    TOOL_SCRIPTS = [
+        "create_empty_labels.py",
+        "split_train_val/split_random_with_labels.py",
+        "split_train_val_test/split_random_with_labels.py",
+        "split_train_val/split_every_5th_with_labels.py",
+        "split_images_only/split_random_images_only.py",
+        "split_images_only/split_every_5th_images_only.py",
+    ]
+
+    def _on_run_tool(self):
+        if self._tool_worker and self._tool_worker.isRunning():
+            QMessageBox.warning(self, "提示", "工具正在执行中，请等待完成或先停止。")
+            return
+
+        idx = self.tool_selector.currentIndex()
+        dataset_dir = path_combo_get(self.tool_dataset)
+        if not dataset_dir:
+            QMessageBox.warning(self, "提示", "请选择数据集目录。")
+            return
+        if not Path(dataset_dir).is_dir():
+            QMessageBox.critical(self, "错误", f"数据集目录不存在：\n{dataset_dir}")
+            return
+
+        script_rel = self.TOOL_SCRIPTS[idx]
+        script = str(ROOT / "tools" / "dataset_tools" / script_rel)
+
+        if not Path(script).is_file():
+            QMessageBox.critical(self, "错误", f"工具脚本不存在：\n{script}")
+            return
+
+        cmd = [sys.executable, script, "--dataset-dir", dataset_dir]
+
+        # 根据参数页提取参数
+        spinners = self._tool_param_spinners[idx]
+        if idx == 0:
+            pass  # 创建空标签，无额外参数
+        elif idx == 1:
+            cmd.extend(["--val-ratio", str(spinners["val_ratio"].value() / 100)])
+        elif idx == 2:
+            cmd.extend(["--val-ratio", str(spinners["val_ratio"].value() / 100),
+                        "--test-ratio", str(spinners["test_ratio"].value() / 100)])
+        elif idx == 3:
+            cmd.extend(["--interval", str(spinners["interval"].value())])
+        elif idx == 4:
+            cmd.extend(["--val-ratio", str(spinners["val_ratio"].value() / 100)])
+        elif idx == 5:
+            cmd.extend(["--interval", str(spinners["interval"].value())])
+
+        self.tool_log.clear()
+        self._log_append(self.tool_log,
+                         f'<span style="color:#6ec6ff;">[info]</span>  执行: {script_rel}')
+
+        self.btn_tool_run.setEnabled(False)
+        self.btn_tool_stop.setEnabled(True)
+
+        self._tool_worker = ToolWorker(cmd)
+        self._tool_worker.log_line.connect(self._append_tool_log)
+        self._tool_worker.failed.connect(self._on_tool_failed)
+        self._tool_worker.finished_ok.connect(self._on_tool_done)
+        self._tool_worker.stopped.connect(self._on_tool_stopped)
+        self._tool_worker.start()
+
+    def _append_tool_log(self, line):
+        self._log_append(self.tool_log, f'<span style="color:#c0c0c0;">{line}</span>')
+
+    def _on_stop_tool(self):
+        if self._tool_worker and self._tool_worker.isRunning():
+            self._log_append(self.tool_log,
+                             f'<span style="color:#ffb86c;">[warn]</span>  正在停止...')
+            self._tool_worker.stop()
+
+    def _on_tool_failed(self, msg):
+        self._log_append(self.tool_log,
+                         f'<span style="color:#ff5555;">[err!]</span>  工具执行失败')
+        self._log_append(self.tool_log, f'<span style="color:#ff6e6e;">{msg[:1500]}</span>')
+        self.btn_tool_run.setEnabled(True)
+        self.btn_tool_stop.setEnabled(False)
+        if not self._closing:
+            QMessageBox.critical(self, "工具失败", msg[:2000])
+
+    def _on_tool_done(self):
+        self._log_append(self.tool_log,
+                         f'<span style="color:#50fa7b;">[ ok ]</span>  工具执行完成')
+        self.btn_tool_run.setEnabled(True)
+        self.btn_tool_stop.setEnabled(False)
+        if not self._closing:
+            QMessageBox.information(self, "完成", "工具执行已结束。")
+
+    def _on_tool_stopped(self):
+        self._log_append(self.tool_log,
+                         f'<span style="color:#ffb86c;">[warn]</span>  工具已停止')
+        self.btn_tool_run.setEnabled(True)
+        self.btn_tool_stop.setEnabled(False)
+
+    # ═══════════════════════════════════════════════════════
+    #  日志 & 结果 页
+    # ═══════════════════════════════════════════════════════
+
+    def _build_log_viewer_tab(self):
+        from gui.paths import LOG_DIR, RESULTS_DIR, PREDICT_DIR
+        w = QWidget()
+        w.setMinimumSize(560, 520)
+        outer = QVBoxLayout(w)
+        outer.setContentsMargins(24, 16, 24, 24)
+        outer.setSpacing(10)
+
+        # ── 日志目录 ──
+        card1, lay1 = card()
+        lay1.addWidget(section_label("日志目录"))
+        lay1.addSpacing(14)
+        self._path_history.setdefault("lv_logs", [])
+        self.lv_log_dir = path_combo(default=LOG_DIR, history=self._path_history["lv_logs"])
+        row1 = QHBoxLayout()
+        row1.setSpacing(10)
+        row1.addWidget(self.lv_log_dir, 1)
+        b1 = btn("浏览", primary=False)
+        b1.setFixedWidth(60)
+        b1.clicked.connect(lambda: self._browse(self.lv_log_dir, True, None, "lv_logs"))
+        row1.addWidget(b1)
+        lay1.addLayout(row1)
+        outer.addWidget(card1)
+
+        # ── 日志文件选择 ──
+        card2, lay2 = card()
+        lay2.addWidget(section_label("历史日志文件"))
+        lay2.addSpacing(14)
+        row2 = QHBoxLayout()
+        row2.setSpacing(10)
+        self.lv_csv_combo = simple_combo(min_width=280, font_size=13)
+        self.lv_csv_combo.addItem("— 选择 CSV 文件 —")
+        self.lv_csv_combo.activated.connect(self._on_lv_csv_selected)
+        row2.addWidget(self.lv_csv_combo, 1)
+        refresh_btn = tiny_btn("⟳")
+        refresh_btn.clicked.connect(self._refresh_lv_csv_list)
+        row2.addWidget(refresh_btn)
+        lay2.addLayout(row2)
+        outer.addWidget(card2)
+
+        # ── 日志内容 ──
+        self.lv_log = log_area()
+        outer.addWidget(self.lv_log, 1)
+
+        # ── 实验结果 ──
+        card3, lay3 = card()
+        lay3.addWidget(section_label("实验 & 结果"))
+        lay3.addSpacing(14)
+
+        exp_sel_row = QHBoxLayout()
+        exp_sel_row.setSpacing(10)
+        exp_sel_row.addWidget(field_label("实验"))
+        self.lv_exp_combo = simple_combo(min_width=200, font_size=13)
+        self.lv_exp_combo.addItem("— 选择实验 —")
+        self.lv_exp_combo.activated.connect(self._on_lv_exp_selected)
+        exp_sel_row.addWidget(self.lv_exp_combo, 1)
+        exp_refresh = tiny_btn("⟳")
+        exp_refresh.clicked.connect(self._refresh_lv_exp_list)
+        exp_sel_row.addWidget(exp_refresh)
+        lay3.addLayout(exp_sel_row)
+        lay3.addSpacing(10)
+
+        btn_row = QHBoxLayout()
+        btn_row.setSpacing(10)
+        self.lv_btn_exp_dir = btn("打开实验目录", primary=False)
+        self.lv_btn_exp_dir.clicked.connect(self._open_lv_exp_dir)
+        btn_row.addWidget(self.lv_btn_exp_dir)
+        self.lv_btn_weights = btn("打开权重目录", primary=False)
+        self.lv_btn_weights.clicked.connect(self._open_lv_weights)
+        btn_row.addWidget(self.lv_btn_weights)
+        self.lv_btn_plot = btn("查看训练图表", primary=False)
+        self.lv_btn_plot.clicked.connect(self._open_lv_plot)
+        btn_row.addWidget(self.lv_btn_plot)
+        btn_row.addStretch()
+        lay3.addLayout(btn_row)
+        outer.addWidget(card3)
+
+        # ── 快捷目录 ──
+        card4, lay4 = card()
+        lay4.addWidget(section_label("快捷目录"))
+        lay4.addSpacing(14)
+        quick_row = QHBoxLayout()
+        quick_row.setSpacing(10)
+        for label, path in [
+            ("训练结果", RESULTS_DIR),
+            ("推理结果", str(Path(PREDICT_DIR) / "predict_result")),
+            ("数据集", str(ROOT / "data" / "dataset")),
+        ]:
+            b = btn(label, primary=False)
+            b.clicked.connect(lambda checked, p=path: self._open_dir_safe(p))
+            quick_row.addWidget(b)
+        quick_row.addStretch()
+        lay4.addLayout(quick_row)
+        outer.addWidget(card4)
+
+        return scroll_area(w)
+
+    def _refresh_lv_csv_list(self):
+        combo = self.lv_csv_combo
+        combo.blockSignals(True)
+        combo.clear()
+        combo.addItem("— 选择 CSV 文件 —")
+        log_dir = path_combo_get(self.lv_log_dir)
+        if Path(log_dir).is_dir():
+            for f in sorted(Path(log_dir).glob("*.csv"), reverse=True):
+                combo.addItem(f.name)
+        combo.blockSignals(False)
+
+    def _on_lv_csv_selected(self, idx: int):
+        if idx <= 0:
+            return
+        text = self.lv_csv_combo.currentText()
+        log_dir = path_combo_get(self.lv_log_dir)
+        csv_path = Path(log_dir) / text
+        if not csv_path.is_file():
+            QMessageBox.warning(self, "提示", f"日志文件不存在：\n{csv_path}")
+            return
+        try:
+            self._load_csv_log(self.lv_log, csv_path)
+        except Exception as e:
+            self._log_append(self.lv_log,
+                f'<span style="color:#ff5555;">[err!]</span>  读取失败: {e}')
+
+    def _refresh_lv_exp_list(self):
+        from gui.paths import RESULTS_DIR
+        combo = self.lv_exp_combo
+        combo.blockSignals(True)
+        combo.clear()
+        combo.addItem("— 选择实验 —")
+        if Path(RESULTS_DIR).is_dir():
+            for d in sorted(Path(RESULTS_DIR).iterdir(), reverse=True):
+                if d.is_dir():
+                    combo.addItem(d.name)
+        combo.blockSignals(False)
+
+    def _on_lv_exp_selected(self, idx: int):
+        pass  # handled by button clicks below
+
+    def _lv_exp_path(self):
+        from gui.paths import RESULTS_DIR
+        name = self.lv_exp_combo.currentText()
+        if not name or name == "— 选择实验 —":
+            QMessageBox.warning(self, "提示", "请先选择实验。")
+            return None
+        return Path(RESULTS_DIR) / name
+
+    def _open_lv_exp_dir(self):
+        p = self._lv_exp_path()
+        if p and p.is_dir():
+            self._open_file_with_default_app(str(p))
+
+    def _open_lv_weights(self):
+        p = self._lv_exp_path()
+        if p:
+            wp = p / "weights"
+            if wp.is_dir():
+                self._open_file_with_default_app(str(wp))
+            else:
+                QMessageBox.warning(self, "提示", f"权重目录不存在：\n{wp}")
+
+    def _open_lv_plot(self):
+        p = self._lv_exp_path()
+        if p:
+            rp = p / "results.png"
+            if rp.is_file():
+                self._open_file_with_default_app(str(rp))
+            else:
+                QMessageBox.warning(self, "提示", f"图表不存在，将打开实验目录。")
+                if p.is_dir():
+                    self._open_file_with_default_app(str(p))
+
     def _add_to_history(self, key, value):
         if not value:
             return
@@ -347,6 +744,22 @@ class MainWindow(QWidget):
         else:
             subprocess.Popen(["xdg-open", path])
 
+    def _toggle_dark_mode(self):
+        self._dark_mode = not self._dark_mode
+        btn = self._tabs.cornerWidget()
+        btn.setText("🌙" if self._dark_mode else "☀")
+        if self._dark_mode:
+            QApplication.instance().setStyleSheet(DARK_STYLE)
+        else:
+            QApplication.instance().setStyleSheet("")
+
+    def _on_ctrl_enter(self):
+        idx = self._tabs.currentIndex()
+        if idx == 0:
+            self._on_start_train()
+        elif idx == 1:
+            self._on_start_infer()
+
     def _load_train_defaults(self):
         self._refresh_devices()
         self._apply_config(TrainConfig())
@@ -375,6 +788,24 @@ class MainWindow(QWidget):
         self.tr_exp.setText(c.experiment_name)
         self.tr_augment.setChecked(bool(c.use_augment))
         self._refresh_history()
+
+    def _scan_trained_models(self):
+        results_dir = path_combo_get(self.tr_results)
+        if not Path(results_dir).is_dir():
+            return
+        found = 0
+        for exp in sorted(Path(results_dir).iterdir()):
+            if exp.is_dir():
+                best = exp / "weights" / "best.pt"
+                if best.is_file():
+                    self._add_to_history("model", str(best))
+                    found += 1
+        if found:
+            self._refresh_combo_history(self.tr_model, self._path_history["model"])
+            self.tr_model.setCurrentIndex(0)
+            self._log_info(f"找到 {found} 个已训练模型")
+        else:
+            self._log_warn("未找到已训练模型")
 
     def _reset_train_defaults(self):
         self._apply_config(TrainConfig())
@@ -540,13 +971,20 @@ class MainWindow(QWidget):
 
         if self.rb_new.isChecked():
             mode = 1
+            mode_label = "新训练"
             if not self._model_file_ok(cfg.model_file):
                 QMessageBox.critical(self, "错误", f"找不到初始权重：\n{cfg.model_file}")
                 return
             selected = None
-            summary = f"模式 1 — 新训练\n权重: {cfg.model_file}\ndata: {cfg.data_yaml}\n实验: {cfg.experiment_name}"
+            details = (
+                f"模式:  {mode_label}\n"
+                f"实验:  {cfg.experiment_name}\n"
+                f"权重:  {cfg.model_file}\n"
+                f"数据:  {cfg.data_yaml}"
+            )
         elif self.rb_resume.isChecked():
             mode = 2
+            mode_label = "续训"
             if not Path(cfg.last_pt).is_file():
                 r = QMessageBox.question(
                     self, "未找到 last.pt",
@@ -556,13 +994,20 @@ class MainWindow(QWidget):
                 if r != QMessageBox.Yes:
                     return
                 mode = 1
+                mode_label = "新训练（降级）"
                 if not self._model_file_ok(cfg.model_file):
                     QMessageBox.critical(self, "错误", f"找不到初始权重：\n{cfg.model_file}")
                     return
             selected = None
-            summary = f"模式 2 — 续训\nlast.pt: {cfg.last_pt}" if mode == 2 else f"已改为模式 1\n权重: {cfg.model_file}"
+            details = (
+                f"模式:  {mode_label}\n"
+                f"实验:  {cfg.experiment_name}\n"
+                f"权重:  {cfg.last_pt if mode == 2 else cfg.model_file}\n"
+                f"数据:  {cfg.data_yaml}"
+            )
         else:
             mode = 3
+            mode_label = "微调"
             selected = self.cb_history.currentText().strip()
             if not selected:
                 QMessageBox.warning(self, "提示", "请在「历史实验」下拉框中选择一项。")
@@ -571,12 +1016,26 @@ class MainWindow(QWidget):
             if not best.is_file():
                 QMessageBox.critical(self, "错误", f"找不到：\n{best}")
                 return
-            summary = f"模式 3 — 基于历史 best\n实验: {selected}\n{best}"
+            details = (
+                f"模式:  {mode_label}\n"
+                f"实验:  {cfg.experiment_name}\n"
+                f"基础:  {selected}\n"
+                f"权重:  {best}\n"
+                f"数据:  {cfg.data_yaml}"
+            )
+
+        summary = (
+            f"{details}\n"
+            f"{'─' * 40}\n"
+            f"Epochs:  {cfg.epochs:<6} Imgsz: {cfg.imgsz}\n"
+            f"Batch:   {cfg.batch:<6} Device: {cfg.device}\n"
+            f"数据增强: {'开' if use_aug else '关'}\n"
+            f"{'─' * 40}\n"
+            f"是否开始训练？"
+        )
 
         r = QMessageBox.question(
-            self, "确认训练",
-            summary + f"\n\nepochs={cfg.epochs}  imgsz={cfg.imgsz}  batch={cfg.batch}  device={cfg.device}\n"
-            f"数据增强={'开' if use_aug else '关'}\n\n是否开始？",
+            self, "确认训练", summary,
             QMessageBox.Yes | QMessageBox.No,
         )
         if r != QMessageBox.Yes:
@@ -744,6 +1203,10 @@ class MainWindow(QWidget):
         self.ir_progress.setFormat("Image %v / %m")
         self.ir_progress.setVisible(False)
         outer.addWidget(self.ir_progress)
+        self.ir_eta_label = QLabel("")
+        self.ir_eta_label.setStyleSheet("font-size:11px; color:#8e8e93;")
+        self.ir_eta_label.setVisible(False)
+        outer.addWidget(self.ir_eta_label)
 
         outer.addWidget(field_label("输出"))
         self.ir_log = log_area()
@@ -760,10 +1223,14 @@ class MainWindow(QWidget):
             self.btn_stop_ir.setVisible(True)
             self.ir_progress.setVisible(True)
             self.ir_progress.setValue(0)
+            self.ir_eta_label.setVisible(True)
+            self.ir_eta_label.setText("")
+            self._infer_start_time = __import__("time").time()
         else:  # idle
             self.btn_infer.setVisible(True)
             self.btn_stop_ir.setVisible(False)
             self.ir_progress.setVisible(False)
+            self.ir_eta_label.setVisible(False)
 
     def closeEvent(self, event):
         if self._closing:
@@ -779,9 +1246,46 @@ class MainWindow(QWidget):
         if self._infer_worker and self._infer_worker.isRunning():
             self._infer_worker.stop()
             workers_running = True
+        if self._tool_worker and self._tool_worker.isRunning():
+            self._tool_worker.stop()
+            workers_running = True
         if not workers_running:
             QApplication.quit()
         event.ignore()
+
+    # ── 历史日志 & 结果查看 ──
+
+    @staticmethod
+    def _open_dir_safe(path_str: str) -> None:
+        p = Path(path_str)
+        if p.is_dir():
+            MainWindow._open_file_with_default_app(str(p))
+        elif p.parent.is_dir():
+            MainWindow._open_file_with_default_app(str(p.parent))
+
+    @staticmethod
+    def _load_csv_log(log_widget, csv_path: Path):
+        import csv
+        log_widget.clear()
+        with open(csv_path, encoding="utf-8-sig") as f:
+            reader = csv.reader(f)
+            rows = list(reader)
+        if not rows:
+            MainWindow._log_append(log_widget,
+                '<span style="color:#6ec6ff;">[info]</span>  日志为空')
+            return
+        MainWindow._log_append(log_widget,
+            f'<span style="color:#6ec6ff;">[info]</span>  加载: {csv_path.name}  ({len(rows)} 行)')
+        html = '<table style="font-size:11px; border-collapse:collapse; width:100%;">'
+        for i, row in enumerate(rows):
+            tag = "th" if i == 0 else "td"
+            color = "#8ab4f8" if i == 0 else "#c0c0c0"
+            html += f'<tr style="color:{color};">'
+            for cell in row:
+                html += f"<{tag} style='padding:2px 8px; border-bottom:1px solid #333;'>{cell}</{tag}>"
+            html += "</tr>"
+        html += "</table>"
+        MainWindow._log_append(log_widget, html)
 
     def showEvent(self, e):
         super().showEvent(e)
@@ -847,9 +1351,16 @@ class MainWindow(QWidget):
 
     @Slot(int, int)
     def _on_infer_progress(self, cur: int, total: int) -> None:
+        import time
         self.ir_progress.setRange(0, total)
         self.ir_progress.setValue(cur)
         self.ir_progress.setFormat(f"Image %v / {total}")
+        elapsed = time.time() - getattr(self, "_infer_start_time", time.time())
+        if cur > 0 and total > 0:
+            eta = (elapsed / cur) * (total - cur)
+            self.ir_eta_label.setText(
+                f"已耗时 {elapsed:.0f}s  |  预计剩余 {eta:.0f}s  |  共 {total} 张"
+            )
 
     @Slot()
     def _on_stop_infer(self):
