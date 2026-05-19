@@ -139,7 +139,7 @@ def log_area(parent: QWidget | None = None) -> QTextEdit:
     e = QTextEdit(parent)
     e.setReadOnly(True)
     e.setStyleSheet(LOG_AREA_STYLE)
-    e.setMinimumHeight(160)
+    e.setMinimumHeight(130)
     return e
 
 
@@ -159,7 +159,7 @@ def scroll_area(widget: QWidget, parent: QWidget | None = None) -> QScrollArea:
     """包裹一个 widget 的可滚动区域（细滚动条）。"""
     from PySide6.QtWidgets import QScrollArea
     scroll = QScrollArea(parent)
-    scroll.setWidgetResizable(False)
+    scroll.setWidgetResizable(True)
     scroll.setWidget(widget)
     scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
     scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)

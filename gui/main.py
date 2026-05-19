@@ -48,6 +48,7 @@ from gui.styles import (
     FONT_FAMILIES,
     FONT_SIZE,
     RADIO_STYLE,
+    SCROLL_AREA_STYLE,
     TAB_WIDGET_STYLE,
 )
 from gui.widgets import (
@@ -95,7 +96,7 @@ class MainWindow(QWidget):
         self.setWindowTitle("YOLO Lab")
         self._closing = False
         self.resize(820, 700)
-        self.setMinimumSize(480, 360)
+        self.setMinimumSize(720, 520)
 
         self._train_worker: TrainWorker | None = None
         self._infer_worker: InferWorker | None = None
@@ -120,10 +121,10 @@ class MainWindow(QWidget):
 
     def _build_train_tab(self):
         w = QWidget()
-        w.setMinimumSize(640, 780)
+        w.setMinimumSize(640, 920)
         outer = QVBoxLayout(w)
         outer.setContentsMargins(24, 16, 24, 24)
-        outer.setSpacing(14)
+        outer.setSpacing(10)
 
         # ── 路径卡片 ──
         card1, lay1 = card()
@@ -672,10 +673,10 @@ class MainWindow(QWidget):
 
     def _build_infer_tab(self):
         w = QWidget()
-        w.setMinimumSize(560, 460)
+        w.setMinimumSize(560, 580)
         outer = QVBoxLayout(w)
         outer.setContentsMargins(24, 16, 24, 24)
-        outer.setSpacing(14)
+        outer.setSpacing(10)
 
         card1, lay1 = card()
         lay1.addWidget(section_label("推理配置"))

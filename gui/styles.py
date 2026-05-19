@@ -36,7 +36,7 @@ FONT_SIZE = 13
 
 # ── 尺寸 ──────────────────────────────────────────────────
 
-CARD_PADDING = (24, 20, 24, 20)
+CARD_PADDING = (20, 16, 20, 16)
 CARD_RADIUS = 12
 INPUT_RADIUS = 6
 INPUT_PADDING = "7px 10px"
