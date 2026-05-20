@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 import os
-from gui.paths import DATA_YAML, MODEL_FILE, RESULTS_DIR, LOG_DIR
+from gui.paths import DATA_YAML, MODEL_FILE, PRETRAINED_DIR, RESULTS_DIR, LOG_DIR
 from gui.device import get_default_device
 
 @dataclass
@@ -8,7 +8,7 @@ class TrainConfig:
 
     # ===== 路径相关 =====
     data_yaml: str = DATA_YAML # data.yaml 配置文件路径
-    model_file: str = MODEL_FILE # 初始加载的模型权重路径（如 yolov8n.pt、best.pt、last.pt）
+    model_file: str = str(PRETRAINED_DIR / MODEL_FILE) # 初始加载的模型权重路径（如 yolov8n.pt、best.pt、last.pt）
     results_dir: str = RESULTS_DIR   # 所有实验结果保存的根目录
     log_dir: str = LOG_DIR   # 日志保存目录
 

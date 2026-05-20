@@ -66,6 +66,7 @@ from gui.widgets import (
     spinner,
     tiny_btn,
 )
+from gui.model_selector import ModelSelector
 from gui.workers import InferWorker, ToolWorker, TrainWorker
 
 
@@ -108,8 +109,8 @@ class MainWindow(QWidget):
         self._tabs.setStyleSheet(TAB_WIDGET_STYLE)
         self._tabs.addTab(self._build_train_tab(), "训练")
         self._tabs.addTab(self._build_infer_tab(), "推理")
-        self._tabs.addTab(self._build_tools_tab(), "工具")
         self._tabs.addTab(self._build_log_viewer_tab(), "日志 & 结果")
+        self._tabs.addTab(self._build_tools_tab(), "工具")
 
         self._dark_mode = False
         dark_btn = QPushButton("☀")
@@ -155,13 +156,12 @@ class MainWindow(QWidget):
             self._path_history.setdefault(key, [])
 
         self.tr_data_yaml = path_combo(default="", history=self._path_history["data_yaml"])
-        self.tr_model     = path_combo(default="", history=self._path_history["model"])
+        self.tr_model = ModelSelector()
         self.tr_results   = path_combo(default="", history=self._path_history["results"])
         self.tr_logs      = path_combo(default="", history=self._path_history["logs"])
 
         rows_data = [
             ("data.yaml", self.tr_data_yaml, "data_yaml", False, "YAML (*.yaml *.yml)"),
-            ("初始权重", self.tr_model,     "model",      False, "权重 (*.pt *.pth *.onnx)"),
             ("结果目录", self.tr_results,   "results",    True,  None),
             ("日志目录", self.tr_logs,      "logs",       True,  None),
         ]
@@ -179,6 +179,16 @@ class MainWindow(QWidget):
             lay1.addLayout(row)
             lay1.addSpacing(8)
 
+        # 初始权重 — 模型选择器
+        model_row = QHBoxLayout()
+        model_row.setSpacing(10)
+        model_lbl = field_label("初始权重")
+        model_lbl.setFixedWidth(72)
+        model_row.addWidget(model_lbl)
+        model_row.addWidget(self.tr_model, 1)
+        lay1.addLayout(model_row)
+        lay1.addSpacing(8)
+
         outer.addWidget(card1)
 
         # ── 超参数卡片 ──
@@ -190,7 +200,6 @@ class MainWindow(QWidget):
         self.tr_imgsz  = spinner(32, 4096, 640, 100)
         self.tr_batch  = spinner(1, 1024, 16, 100)
         self.tr_device = QComboBox()
-        self.tr_device.setEditable(True)
         self.tr_device.setMinimumWidth(100)
         self.tr_device.setStyleSheet(COMBO_STYLE)
 
@@ -716,11 +725,12 @@ class MainWindow(QWidget):
 
     @staticmethod
     def _model_file_ok(path: str) -> bool:
-        """本地文件存在，或是一个 YOLO 模型短名称（ultralytics 自动下载）。"""
         if Path(path).is_file():
             return True
-        # 短名称如 yolov8n-seg.pt — 不含路径分隔符，ultralytics 会自动下载
-        return bool(path) and os.sep not in path and "/" not in path
+        if path and os.sep not in path and "/" not in path:
+            from gui.paths import PRETRAINED_DIR
+            return (PRETRAINED_DIR / path).is_file()
+        return False
 
     def _open_data_yaml(self):
         p = Path(path_combo_get(self.tr_data_yaml))
@@ -765,26 +775,29 @@ class MainWindow(QWidget):
         self._apply_config(TrainConfig())
 
     def _refresh_devices(self):
-        """刷新 Device 下拉框的可用设备列表。"""
-        current = self.tr_device.currentText().strip()
+        current = self.tr_device.currentData() or get_default_device()
         self.tr_device.clear()
-        self.tr_device.addItems(get_available_devices())
-        if current:
-            idx = self.tr_device.findText(current)
-            if idx >= 0:
-                self.tr_device.setCurrentIndex(idx)
-            else:
-                self.tr_device.setCurrentText(current)
+        for dev_id, dev_name in get_available_devices():
+            self.tr_device.addItem(dev_name, dev_id)
+        idx = self.tr_device.findData(current)
+        if idx >= 0:
+            self.tr_device.setCurrentIndex(idx)
+        else:
+            self.tr_device.setCurrentIndex(0)
 
     def _apply_config(self, c):
         self.tr_data_yaml.setCurrentText(c.data_yaml)
-        self.tr_model.setCurrentText(c.model_file)
+        self.tr_model.set_model(c.model_file)
         self.tr_results.setCurrentText(c.results_dir)
         self.tr_logs.setCurrentText(c.log_dir)
         self.tr_epochs.setValue(int(c.epochs))
         self.tr_imgsz.setValue(int(c.imgsz))
         self.tr_batch.setValue(int(c.batch))
-        self.tr_device.setCurrentText(str(c.device))
+        idx = self.tr_device.findData(str(c.device))
+        if idx >= 0:
+            self.tr_device.setCurrentIndex(idx)
+        else:
+            self.tr_device.setCurrentIndex(0)
         self.tr_exp.setText(c.experiment_name)
         self.tr_augment.setChecked(bool(c.use_augment))
         self._refresh_history()
@@ -798,11 +811,9 @@ class MainWindow(QWidget):
             if exp.is_dir():
                 best = exp / "weights" / "best.pt"
                 if best.is_file():
-                    self._add_to_history("model", str(best))
+                    self.tr_model.add_custom_path(str(best))
                     found += 1
         if found:
-            self._refresh_combo_history(self.tr_model, self._path_history["model"])
-            self.tr_model.setCurrentIndex(0)
             self._log_info(f"找到 {found} 个已训练模型")
         else:
             self._log_warn("未找到已训练模型")
@@ -824,26 +835,31 @@ class MainWindow(QWidget):
     def _get_current_config_dict(self):
         return {
             "data_yaml": path_combo_get(self.tr_data_yaml),
-            "model_file": path_combo_get(self.tr_model),
+            "model_file": self.tr_model.current_model_path(),
             "results_dir": path_combo_get(self.tr_results),
             "log_dir": path_combo_get(self.tr_logs),
             "epochs": self.tr_epochs.value(),
             "imgsz": self.tr_imgsz.value(),
             "batch": self.tr_batch.value(),
-            "device": self.tr_device.currentText().strip(),
+            "device": self.tr_device.currentData() or get_default_device(),
             "experiment_name": self.tr_exp.text().strip(),
             "use_augment": self.tr_augment.isChecked(),
         }
 
     def _apply_config_dict(self, d):
         self.tr_data_yaml.setCurrentText(d.get("data_yaml", ""))
-        self.tr_model.setCurrentText(d.get("model_file", ""))
+        self.tr_model.set_model(d.get("model_file", ""))
         self.tr_results.setCurrentText(d.get("results_dir", ""))
         self.tr_logs.setCurrentText(d.get("log_dir", ""))
         self.tr_epochs.setValue(d.get("epochs", 150))
         self.tr_imgsz.setValue(d.get("imgsz", 640))
         self.tr_batch.setValue(d.get("batch", 16))
-        self.tr_device.setCurrentText(d.get("device", get_default_device()))
+        dev = d.get("device", get_default_device())
+        idx = self.tr_device.findData(dev)
+        if idx >= 0:
+            self.tr_device.setCurrentIndex(idx)
+        else:
+            self.tr_device.setCurrentIndex(0)
         self.tr_exp.setText(d.get("experiment_name", ""))
         self.tr_augment.setChecked(d.get("use_augment", True))
         self._refresh_history()
@@ -949,13 +965,13 @@ class MainWindow(QWidget):
     def _build_config_from_train_ui(self):
         c = TrainConfig()
         c.data_yaml = path_combo_get(self.tr_data_yaml)
-        c.model_file = path_combo_get(self.tr_model)
+        c.model_file = self.tr_model.current_model_path()
         c.results_dir = path_combo_get(self.tr_results)
         c.log_dir = path_combo_get(self.tr_logs)
         c.epochs = int(self.tr_epochs.value())
         c.imgsz = int(self.tr_imgsz.value())
         c.batch = int(self.tr_batch.value())
-        c.device = self.tr_device.currentText().strip() or get_default_device()
+        c.device = self.tr_device.currentData() or get_default_device()
         c.experiment_name = self.tr_exp.text().strip() or c.experiment_name
         c.use_augment = self.tr_augment.isChecked()
         return c
