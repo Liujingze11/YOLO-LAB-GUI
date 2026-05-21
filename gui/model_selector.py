@@ -7,10 +7,11 @@ import os
 import urllib.request
 from pathlib import Path
 
-from PySide6.QtCore import Qt, QThread, QTimer, Signal, Slot
+from PySide6.QtCore import Qt, QThread, Signal, Slot
 from PySide6.QtGui import QStandardItem, QColor
 from PySide6.QtWidgets import (
     QComboBox,
+    QDialog,
     QFileDialog,
     QHBoxLayout,
     QLabel,
@@ -23,16 +24,13 @@ from PySide6.QtWidgets import (
 
 from gui.paths import MODEL_REGISTRY, PRETRAINED_DIR, get_model_download_url
 from gui.styles import (
-    COLOR_CARD_BG,
     COLOR_DISABLED,
     COLOR_TEXT,
     COLOR_TEXT_MUTED,
     COMBO_STYLE,
-    INPUT_RADIUS,
-    PATH_COMBO_MIN_WIDTH,
-    PROGRESS_HEIGHT,
     PROGRESS_STYLE,
 )
+from gui.i18n import tr
 from gui.widgets import btn, danger_btn
 
 
@@ -84,6 +82,67 @@ class _ModelDownloader(QThread):
             self._tmp.unlink(missing_ok=True)
 
 
+class DownloadDialog(QDialog):
+    """Modal dialog showing download progress with cancel button."""
+
+    def __init__(self, filename: str, parent: QWidget | None = None):
+        super().__init__(parent)
+        self._filename = filename
+        self._cancelled = False
+        self.setWindowTitle(tr("model.dialog.title"))
+        self.setFixedSize(440, 130)
+        self.setModal(True)
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(24, 20, 24, 20)
+        layout.setSpacing(12)
+
+        self._label = QLabel(tr("model.dialog.downloading", filename=filename))
+        self._label.setProperty("themeClass", "field_label")
+        self._label.setStyleSheet(f"font-size: 13px; color: {COLOR_TEXT};")
+        layout.addWidget(self._label)
+
+        self._progress = QProgressBar()
+        self._progress.setFixedHeight(14)
+        self._progress.setProperty("themeClass", "progress")
+        self._progress.setStyleSheet(PROGRESS_STYLE)
+        self._progress.setTextVisible(False)
+        layout.addWidget(self._progress)
+
+        btn_row = QHBoxLayout()
+        btn_row.setSpacing(10)
+        self._status = QLabel("")
+        self._status.setStyleSheet(f"font-size: 11px; color: {COLOR_TEXT_MUTED};")
+        btn_row.addWidget(self._status, 1)
+        self._cancel_btn = danger_btn(tr("model.dialog.cancel_btn"))
+        self._cancel_btn.clicked.connect(self._on_cancel)
+        btn_row.addWidget(self._cancel_btn)
+        layout.addLayout(btn_row)
+
+    def set_progress(self, current: int, total: int) -> None:
+        if total > 0:
+            self._progress.setMaximum(total)
+            self._progress.setValue(min(current, total))
+            pct = current * 100 // total if total else 0
+            self._status.setText(f"{current // 1048576}MB / {total // 1048576}MB  ({pct}%)")
+
+    def set_error(self, msg: str) -> None:
+        self._label.setText(tr("model.dialog.failed", filename=self._filename))
+        self._status.setText(msg[:80])
+
+    def set_cancelled(self) -> None:
+        self._label.setText(tr("model.dialog.cancelled"))
+        self._status.setText(self._filename)
+
+    def _on_cancel(self) -> None:
+        self._cancelled = True
+        self.reject()
+
+    @property
+    def cancelled(self) -> bool:
+        return self._cancelled
+
+
 class ModelSelector(QWidget):
     model_changed = Signal(str)
 
@@ -94,10 +153,11 @@ class ModelSelector(QWidget):
         self._model_states: dict[str, str] = {}
         self._downloader: _ModelDownloader | None = None
         self._custom_paths: list[str] = []
-        self._status_timer: QTimer | None = None
+        self._download_dialog: DownloadDialog | None = None
 
         self._combo = QComboBox()
         self._combo.setMinimumWidth(320)
+        self._combo.setProperty("themeClass", "combo")
         self._combo.setStyleSheet(COMBO_STYLE)
         self._combo.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self._combo.currentIndexChanged.connect(self._on_selection_changed)
@@ -109,26 +169,6 @@ class ModelSelector(QWidget):
         self._browse_btn.setFixedWidth(60)
         self._browse_btn.clicked.connect(self._on_browse)
 
-        # ── download bar (hidden when idle) ──
-        self._download_bar = QWidget()
-        self._download_bar.setVisible(False)
-        self._progress = QProgressBar()
-        self._progress.setFixedHeight(PROGRESS_HEIGHT)
-        self._progress.setStyleSheet(PROGRESS_STYLE)
-        self._progress.setTextVisible(False)
-        self._dl_status = QLabel("")
-        self._dl_status.setStyleSheet(f"font-size:11px; color:{COLOR_TEXT_MUTED};")
-        self._cancel_btn = danger_btn("取消下载")
-        self._cancel_btn.clicked.connect(self._on_cancel_download)
-
-        dl_row = QHBoxLayout(self._download_bar)
-        dl_row.setContentsMargins(0, 0, 0, 0)
-        dl_row.setSpacing(6)
-        dl_row.addWidget(self._progress, 1)
-        dl_row.addWidget(self._dl_status)
-        dl_row.addWidget(self._cancel_btn)
-
-        # ── main layout ──
         combo_row = QHBoxLayout()
         combo_row.setContentsMargins(0, 0, 0, 0)
         combo_row.setSpacing(6)
@@ -139,7 +179,6 @@ class ModelSelector(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
         layout.addLayout(combo_row)
-        layout.addWidget(self._download_bar)
 
         self._init_states()
         self._populate()
@@ -216,19 +255,17 @@ class ModelSelector(QWidget):
                 item.setForeground(QColor(color))
             model.appendRow(item)
 
-        # Group models by tag
         groups: dict[str, list[tuple[str, str, str]]] = {}
         for fn, display, tag in MODEL_REGISTRY:
             groups.setdefault(tag, []).append((fn, display, tag))
 
-        group_labels = {
-            "v8": "YOLOv8 分割",
-            "v11": "YOLO11 分割",
-            "v12": "YOLO12 分割",
+        seg_keys = {
+            "v8": "model.group.v8_seg",
+            "v11": "model.group.v11_seg",
+            "v12": "model.group.v12_seg",
         }
 
         seg_tags = ["v8", "v11", "v12"]
-        det_tags = sorted(set(t for _, _, t in MODEL_REGISTRY) - set(seg_tags))
 
         for tag in seg_tags:
             if tag not in groups:
@@ -236,32 +273,29 @@ class ModelSelector(QWidget):
             display_models = [(fn, d, t) for fn, d, t in groups[tag] if fn.endswith("-seg.pt")]
             if not display_models:
                 continue
-            _add(f"── {group_labels.get(tag, tag)} ──", None, enabled=False, color=COLOR_DISABLED)
+            _add(f"── {tr(seg_keys.get(tag, tag))} ──", None, enabled=False, color=COLOR_DISABLED)
             for fn, display, _ in display_models:
                 self._add_model_item(fn, display, _add)
 
-        _add(f"── YOLOv8 检测 ──", None, enabled=False, color=COLOR_DISABLED)
+        _add(f"── {tr('model.group.v8_det')} ──", None, enabled=False, color=COLOR_DISABLED)
         for fn, display, tag in groups.get("v8", []):
             if not fn.endswith("-seg.pt"):
                 self._add_model_item(fn, display, _add)
 
-        _add(f"── YOLO11 检测 ──", None, enabled=False, color=COLOR_DISABLED)
+        _add(f"── {tr('model.group.v11_det')} ──", None, enabled=False, color=COLOR_DISABLED)
         for fn, display, tag in groups.get("v11", []):
             if not fn.endswith("-seg.pt"):
                 self._add_model_item(fn, display, _add)
 
-        # Separator + custom paths
         model.appendRow(QStandardItem(""))
         if self._custom_paths:
-            _add("── 本地文件 ──", None, enabled=False, color=COLOR_DISABLED)
+            _add(f"── {tr('model.group.local')} ──", None, enabled=False, color=COLOR_DISABLED)
             for p in self._custom_paths:
                 _add(Path(p).name, p, enabled=True)
 
-        # Browse action
         model.appendRow(QStandardItem(""))
-        _add("浏览本地文件...", "__browse__", enabled=True)
+        _add(tr("model.action.browse"), "__browse__", enabled=True)
 
-        # Restore or auto-select first downloaded
         if target_data and self._find_item_index(target_data) >= 0:
             self._combo.setCurrentIndex(self._find_item_index(target_data))
         else:
@@ -278,9 +312,9 @@ class ModelSelector(QWidget):
         if state == "ok":
             _add_fn(f"{display}  ✓", fn, enabled=True)
         elif state == "downloading":
-            _add_fn(f"{display}  (下载中...)", fn, enabled=True, color=COLOR_DISABLED)
+            _add_fn(f"{display}  {tr('model.tag.downloading')}", fn, enabled=True, color=COLOR_DISABLED)
         else:
-            _add_fn(f"{display}  [点击下载]", fn, enabled=True, color=COLOR_DISABLED)
+            _add_fn(f"{display}  {tr('model.tag.download')}", fn, enabled=True, color=COLOR_DISABLED)
 
     def _find_item_index(self, data: str) -> int:
         for i in range(self._combo.count()):
@@ -292,6 +326,14 @@ class ModelSelector(QWidget):
         idx = self._find_item_index(data)
         if idx >= 0:
             self._combo.setCurrentIndex(idx)
+
+    def _select_first_ok(self) -> None:
+        """Move combo selection to the first available 'ok' model."""
+        for i in range(self._combo.count()):
+            d = self._combo.itemData(i, Qt.UserRole)
+            if d and self._model_states.get(d) == "ok":
+                self._combo.setCurrentIndex(i)
+                return
 
     # ── slots ──
 
@@ -334,37 +376,41 @@ class ModelSelector(QWidget):
         self._model_states[filename] = "downloading"
         self._populate()
 
-        self._progress.setValue(0)
-        self._progress.setVisible(True)
-        self._cancel_btn.setVisible(True)
-        self._dl_status.setText(f"正在下载 {filename} ...")
-        self._download_bar.setVisible(True)
-        self._combo.setEnabled(False)
-        self._browse_btn.setEnabled(False)
-
         url = get_model_download_url(filename, tag)
         self._downloader = _ModelDownloader(filename, url, PRETRAINED_DIR)
         self._downloader.progress.connect(self._on_download_progress)
         self._downloader.finished.connect(self._on_download_finished)
         self._downloader.error_msg.connect(self._on_download_error)
+
+        self._download_dialog = DownloadDialog(filename, self.window())
+        self._download_dialog.rejected.connect(self._on_dialog_closed)
+        self._download_dialog.show()
+
+        self._combo.setEnabled(False)
+        self._browse_btn.setEnabled(False)
         self._downloader.start()
 
     @Slot(int, int)
     def _on_download_progress(self, current: int, total: int) -> None:
-        if total > 0:
-            self._progress.setMaximum(total)
-            self._progress.setValue(min(current, total))
+        if self._download_dialog:
+            self._download_dialog.set_progress(current, total)
 
-    def _hide_download_bar(self, after_ms: int = 0) -> None:
-        if after_ms > 0:
-            if self._status_timer:
-                self._status_timer.stop()
-            self._status_timer = QTimer(self)
-            self._status_timer.setSingleShot(True)
-            self._status_timer.timeout.connect(lambda: self._download_bar.setVisible(False))
-            self._status_timer.start(after_ms)
-        else:
-            self._download_bar.setVisible(False)
+    @Slot()
+    def _on_dialog_closed(self) -> None:
+        if self._download_dialog is None:
+            return
+        cancelled = self._download_dialog.cancelled
+        if cancelled and self._downloader and self._downloader.isRunning():
+            self._downloader.stop()
+        self._combo.setEnabled(True)
+        self._browse_btn.setEnabled(True)
+        for fn, state in list(self._model_states.items()):
+            if state == "downloading":
+                self._model_states[fn] = "missing"
+                break
+        self._populate()
+        self._select_first_ok()
+        self._download_dialog = None
 
     @Slot(bool, str)
     def _on_download_finished(self, success: bool, filename: str) -> None:
@@ -372,44 +418,34 @@ class ModelSelector(QWidget):
         self._browse_btn.setEnabled(True)
 
         if success:
-            self._download_bar.setVisible(False)
+            if self._download_dialog:
+                self._download_dialog.accept()
+                self._download_dialog = None
             self._model_states[filename] = "ok"
             self._populate()
             self._select_item_by_data(filename)
             self.model_changed.emit(str(PRETRAINED_DIR / filename))
         else:
+            # Dialog stays open to show the error; user closes it manually.
             self._model_states[filename] = "missing"
-            self._dl_status.setText("下载失败")
-            self._cancel_btn.setVisible(False)
-            self._progress.setVisible(False)
-            self._hide_download_bar(3000)
             self._populate()
+            self._select_first_ok()
 
     @Slot(str)
     def _on_download_error(self, msg: str) -> None:
         self._combo.setEnabled(True)
         self._browse_btn.setEnabled(True)
-        self._dl_status.setText(f"下载出错: {msg}")
-        self._cancel_btn.setVisible(False)
-        self._progress.setVisible(False)
-        self._hide_download_bar(5000)
+        if self._download_dialog:
+            self._download_dialog.set_error(msg)
+            self._download_dialog._cancel_btn.setText(tr("model.dialog.close_btn"))
+            try:
+                self._download_dialog._cancel_btn.clicked.disconnect()
+            except Exception:
+                pass
+            self._download_dialog._cancel_btn.clicked.connect(self._download_dialog.reject)
         for fn, state in list(self._model_states.items()):
             if state == "downloading":
                 self._model_states[fn] = "missing"
                 break
         self._populate()
-
-    def _on_cancel_download(self) -> None:
-        if self._downloader and self._downloader.isRunning():
-            self._downloader.stop()
-        self._combo.setEnabled(True)
-        self._browse_btn.setEnabled(True)
-        self._cancel_btn.setVisible(False)
-        self._progress.setVisible(False)
-        self._dl_status.setText("已取消下载")
-        self._hide_download_bar(3000)
-        for fn, state in list(self._model_states.items()):
-            if state == "downloading":
-                self._model_states[fn] = "missing"
-                break
-        self._populate()
+        self._select_first_ok()
