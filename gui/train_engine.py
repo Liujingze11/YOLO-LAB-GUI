@@ -6,6 +6,7 @@
 import os
 import sys
 import tempfile
+import json
 import yaml
 import shutil
 import argparse
@@ -33,6 +34,26 @@ from ultralytics import YOLO
 
 from gui.config import TrainConfig
 from gui.train_logger import append_train_log, append_full_val_log
+
+# ── 国际化支持 ──────────────────────────────────────────────
+
+_LOCALE_DIR = Path(__file__).resolve().parent.parent / "locales"
+
+def _load_locale(lang: str) -> dict:
+    path = _LOCALE_DIR / f"{lang}.json"
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+def _t(loc: dict, key: str, **kwargs) -> str:
+    text = loc.get(key, key)
+    if kwargs:
+        try:
+            text = text.format(**kwargs)
+        except (KeyError, ValueError):
+            pass
+    return text
+
+_loc: dict = {}
 
 
 def list_experiments(results_dir):
@@ -69,7 +90,7 @@ def _resolve_data_yaml(data_yaml_path: str) -> str:
         tmp = tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False, encoding="utf-8")
         yaml.dump(data, tmp, allow_unicode=True, default_flow_style=False)
         tmp.close()
-        print(f"已修正数据集路径: {path_val} -> {data['path']}")
+        print(_t(_loc, "train.engine.fix_path", old=path_val, new=data['path']))
         return tmp.name
     return data_yaml_path
 
@@ -179,7 +200,7 @@ def get_val_metrics(best_pt_path, config):
 
 def log_validation_result(config, mode, notes=""):
     if not os.path.exists(config.best_pt):
-        print(f"未找到 best.pt，无法记录验证结果：{config.best_pt}")
+        print(_t(_loc, "train.engine.no_best_pt", path=config.best_pt))
         return
     try:
         metrics = get_val_metrics(config.best_pt, config)
@@ -190,35 +211,39 @@ def log_validation_result(config, mode, notes=""):
             class_instance_counts=class_instance_counts,
             notes=notes,
         )
-        print("验证结果已记录到日志。")
+        print(_t(_loc, "train.engine.val_logged"))
     except Exception as e:
-        print(f"记录验证结果失败：{e}")
+        print(_t(_loc, "train.engine.val_failed", err=str(e)))
 
 
 # ── 训练执行（非交互）─────────────────────────────────────
 
 def execute_new_training(config, use_augment: bool) -> None:
     append_train_log(config, mode="new_train", status="started",
-                     notes=f"开始新训练，数据增强={'开启' if use_augment else '关闭'}")
+                     notes=_t(_loc, "train.engine.log_started",
+                              aug='开启' if use_augment else '关闭'))
     try:
         model = YOLO(config.model_file)
         train_kwargs = build_train_kwargs(config, use_augment)
         model.train(**train_kwargs)
         append_train_log(config, mode="new_train", status="finished",
-                         notes=f"训练完成，数据增强={'开启' if use_augment else '关闭'}")
-        log_validation_result(config, mode="new_train", notes="训练完成后的验证结果")
+                         notes=_t(_loc, "train.engine.log_finished",
+                                  aug='开启' if use_augment else '关闭'))
+        log_validation_result(config, mode="new_train", notes=_t(_loc, "train.engine.log_val"))
     except Exception as e:
         append_train_log(config, mode="new_train", status="failed", notes=str(e))
         raise
 
 
 def execute_resume_training(config) -> None:
-    append_train_log(config, mode="resume_train", status="started", notes="继续上次训练")
+    append_train_log(config, mode="resume_train", status="started",
+                     notes=_t(_loc, "train.engine.log_resume_started"))
     try:
         model = YOLO(config.last_pt)
         model.train(resume=True)
-        append_train_log(config, mode="resume_train", status="finished", notes="继续训练完成")
-        log_validation_result(config, mode="resume_train", notes="继续训练后的验证结果")
+        append_train_log(config, mode="resume_train", status="finished",
+                         notes=_t(_loc, "train.engine.log_resume_finished"))
+        log_validation_result(config, mode="resume_train", notes=_t(_loc, "train.engine.log_resume_val"))
     except Exception as e:
         append_train_log(config, mode="resume_train", status="failed", notes=str(e))
         raise
@@ -227,17 +252,19 @@ def execute_resume_training(config) -> None:
 def execute_train_from_previous_best(config, selected_exp: str, use_augment: bool) -> None:
     selected_best_pt = os.path.join(config.results_dir, selected_exp, "weights", "best.pt")
     if not os.path.exists(selected_best_pt):
-        raise FileNotFoundError(f"该实验下没有找到 best.pt：{selected_best_pt}")
+        raise FileNotFoundError(_t(_loc, "train.engine.no_best_pt_found", path=selected_best_pt))
     append_train_log(config, mode="train_from_best", status="started",
-                     notes=f"基于历史实验 {selected_exp} 开始训练，数据增强={'开启' if use_augment else '关闭'}")
+                     notes=_t(_loc, "train.engine.log_finetune_started",
+                              exp=selected_exp, aug='开启' if use_augment else '关闭'))
     try:
         model = YOLO(selected_best_pt)
         train_kwargs = build_train_kwargs(config, use_augment)
         model.train(**train_kwargs)
         append_train_log(config, mode="train_from_best", status="finished",
-                         notes=f"基于历史实验 {selected_exp} 的训练完成，数据增强={'开启' if use_augment else '关闭'}")
+                         notes=_t(_loc, "train.engine.log_finetune_finished",
+                                  exp=selected_exp, aug='开启' if use_augment else '关闭'))
         log_validation_result(config, mode="train_from_best",
-                              notes=f"基于历史实验 {selected_exp} 的验证结果")
+                              notes=_t(_loc, "train.engine.log_finetune_val", exp=selected_exp))
     except Exception as e:
         append_train_log(config, mode="train_from_best", status="failed", notes=str(e))
         raise
@@ -245,6 +272,8 @@ def execute_train_from_previous_best(config, selected_exp: str, use_augment: boo
 
 def run_non_interactive(args):
     """根据命令行参数直接运行训练，不弹出任何交互提示。"""
+    global _loc
+    _loc = _load_locale(args.lang)
     config = TrainConfig()
     config = override_config_from_args(config, args)
 
@@ -254,35 +283,35 @@ def run_non_interactive(args):
     try:
         mode = args.mode
         if mode is None:
-            print("错误：无交互模式必须指定 --mode (1/2/3)")
+            print(_t(_loc, "train.engine.no_mode"))
             sys.exit(1)
 
         use_augment = args.use_augment if args.use_augment is not None else config.use_augment
 
         if mode == 1:
-            print(f"开始新训练 — 实验: {config.experiment_name}")
-            print(f"权重: {config.model_file}  |  epochs={config.epochs}  imgsz={config.imgsz}  batch={config.batch}  device={config.device}")
-            print(f"数据增强: {'开启' if use_augment else '关闭'}")
+            print(_t(_loc, "train.engine.new_start", name=config.experiment_name))
+            print(_t(_loc, "train.engine.new_weights", model=config.model_file, epochs=config.epochs, imgsz=config.imgsz, batch=config.batch, device=config.device))
+            print(_t(_loc, "train.engine.augment_on" if use_augment else "train.engine.augment_off"))
             execute_new_training(config, use_augment)
 
         elif mode == 2:
             if not os.path.exists(config.last_pt):
-                print(f"未找到续训权重，改为新训练: {config.last_pt}")
-                print(f"权重: {config.model_file}  |  epochs={config.epochs}  imgsz={config.imgsz}  batch={config.batch}  device={config.device}")
+                print(_t(_loc, "train.engine.resume_fallback", path=config.last_pt))
+                print(_t(_loc, "train.engine.new_weights", model=config.model_file, epochs=config.epochs, imgsz=config.imgsz, batch=config.batch, device=config.device))
                 execute_new_training(config, use_augment)
             else:
-                print(f"继续训练 — 实验: {config.experiment_name}")
-                print(f"权重: {config.last_pt}")
+                print(_t(_loc, "train.engine.resume_start", name=config.experiment_name))
+                print(_t(_loc, "train.engine.resume_weights", path=config.last_pt))
                 execute_resume_training(config)
 
         elif mode == 3:
             selected_exp = args.selected_exp
             if not selected_exp:
-                print("错误：模式3必须指定 --selected-exp")
+                print(_t(_loc, "train.engine.no_selected_exp"))
                 sys.exit(1)
-            print(f"基于历史实验继续训练 — {selected_exp}")
-            print(f"epochs={config.epochs}  imgsz={config.imgsz}  batch={config.batch}  device={config.device}")
-            print(f"数据增强: {'开启' if use_augment else '关闭'}")
+            print(_t(_loc, "train.engine.history_train", exp=selected_exp))
+            print(_t(_loc, "train.engine.history_params", epochs=config.epochs, imgsz=config.imgsz, batch=config.batch, device=config.device))
+            print(_t(_loc, "train.engine.augment_on" if use_augment else "train.engine.augment_off"))
             execute_train_from_previous_best(config, selected_exp, use_augment)
     finally:
         if config.data_yaml != _original_data_yaml and os.path.exists(config.data_yaml):
@@ -307,6 +336,7 @@ def parse_args():
     parser.add_argument("--use-augment", action="store_true", default=None, dest="use_augment")
     parser.add_argument("--no-augment", action="store_false", default=None, dest="use_augment")
     parser.add_argument("--selected-exp", type=str, default=None)
+    parser.add_argument("--lang", default="zh", help="Language code (zh/en/fr/es)")
     return parser.parse_args()
 
 
