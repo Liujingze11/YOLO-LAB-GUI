@@ -42,13 +42,13 @@ from gui.train_engine import list_experiments
 from gui.styles import (
     CHECKBOX_STYLE,
     COMBO_STYLE,
-    DARK_STYLE,
     DARK_TOGGLE_STYLE,
     FONT_FAMILIES,
     FONT_SIZE,
     RADIO_STYLE,
     SPINNER_STYLE,
     TAB_WIDGET_STYLE,
+    apply_theme_to_widgets,
 )
 from gui.widgets import (
     btn,
@@ -68,6 +68,7 @@ from gui.widgets import (
 )
 from gui.model_selector import ModelSelector
 from gui.workers import InferWorker, ToolWorker, TrainWorker
+from gui.i18n import tr, set_language, apply_language, current_lang, AVAILABLE_LANGS
 
 
 # ── 预设管理 ──────────────────────────────────────────────
@@ -93,7 +94,7 @@ def save_presets(presets: dict) -> None:
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("YOLO Lab")
+        self.setWindowTitle(tr("app.title"))
         self._closing = False
         self.resize(820, 700)
         self.setMinimumSize(720, 520)
@@ -106,18 +107,41 @@ class MainWindow(QWidget):
         self._path_history: dict[str, list[str]] = {}
 
         self._tabs = QTabWidget()
+        self._tabs.setProperty("themeClass", "tab_widget")
         self._tabs.setStyleSheet(TAB_WIDGET_STYLE)
-        self._tabs.addTab(self._build_train_tab(), "训练")
-        self._tabs.addTab(self._build_infer_tab(), "推理")
-        self._tabs.addTab(self._build_log_viewer_tab(), "日志 & 结果")
-        self._tabs.addTab(self._build_tools_tab(), "工具")
+        tab_keys = ["tab.train", "tab.infer", "tab.logs", "tab.tools"]
+        self._tabs.addTab(self._build_train_tab(), tr(tab_keys[0]))
+        self._tabs.tabBar().setTabData(0, tab_keys[0])
+        self._tabs.addTab(self._build_infer_tab(), tr(tab_keys[1]))
+        self._tabs.tabBar().setTabData(1, tab_keys[1])
+        self._tabs.addTab(self._build_log_viewer_tab(), tr(tab_keys[2]))
+        self._tabs.tabBar().setTabData(2, tab_keys[2])
+        self._tabs.addTab(self._build_tools_tab(), tr(tab_keys[3]))
+        self._tabs.tabBar().setTabData(3, tab_keys[3])
 
         self._dark_mode = False
-        dark_btn = QPushButton("☀")
-        dark_btn.setStyleSheet(DARK_TOGGLE_STYLE)
-        dark_btn.setFixedSize(32, 32)
-        dark_btn.clicked.connect(self._toggle_dark_mode)
-        self._tabs.setCornerWidget(dark_btn)
+        self._dark_btn = QPushButton("☀")
+        self._dark_btn.setProperty("themeClass", "tiny_btn")
+        self._dark_btn.setStyleSheet(DARK_TOGGLE_STYLE)
+        self._dark_btn.setFixedSize(32, 32)
+        self._dark_btn.clicked.connect(self._toggle_dark_mode)
+
+        self._lang_combo = QComboBox()
+        self._lang_combo.setProperty("themeClass", "combo")
+        self._lang_combo.setStyleSheet(COMBO_STYLE)
+        self._lang_combo.setMaximumWidth(90)
+        for code, name in AVAILABLE_LANGS.items():
+            self._lang_combo.addItem(name, code)
+        self._lang_combo.setCurrentIndex(0)
+        self._lang_combo.currentIndexChanged.connect(self._on_lang_changed)
+
+        corner = QWidget()
+        cl = QHBoxLayout(corner)
+        cl.setContentsMargins(0, 0, 8, 0)
+        cl.setSpacing(6)
+        cl.addWidget(self._lang_combo)
+        cl.addWidget(self._dark_btn)
+        self._tabs.setCornerWidget(corner)
 
         root = QVBoxLayout(self)
         root.setContentsMargins(0, 0, 0, 0)
@@ -141,12 +165,12 @@ class MainWindow(QWidget):
         # ── 路径卡片 ──
         card1, lay1 = card()
         header1 = QHBoxLayout()
-        header1.addWidget(section_label("路径"))
+        header1.addWidget(section_label("路径", i18n_key="train.card.paths"))
         header1.addStretch()
-        scan_models_btn = tiny_btn("扫描模型")
+        scan_models_btn = tiny_btn("扫描模型", i18n_key="train.btn.scan")
         scan_models_btn.clicked.connect(self._scan_trained_models)
         header1.addWidget(scan_models_btn)
-        edit_yaml_btn = tiny_btn("编辑 data.yaml")
+        edit_yaml_btn = tiny_btn("编辑 data.yaml", i18n_key="train.btn.edit_yaml")
         edit_yaml_btn.clicked.connect(self._open_data_yaml)
         header1.addWidget(edit_yaml_btn)
         lay1.addLayout(header1)
@@ -168,11 +192,15 @@ class MainWindow(QWidget):
         for label, cb, hist_key, is_dir, flt in rows_data:
             row = QHBoxLayout()
             row.setSpacing(10)
-            lbl = field_label(label)
+            lbl = field_label(label, i18n_key={
+                "data.yaml": "train.data_yaml",
+                "结果目录": "train.field.results_dir",
+                "日志目录": "train.field.log_dir",
+            }.get(label, ""))
             lbl.setFixedWidth(72)
             row.addWidget(lbl)
             row.addWidget(cb, 1)
-            b = btn("浏览", primary=False)
+            b = btn("浏览", primary=False, i18n_key="train.btn.browse")
             b.setFixedWidth(60)
             b.clicked.connect(lambda checked, c=cb, d=is_dir, f=flt, k=hist_key: self._browse(c, d, f, k))
             row.addWidget(b)
@@ -182,7 +210,7 @@ class MainWindow(QWidget):
         # 初始权重 — 模型选择器
         model_row = QHBoxLayout()
         model_row.setSpacing(10)
-        model_lbl = field_label("初始权重")
+        model_lbl = field_label("初始权重", i18n_key="train.field.init_weights")
         model_lbl.setFixedWidth(72)
         model_row.addWidget(model_lbl)
         model_row.addWidget(self.tr_model, 1)
@@ -193,7 +221,7 @@ class MainWindow(QWidget):
 
         # ── 超参数卡片 ──
         card2, lay2 = card()
-        lay2.addWidget(section_label("超参数"))
+        lay2.addWidget(section_label("超参数", i18n_key="train.card.hyperparams"))
         lay2.addSpacing(14)
 
         self.tr_epochs = spinner(1, 100000, 150, 100)
@@ -201,17 +229,20 @@ class MainWindow(QWidget):
         self.tr_batch  = spinner(1, 1024, 16, 100)
         self.tr_device = QComboBox()
         self.tr_device.setMinimumWidth(100)
+        self.tr_device.setProperty("themeClass", "combo")
         self.tr_device.setStyleSheet(COMBO_STYLE)
 
         grid = QHBoxLayout()
         grid.setSpacing(28)
-        for lbl, wgt in [
-            ("Epochs", self.tr_epochs), ("Imgsz", self.tr_imgsz),
-            ("Batch", self.tr_batch), ("Device", self.tr_device),
+        for lbl_text, i18n_key, wgt in [
+            ("Epochs", "train.field.epochs", self.tr_epochs),
+            ("Imgsz", "train.field.imgsz", self.tr_imgsz),
+            ("Batch", "train.field.batch", self.tr_batch),
+            ("Device", "train.field.device", self.tr_device),
         ]:
             col = QVBoxLayout()
             col.setSpacing(4)
-            col.addWidget(field_label(lbl))
+            col.addWidget(field_label(lbl_text, i18n_key=i18n_key))
             col.addWidget(wgt)
             grid.addLayout(col)
         grid.addStretch()
@@ -220,7 +251,7 @@ class MainWindow(QWidget):
 
         exp_row = QHBoxLayout()
         exp_row.setSpacing(10)
-        exp_row.addWidget(field_label("实验名称"))
+        exp_row.addWidget(field_label("实验名称", i18n_key="train.field.exp_name"))
         self.tr_exp = input_(min_width=320)
         exp_row.addWidget(self.tr_exp, 1)
         lay2.addLayout(exp_row)
@@ -228,23 +259,35 @@ class MainWindow(QWidget):
 
         # ── 训练模式卡片 ──
         card3, lay3 = card()
-        lay3.addWidget(section_label("训练模式"))
+        lay3.addWidget(section_label("训练模式", i18n_key="train.card.mode"))
         lay3.addSpacing(12)
 
-        self.rb_new = QRadioButton("新训练 — 从初始权重开始")
-        self.rb_resume = QRadioButton("续训 — 从上一次 last.pt 继续")
-        self.rb_best = QRadioButton("微调 — 基于历史实验的 best.pt")
+        self.rb_new = QRadioButton(tr("train.rb.new"))
+        self.rb_new.setProperty("i18nKey", "train.rb.new")
         self.rb_new.setChecked(True)
-        for rb in [self.rb_new, self.rb_resume, self.rb_best]:
-            rb.setStyleSheet(RADIO_STYLE)
-            lay3.addWidget(rb)
+        self.rb_new.setStyleSheet(RADIO_STYLE)
+        self.rb_new.setProperty("themeClass", "radio")
+
+        self.rb_resume = QRadioButton(tr("train.rb.resume"))
+        self.rb_resume.setProperty("i18nKey", "train.rb.resume")
+        self.rb_resume.setStyleSheet(RADIO_STYLE)
+        self.rb_resume.setProperty("themeClass", "radio")
+
+        self.rb_best = QRadioButton(tr("train.rb.finetune"))
+        self.rb_best.setProperty("i18nKey", "train.rb.finetune")
+        self.rb_best.setStyleSheet(RADIO_STYLE)
+        self.rb_best.setProperty("themeClass", "radio")
+
+        lay3.addWidget(self.rb_new)
+        lay3.addWidget(self.rb_resume)
+        lay3.addWidget(self.rb_best)
 
         hist_row = QHBoxLayout()
         hist_row.setSpacing(10)
-        hist_row.addWidget(field_label("历史实验"))
+        hist_row.addWidget(field_label("历史实验", i18n_key="train.field.history"))
         self.cb_history = simple_combo(min_width=300, font_size=13)
         hist_row.addWidget(self.cb_history, 1)
-        refresh = btn("刷新", primary=False)
+        refresh = btn("刷新", primary=False, i18n_key="train.btn.refresh")
         refresh.clicked.connect(self._refresh_history)
         hist_row.addWidget(refresh)
         lay3.addSpacing(8)
@@ -252,8 +295,10 @@ class MainWindow(QWidget):
         outer.addWidget(card3)
 
         # ── 数据增强 ──
-        self.tr_augment = QCheckBox("启用数据增强")
+        self.tr_augment = QCheckBox(tr("train.augment"))
+        self.tr_augment.setProperty("i18nKey", "train.augment")
         self.tr_augment.setChecked(True)
+        self.tr_augment.setProperty("themeClass", "checkbox")
         self.tr_augment.setStyleSheet(CHECKBOX_STYLE)
         outer.addWidget(self.tr_augment)
 
@@ -261,18 +306,18 @@ class MainWindow(QWidget):
         btn_row = QHBoxLayout()
         btn_row.setSpacing(10)
 
-        self.btn_start = btn("开始训练")
+        self.btn_start = btn("开始训练", i18n_key="train.btn.start")
         self.btn_start.setFixedHeight(38)
         self.btn_start.clicked.connect(self._on_start_train)
         btn_row.addWidget(self.btn_start)
 
-        self.btn_stop = danger_btn("停止训练")
+        self.btn_stop = danger_btn("停止训练", i18n_key="train.btn.stop")
         self.btn_stop.setFixedHeight(38)
         self.btn_stop.setEnabled(False)
         self.btn_stop.clicked.connect(self._on_stop_train)
         btn_row.addWidget(self.btn_stop)
 
-        self.btn_reset = btn("恢复默认", primary=False)
+        self.btn_reset = btn("恢复默认", primary=False, i18n_key="train.btn.reset")
         self.btn_reset.setFixedHeight(38)
         self.btn_reset.clicked.connect(self._reset_train_defaults)
         btn_row.addWidget(self.btn_reset)
@@ -282,12 +327,12 @@ class MainWindow(QWidget):
         self.cb_presets.currentTextChanged.connect(self._on_preset_selected)
         btn_row.addWidget(self.cb_presets)
 
-        save_btn = btn("保存预设", primary=False)
+        save_btn = btn("保存预设", primary=False, i18n_key="train.btn.save_preset")
         save_btn.setFixedHeight(38)
         save_btn.clicked.connect(self._save_preset)
         btn_row.addWidget(save_btn)
 
-        del_btn = btn("删除预设", primary=False)
+        del_btn = btn("删除预设", primary=False, i18n_key="train.btn.delete_preset")
         del_btn.setFixedHeight(38)
         del_btn.clicked.connect(self._delete_preset)
         btn_row.addWidget(del_btn)
@@ -297,11 +342,11 @@ class MainWindow(QWidget):
 
         # ── 进度条 ──
         outer.addSpacing(4)
-        self.tr_progress = progress_bar()
+        self.tr_progress = progress_bar(i18n_key="train.progress.format")
         outer.addWidget(self.tr_progress)
 
         # ── 日志 ──
-        outer.addWidget(field_label("输出"))
+        outer.addWidget(field_label("输出", i18n_key="train.log.output"))
         self.tr_log = log_area()
         outer.addWidget(self.tr_log, 1)
 
@@ -320,7 +365,7 @@ class MainWindow(QWidget):
 
         # ── 数据集目录卡片 ──
         card1, lay1 = card()
-        lay1.addWidget(section_label("数据集目录"))
+        lay1.addWidget(section_label("数据集目录", i18n_key="tools.card.dataset"))
         lay1.addSpacing(14)
 
         self._path_history.setdefault("tool_dataset", [])
@@ -329,7 +374,7 @@ class MainWindow(QWidget):
         row = QHBoxLayout()
         row.setSpacing(10)
         row.addWidget(self.tool_dataset, 1)
-        b = btn("浏览", primary=False)
+        b = btn("浏览", primary=False, i18n_key="train.btn.browse")
         b.setFixedWidth(60)
         b.clicked.connect(lambda: self._browse(self.tool_dataset, True, None, "tool_dataset"))
         row.addWidget(b)
@@ -338,19 +383,23 @@ class MainWindow(QWidget):
 
         # ── 工具选择卡片 ──
         card2, lay2 = card()
-        lay2.addWidget(section_label("工具"))
+        lay2.addWidget(section_label("工具", i18n_key="tools.card.tools"))
         lay2.addSpacing(14)
 
         self.tool_selector = QComboBox()
+        self.tool_selector.setProperty("themeClass", "combo")
         self.tool_selector.setStyleSheet(COMBO_STYLE)
-        self.tool_selector.addItems([
-            "创建空标签文件",
-            "随机分割 train/val（含标签）",
-            "随机分割 train/val/test（含标签）",
-            "每 N 张分割 train/val（含标签）",
-            "随机分割 train/val（仅图片）",
-            "每 N 张分割 train/val（仅图片）",
-        ])
+        tool_item_keys = [
+            "tools.item.empty_labels",
+            "tools.item.random_train_val",
+            "tools.item.random_train_val_test",
+            "tools.item.every_nth_labels",
+            "tools.item.random_images_only",
+            "tools.item.every_nth_images_only",
+        ]
+        for i, key in enumerate(tool_item_keys):
+            self.tool_selector.addItem(tr(key))
+            self.tool_selector.setItemData(i, key, Qt.ItemDataRole.UserRole + 1)
         self.tool_selector.currentIndexChanged.connect(self._on_tool_changed)
         lay2.addWidget(self.tool_selector)
         lay2.addSpacing(16)
@@ -360,12 +409,12 @@ class MainWindow(QWidget):
         self._tool_param_spinners: list[dict[str, QSpinBox]] = []
         param_specs = [
             [],                                          # 0: 创建空标签
-            [("验证集比例 %", "val_ratio", 20, 1, 99)],   # 1: 随机 train/val
-            [("验证集比例 %", "val_ratio", 20, 1, 99),    # 2: 随机 train/val/test
-             ("测试集比例 %", "test_ratio", 10, 1, 99)],
-            [("间隔 N (每 N 张取 1 张)", "interval", 5, 1, 100)],  # 3: 每N张含标签
-            [("验证集比例 %", "val_ratio", 20, 1, 99)],   # 4: 随机仅图片
-            [("间隔 N (每 N 张取 1 张)", "interval", 5, 1, 100)],  # 5: 每N张仅图片
+            [("验证集比例 %", "val_ratio", 20, 1, 99, "tools.param.val_ratio")],   # 1: 随机 train/val
+            [("验证集比例 %", "val_ratio", 20, 1, 99, "tools.param.val_ratio"),    # 2: 随机 train/val/test
+             ("测试集比例 %", "test_ratio", 10, 1, 99, "tools.param.test_ratio")],
+            [("间隔 N (每 N 张取 1 张)", "interval", 5, 1, 100, "tools.param.interval")],  # 3: 每N张含标签
+            [("验证集比例 %", "val_ratio", 20, 1, 99, "tools.param.val_ratio")],   # 4: 随机仅图片
+            [("间隔 N (每 N 张取 1 张)", "interval", 5, 1, 100, "tools.param.interval")],  # 5: 每N张仅图片
         ]
         for specs in param_specs:
             page = QWidget()
@@ -373,14 +422,16 @@ class MainWindow(QWidget):
             pl.setContentsMargins(0, 0, 0, 0)
             pl.setSpacing(8)
             spinner_map = {}
-            for label_text, name, default, min_v, max_v in specs:
+            for label_text, name, default, min_v, max_v, *rest in specs:
+                i18n_key = rest[0] if rest else None
                 r = QHBoxLayout()
                 r.setSpacing(10)
-                r.addWidget(field_label(label_text))
+                r.addWidget(field_label(label_text, i18n_key=i18n_key))
                 spin = QSpinBox()
                 spin.setRange(min_v, max_v)
                 spin.setValue(default)
                 spin.setMinimumWidth(80)
+                spin.setProperty("themeClass", "spinner")
                 spin.setStyleSheet(SPINNER_STYLE)
                 r.addWidget(spin)
                 r.addStretch()
@@ -397,12 +448,12 @@ class MainWindow(QWidget):
         btn_row = QHBoxLayout()
         btn_row.setSpacing(10)
 
-        self.btn_tool_run = btn("执行工具")
+        self.btn_tool_run = btn("执行工具", i18n_key="tools.btn.run")
         self.btn_tool_run.setFixedHeight(38)
         self.btn_tool_run.clicked.connect(self._on_run_tool)
         btn_row.addWidget(self.btn_tool_run)
 
-        self.btn_tool_stop = danger_btn("停止")
+        self.btn_tool_stop = danger_btn("停止", i18n_key="tools.btn.stop")
         self.btn_tool_stop.setFixedHeight(38)
         self.btn_tool_stop.setEnabled(False)
         self.btn_tool_stop.clicked.connect(self._on_stop_tool)
@@ -412,7 +463,7 @@ class MainWindow(QWidget):
         outer.addLayout(btn_row)
 
         # ── 输出 ──
-        outer.addWidget(field_label("输出"))
+        outer.addWidget(field_label("输出", i18n_key="tools.log.output"))
         self.tool_log = log_area()
         outer.addWidget(self.tool_log, 1)
 
@@ -432,23 +483,23 @@ class MainWindow(QWidget):
 
     def _on_run_tool(self):
         if self._tool_worker and self._tool_worker.isRunning():
-            QMessageBox.warning(self, "提示", "工具正在执行中，请等待完成或先停止。")
+            QMessageBox.warning(self, tr("msg.title.hint"), tr("msg.tool_running"))
             return
 
         idx = self.tool_selector.currentIndex()
         dataset_dir = path_combo_get(self.tool_dataset)
         if not dataset_dir:
-            QMessageBox.warning(self, "提示", "请选择数据集目录。")
+            QMessageBox.warning(self, tr("msg.title.hint"), tr("msg.select_dataset"))
             return
         if not Path(dataset_dir).is_dir():
-            QMessageBox.critical(self, "错误", f"数据集目录不存在：\n{dataset_dir}")
+            QMessageBox.critical(self, tr("msg.title.error"), f"{tr('msg.dataset_not_found')}\n{dataset_dir}")
             return
 
         script_rel = self.TOOL_SCRIPTS[idx]
         script = str(ROOT / "tools" / "dataset_tools" / script_rel)
 
         if not Path(script).is_file():
-            QMessageBox.critical(self, "错误", f"工具脚本不存在：\n{script}")
+            QMessageBox.critical(self, tr("msg.title.error"), f"{tr('msg.tool_not_found')}\n{script}")
             return
 
         cmd = [sys.executable, script, "--dataset-dir", dataset_dir]
@@ -471,7 +522,7 @@ class MainWindow(QWidget):
 
         self.tool_log.clear()
         self._log_append(self.tool_log,
-                         f'<span style="color:#6ec6ff;">[info]</span>  执行: {script_rel}')
+                         f'<span style="color:#6ec6ff;">{tr("log.info_prefix")}</span>  {tr("tool.log.running", script=script_rel)}')
 
         self.btn_tool_run.setEnabled(False)
         self.btn_tool_stop.setEnabled(True)
@@ -489,29 +540,29 @@ class MainWindow(QWidget):
     def _on_stop_tool(self):
         if self._tool_worker and self._tool_worker.isRunning():
             self._log_append(self.tool_log,
-                             f'<span style="color:#ffb86c;">[warn]</span>  正在停止...')
+                             f'<span style="color:#ffb86c;">{tr("log.warn_prefix")}</span>  {tr("train.log.tool_stopping")}')
             self._tool_worker.stop()
 
     def _on_tool_failed(self, msg):
         self._log_append(self.tool_log,
-                         f'<span style="color:#ff5555;">[err!]</span>  工具执行失败')
+                         f'<span style="color:#ff5555;">{tr("log.err_prefix")}</span>  {tr("tool.log.failed")}')
         self._log_append(self.tool_log, f'<span style="color:#ff6e6e;">{msg[:1500]}</span>')
         self.btn_tool_run.setEnabled(True)
         self.btn_tool_stop.setEnabled(False)
         if not self._closing:
-            QMessageBox.critical(self, "工具失败", msg[:2000])
+            QMessageBox.critical(self, tr("msg.title.tool_failed"), msg[:2000])
 
     def _on_tool_done(self):
         self._log_append(self.tool_log,
-                         f'<span style="color:#50fa7b;">[ ok ]</span>  工具执行完成')
+                         f'<span style="color:#50fa7b;">{tr("log.ok_prefix")}</span>  {tr("tool.log.done")}')
         self.btn_tool_run.setEnabled(True)
         self.btn_tool_stop.setEnabled(False)
         if not self._closing:
-            QMessageBox.information(self, "完成", "工具执行已结束。")
+            QMessageBox.information(self, tr("msg.title.done"), tr("msg.tool_done"))
 
     def _on_tool_stopped(self):
         self._log_append(self.tool_log,
-                         f'<span style="color:#ffb86c;">[warn]</span>  工具已停止')
+                         f'<span style="color:#ffb86c;">{tr("log.warn_prefix")}</span>  {tr("tool.log.cancelled")}')
         self.btn_tool_run.setEnabled(True)
         self.btn_tool_stop.setEnabled(False)
 
@@ -529,14 +580,14 @@ class MainWindow(QWidget):
 
         # ── 日志目录 ──
         card1, lay1 = card()
-        lay1.addWidget(section_label("日志目录"))
+        lay1.addWidget(section_label("日志目录", i18n_key="logs.card.logdir"))
         lay1.addSpacing(14)
         self._path_history.setdefault("lv_logs", [])
         self.lv_log_dir = path_combo(default=LOG_DIR, history=self._path_history["lv_logs"])
         row1 = QHBoxLayout()
         row1.setSpacing(10)
         row1.addWidget(self.lv_log_dir, 1)
-        b1 = btn("浏览", primary=False)
+        b1 = btn("浏览", primary=False, i18n_key="train.btn.browse")
         b1.setFixedWidth(60)
         b1.clicked.connect(lambda: self._browse(self.lv_log_dir, True, None, "lv_logs"))
         row1.addWidget(b1)
@@ -545,12 +596,12 @@ class MainWindow(QWidget):
 
         # ── 日志文件选择 ──
         card2, lay2 = card()
-        lay2.addWidget(section_label("历史日志文件"))
+        lay2.addWidget(section_label("历史日志文件", i18n_key="logs.card.files"))
         lay2.addSpacing(14)
         row2 = QHBoxLayout()
         row2.setSpacing(10)
         self.lv_csv_combo = simple_combo(min_width=280, font_size=13)
-        self.lv_csv_combo.addItem("— 选择 CSV 文件 —")
+        self.lv_csv_combo.addItem(tr("logs.combo.csv_placeholder"))
         self.lv_csv_combo.activated.connect(self._on_lv_csv_selected)
         row2.addWidget(self.lv_csv_combo, 1)
         refresh_btn = tiny_btn("⟳")
@@ -565,14 +616,14 @@ class MainWindow(QWidget):
 
         # ── 实验结果 ──
         card3, lay3 = card()
-        lay3.addWidget(section_label("实验 & 结果"))
+        lay3.addWidget(section_label("实验 & 结果", i18n_key="logs.card.experiments"))
         lay3.addSpacing(14)
 
         exp_sel_row = QHBoxLayout()
         exp_sel_row.setSpacing(10)
-        exp_sel_row.addWidget(field_label("实验"))
+        exp_sel_row.addWidget(field_label("实验", i18n_key="logs.field.experiment"))
         self.lv_exp_combo = simple_combo(min_width=200, font_size=13)
-        self.lv_exp_combo.addItem("— 选择实验 —")
+        self.lv_exp_combo.addItem(tr("logs.combo.exp_placeholder"))
         self.lv_exp_combo.activated.connect(self._on_lv_exp_selected)
         exp_sel_row.addWidget(self.lv_exp_combo, 1)
         exp_refresh = tiny_btn("⟳")
@@ -583,13 +634,13 @@ class MainWindow(QWidget):
 
         btn_row = QHBoxLayout()
         btn_row.setSpacing(10)
-        self.lv_btn_exp_dir = btn("打开实验目录", primary=False)
+        self.lv_btn_exp_dir = btn("打开实验目录", primary=False, i18n_key="logs.btn.exp_dir")
         self.lv_btn_exp_dir.clicked.connect(self._open_lv_exp_dir)
         btn_row.addWidget(self.lv_btn_exp_dir)
-        self.lv_btn_weights = btn("打开权重目录", primary=False)
+        self.lv_btn_weights = btn("打开权重目录", primary=False, i18n_key="logs.btn.weights")
         self.lv_btn_weights.clicked.connect(self._open_lv_weights)
         btn_row.addWidget(self.lv_btn_weights)
-        self.lv_btn_plot = btn("查看训练图表", primary=False)
+        self.lv_btn_plot = btn("查看训练图表", primary=False, i18n_key="logs.btn.plot")
         self.lv_btn_plot.clicked.connect(self._open_lv_plot)
         btn_row.addWidget(self.lv_btn_plot)
         btn_row.addStretch()
@@ -598,16 +649,17 @@ class MainWindow(QWidget):
 
         # ── 快捷目录 ──
         card4, lay4 = card()
-        lay4.addWidget(section_label("快捷目录"))
+        lay4.addWidget(section_label("快捷目录", i18n_key="logs.card.quick"))
         lay4.addSpacing(14)
         quick_row = QHBoxLayout()
         quick_row.setSpacing(10)
-        for label, path in [
-            ("训练结果", RESULTS_DIR),
-            ("推理结果", str(Path(PREDICT_DIR) / "predict_result")),
-            ("数据集", str(ROOT / "data" / "dataset")),
-        ]:
-            b = btn(label, primary=False)
+        btn_specs = [
+            ("训练结果", RESULTS_DIR, "logs.btn.results"),
+            ("推理结果", str(Path(PREDICT_DIR) / "predict_result"), "logs.btn.predictions"),
+            ("数据集", str(ROOT / "data" / "dataset"), "logs.btn.dataset"),
+        ]
+        for label, path, i18n_key in btn_specs:
+            b = btn(label, primary=False, i18n_key=i18n_key)
             b.clicked.connect(lambda checked, p=path: self._open_dir_safe(p))
             quick_row.addWidget(b)
         quick_row.addStretch()
@@ -620,7 +672,7 @@ class MainWindow(QWidget):
         combo = self.lv_csv_combo
         combo.blockSignals(True)
         combo.clear()
-        combo.addItem("— 选择 CSV 文件 —")
+        combo.addItem(tr("logs.combo.csv_placeholder"))
         log_dir = path_combo_get(self.lv_log_dir)
         if Path(log_dir).is_dir():
             for f in sorted(Path(log_dir).glob("*.csv"), reverse=True):
@@ -634,20 +686,20 @@ class MainWindow(QWidget):
         log_dir = path_combo_get(self.lv_log_dir)
         csv_path = Path(log_dir) / text
         if not csv_path.is_file():
-            QMessageBox.warning(self, "提示", f"日志文件不存在：\n{csv_path}")
+            QMessageBox.warning(self, tr("msg.title.hint"), f"{tr('msg.yaml_not_found')}\n{csv_path}")
             return
         try:
             self._load_csv_log(self.lv_log, csv_path)
         except Exception as e:
             self._log_append(self.lv_log,
-                f'<span style="color:#ff5555;">[err!]</span>  读取失败: {e}')
+                f'<span style="color:#ff5555;">{tr("log.err_prefix")}</span>  {tr("msg.csv_read_failed")} {e}')
 
     def _refresh_lv_exp_list(self):
         from gui.paths import RESULTS_DIR
         combo = self.lv_exp_combo
         combo.blockSignals(True)
         combo.clear()
-        combo.addItem("— 选择实验 —")
+        combo.addItem(tr("logs.combo.exp_placeholder"))
         if Path(RESULTS_DIR).is_dir():
             for d in sorted(Path(RESULTS_DIR).iterdir(), reverse=True):
                 if d.is_dir():
@@ -660,8 +712,9 @@ class MainWindow(QWidget):
     def _lv_exp_path(self):
         from gui.paths import RESULTS_DIR
         name = self.lv_exp_combo.currentText()
-        if not name or name == "— 选择实验 —":
-            QMessageBox.warning(self, "提示", "请先选择实验。")
+        placeholder = tr("logs.combo.exp_placeholder")
+        if not name or name == placeholder:
+            QMessageBox.warning(self, tr("msg.title.hint"), tr("msg.select_experiment"))
             return None
         return Path(RESULTS_DIR) / name
 
@@ -677,7 +730,7 @@ class MainWindow(QWidget):
             if wp.is_dir():
                 self._open_file_with_default_app(str(wp))
             else:
-                QMessageBox.warning(self, "提示", f"权重目录不存在：\n{wp}")
+                QMessageBox.warning(self, tr("msg.title.hint"), f"{tr('msg.weights_dir_not_found')}\n{wp}")
 
     def _open_lv_plot(self):
         p = self._lv_exp_path()
@@ -686,7 +739,7 @@ class MainWindow(QWidget):
             if rp.is_file():
                 self._open_file_with_default_app(str(rp))
             else:
-                QMessageBox.warning(self, "提示", f"图表不存在，将打开实验目录。")
+                QMessageBox.warning(self, tr("msg.title.hint"), tr("msg.plot_not_found"))
                 if p.is_dir():
                     self._open_file_with_default_app(str(p))
 
@@ -735,12 +788,12 @@ class MainWindow(QWidget):
     def _open_data_yaml(self):
         p = Path(path_combo_get(self.tr_data_yaml))
         if not p.is_file():
-            QMessageBox.warning(self, "提示", f"文件不存在：\n{p}")
+            QMessageBox.warning(self, tr("msg.title.hint"), f"{tr('msg.yaml_not_found')}\n{p}")
             return
         try:
             self._open_file_with_default_app(str(p))
         except Exception:
-            QMessageBox.critical(self, "错误", "无法打开文件，请手动打开。")
+            QMessageBox.critical(self, tr("msg.title.error"), tr("msg.cannot_open_file"))
 
     @staticmethod
     def _open_file_with_default_app(path: str) -> None:
@@ -756,12 +809,14 @@ class MainWindow(QWidget):
 
     def _toggle_dark_mode(self):
         self._dark_mode = not self._dark_mode
-        btn = self._tabs.cornerWidget()
-        btn.setText("🌙" if self._dark_mode else "☀")
-        if self._dark_mode:
-            QApplication.instance().setStyleSheet(DARK_STYLE)
-        else:
-            QApplication.instance().setStyleSheet("")
+        self._dark_btn.setText("🌙" if self._dark_mode else "☀")
+        apply_theme_to_widgets(self, self._dark_mode)
+
+    def _on_lang_changed(self, idx):
+        lang = self._lang_combo.itemData(idx)
+        if lang:
+            set_language(lang)
+            apply_language(self)
 
     def _on_ctrl_enter(self):
         idx = self._tabs.currentIndex()
@@ -814,13 +869,13 @@ class MainWindow(QWidget):
                     self.tr_model.add_custom_path(str(best))
                     found += 1
         if found:
-            self._log_info(f"找到 {found} 个已训练模型")
+            self._log_info(tr("train.log.scan_found", count=found))
         else:
-            self._log_warn("未找到已训练模型")
+            self._log_warn(tr("train.log.scan_none"))
 
     def _reset_train_defaults(self):
         self._apply_config(TrainConfig())
-        self._log_info("已恢复默认配置")
+        self._log_info(tr("train.log.defaults_reset"))
 
     def _refresh_history(self):
         self.cb_history.clear()
@@ -867,17 +922,18 @@ class MainWindow(QWidget):
     def _refresh_preset_combo(self):
         self.cb_presets.blockSignals(True)
         self.cb_presets.clear()
-        self.cb_presets.addItem("— 预设 —")
+        self.cb_presets.addItem(tr("train.combo.presets"))
         self._presets = load_presets()
         for name in sorted(self._presets.keys()):
             self.cb_presets.addItem(name)
         self.cb_presets.blockSignals(False)
 
     def _on_preset_selected(self, name):
-        if not name or name == "— 预设 —" or name not in self._presets:
+        placeholder = tr("train.combo.presets")
+        if not name or name == placeholder or name not in self._presets:
             return
         self._apply_config_dict(self._presets[name])
-        self._log_info(f"已加载预设：「{name}」")
+        self._log_info(tr("train.log.preset_loaded", name=name))
 
     def _save_preset(self):
         name = self.tr_exp.text().strip()
@@ -889,18 +945,19 @@ class MainWindow(QWidget):
         idx = self.cb_presets.findText(name)
         if idx >= 0:
             self.cb_presets.setCurrentIndex(idx)
-        self._log_info(f"预设已保存：「{name}」")
+        self._log_info(tr("train.log.preset_saved", name=name))
 
     def _delete_preset(self):
         name = self.cb_presets.currentText()
-        if not name or name == "— 预设 —":
-            QMessageBox.warning(self, "提示", "请先选择要删除的预设。")
+        placeholder = tr("train.combo.presets")
+        if not name or name == placeholder:
+            QMessageBox.warning(self, tr("msg.title.hint"), tr("msg.select_experiment"))
             return
         if name in self._presets:
             del self._presets[name]
             save_presets(self._presets)
             self._refresh_preset_combo()
-            self._log_info(f"已删除预设：「{name}」")
+            self._log_info(tr("train.log.preset_deleted", name=name))
 
     # ── 日志 ──
 
@@ -921,39 +978,44 @@ class MainWindow(QWidget):
             log_widget.moveCursor(QTextCursor.MoveOperation.End)
 
     def _log_info(self, msg):
-        self._log_append(self.tr_log, f'<span style="color:#6ec6ff;">[info]</span>  {msg}')
+        self._log_append(self.tr_log, f'<span style="color:#6ec6ff;">{tr("log.info_prefix")}</span>  {msg}')
 
     def _log_good(self, msg):
-        self._log_append(self.tr_log, f'<span style="color:#50fa7b;">[ ok ]</span>  {msg}')
+        self._log_append(self.tr_log, f'<span style="color:#50fa7b;">{tr("log.ok_prefix")}</span>  {msg}')
 
     def _log_warn(self, msg):
-        self._log_append(self.tr_log, f'<span style="color:#ffb86c;">[warn]</span>  {msg}')
+        self._log_append(self.tr_log, f'<span style="color:#ffb86c;">{tr("log.warn_prefix")}</span>  {msg}')
 
     def _log_err(self, msg):
-        self._log_append(self.tr_log, f'<span style="color:#ff5555;">[err!]</span>  {msg}')
+        self._log_append(self.tr_log, f'<span style="color:#ff5555;">{tr("log.err_prefix")}</span>  {msg}')
 
     # ── 训练 ──
 
     def _set_train_ui_state(self, state: str) -> None:
         if state == "running":
             self.btn_start.setEnabled(False)
-            self.btn_stop.setText("停止训练")
+            self.btn_stop.setText(tr("train.btn.stop"))
+            self.btn_stop.setProperty("i18nKey", "train.btn.stop")
             self.btn_stop.setEnabled(True)
             self.btn_stop.clicked.disconnect()
             self.btn_stop.clicked.connect(self._on_stop_train)
             self.tr_progress.setValue(0)
         elif state == "stopped":
-            self.btn_start.setText("继续训练")
+            self.btn_start.setText(tr("train.btn.continue"))
+            self.btn_start.setProperty("i18nKey", "train.btn.continue")
             self.btn_start.setEnabled(True)
-            self.btn_stop.setText("结束训练")
+            self.btn_stop.setText(tr("train.btn.end"))
+            self.btn_stop.setProperty("i18nKey", "train.btn.end")
             self.btn_stop.setEnabled(True)
             self.rb_resume.setChecked(True)
             self.btn_stop.clicked.disconnect()
             self.btn_stop.clicked.connect(self._on_end_train)
         else:  # idle
-            self.btn_start.setText("开始训练")
+            self.btn_start.setText(tr("train.btn.start"))
+            self.btn_start.setProperty("i18nKey", "train.btn.start")
             self.btn_start.setEnabled(True)
-            self.btn_stop.setText("停止训练")
+            self.btn_stop.setText(tr("train.btn.stop"))
+            self.btn_stop.setProperty("i18nKey", "train.btn.stop")
             self.btn_stop.setEnabled(False)
             self.rb_new.setChecked(True)
             self.btn_stop.clicked.disconnect()
@@ -979,7 +1041,7 @@ class MainWindow(QWidget):
     @Slot()
     def _on_start_train(self):
         if self._train_worker and self._train_worker.isRunning():
-            QMessageBox.warning(self, "提示", "训练正在进行中。")
+            QMessageBox.warning(self, tr("msg.title.hint"), tr("msg.train_running"))
             return
 
         cfg = self._build_config_from_train_ui()
@@ -987,82 +1049,75 @@ class MainWindow(QWidget):
 
         if self.rb_new.isChecked():
             mode = 1
-            mode_label = "新训练"
+            mode_label = tr("train.msg.mode_new")
             if not self._model_file_ok(cfg.model_file):
-                QMessageBox.critical(self, "错误", f"找不到初始权重：\n{cfg.model_file}")
+                QMessageBox.critical(self, tr("msg.title.error"), f"{tr('msg.no_model')}\n{cfg.model_file}")
                 return
             selected = None
-            details = (
-                f"模式:  {mode_label}\n"
-                f"实验:  {cfg.experiment_name}\n"
-                f"权重:  {cfg.model_file}\n"
-                f"数据:  {cfg.data_yaml}"
-            )
+            details = tr("train.msg.new_summary",
+                         mode=mode_label, exp=cfg.experiment_name,
+                         weights=cfg.model_file, data=cfg.data_yaml)
         elif self.rb_resume.isChecked():
             mode = 2
-            mode_label = "续训"
+            mode_label = tr("train.msg.mode_resume")
             if not Path(cfg.last_pt).is_file():
                 r = QMessageBox.question(
-                    self, "未找到 last.pt",
-                    f"未找到续训权重：\n{cfg.last_pt}\n\n是否改为模式 1 新训练？",
+                    self, tr("msg.title.hint"),
+                    f"{tr('msg.no_last_pt')}\n{cfg.last_pt}\n\n{tr('msg.fallback_new_train')}",
                     QMessageBox.Yes | QMessageBox.No,
                 )
                 if r != QMessageBox.Yes:
                     return
                 mode = 1
-                mode_label = "新训练（降级）"
+                mode_label = tr("train.msg.mode_new_fallback")
                 if not self._model_file_ok(cfg.model_file):
-                    QMessageBox.critical(self, "错误", f"找不到初始权重：\n{cfg.model_file}")
+                    QMessageBox.critical(self, tr("msg.title.error"), f"{tr('msg.no_model')}\n{cfg.model_file}")
                     return
             selected = None
-            details = (
-                f"模式:  {mode_label}\n"
-                f"实验:  {cfg.experiment_name}\n"
-                f"权重:  {cfg.last_pt if mode == 2 else cfg.model_file}\n"
-                f"数据:  {cfg.data_yaml}"
-            )
+            weights_path = cfg.last_pt if mode == 2 else cfg.model_file
+            details = tr("train.msg.resume_summary",
+                         mode=mode_label, exp=cfg.experiment_name,
+                         weights=weights_path, data=cfg.data_yaml)
         else:
             mode = 3
-            mode_label = "微调"
+            mode_label = tr("train.msg.mode_finetune")
             selected = self.cb_history.currentText().strip()
             if not selected:
-                QMessageBox.warning(self, "提示", "请在「历史实验」下拉框中选择一项。")
+                QMessageBox.warning(self, tr("msg.title.hint"), tr("msg.no_history_selected"))
                 return
             best = Path(cfg.results_dir) / selected / "weights" / "best.pt"
             if not best.is_file():
-                QMessageBox.critical(self, "错误", f"找不到：\n{best}")
+                QMessageBox.critical(self, tr("msg.title.error"), f"{tr('msg.no_best_pt')}\n{best}")
                 return
-            details = (
-                f"模式:  {mode_label}\n"
-                f"实验:  {cfg.experiment_name}\n"
-                f"基础:  {selected}\n"
-                f"权重:  {best}\n"
-                f"数据:  {cfg.data_yaml}"
-            )
+            details = tr("train.msg.finetune_summary",
+                         mode=mode_label, exp=cfg.experiment_name,
+                         base=selected, weights=best, data=cfg.data_yaml)
 
+        aug_status = tr("train.engine.augment_on") if use_aug else tr("train.engine.augment_off")
         summary = (
             f"{details}\n"
             f"{'─' * 40}\n"
-            f"Epochs:  {cfg.epochs:<6} Imgsz: {cfg.imgsz}\n"
-            f"Batch:   {cfg.batch:<6} Device: {cfg.device}\n"
-            f"数据增强: {'开' if use_aug else '关'}\n"
+            f"{tr('train.field.epochs')}:  {cfg.epochs:<6}  {tr('train.field.imgsz')}: {cfg.imgsz}\n"
+            f"{tr('train.field.batch')}:   {cfg.batch:<6}  {tr('train.field.device')}: {cfg.device}\n"
+            f"{aug_status}\n"
             f"{'─' * 40}\n"
-            f"是否开始训练？"
+            f"{tr('msg.title.confirm')}"
         )
 
         r = QMessageBox.question(
-            self, "确认训练", summary,
+            self, tr("msg.title.confirm"), summary,
             QMessageBox.Yes | QMessageBox.No,
         )
         if r != QMessageBox.Yes:
             return
 
         self.tr_log.clear()
-        self._log_info(f"开始训练 — {cfg.experiment_name}")
-        self._log_info(f"epochs={cfg.epochs}  imgsz={cfg.imgsz}  batch={cfg.batch}  device={cfg.device}")
+        self._log_info(tr("train.log.starting", name=cfg.experiment_name))
+        self._log_info(tr("train.log.params", epochs=cfg.epochs, imgsz=cfg.imgsz, batch=cfg.batch, device=cfg.device))
 
         cmd = [
             sys.executable, str(ROOT / "gui" / "train_engine.py"),
+            "--lang", current_lang(),
             "--no-interactive",
             "--mode", str(mode),
             "--data-yaml", cfg.data_yaml,
@@ -1107,34 +1162,34 @@ class MainWindow(QWidget):
     @Slot()
     def _on_stop_train(self):
         if self._train_worker and self._train_worker.isRunning():
-            self._log_warn("正在停止训练...")
+            self._log_warn(tr("train.log.stopping"))
             self._train_worker.stop()
 
     @Slot(str)
     def _on_train_failed(self, msg):
-        self._log_err("训练失败")
+        self._log_err(tr("msg.title.failed"))
         self._log_append(self.tr_log, f'<span style="color:#ff6e6e;">{msg[:1500]}</span>')
         if not self._closing:
-            QMessageBox.critical(self, "训练失败", msg[:2000])
+            QMessageBox.critical(self, tr("msg.title.failed"), msg[:2000])
         self._set_train_ui_state("idle")
         self._refresh_history()
 
     @Slot()
     def _on_train_done(self):
-        self._log_good("训练完成")
+        self._log_good(tr("msg.train_done"))
         if not self._closing:
-            QMessageBox.information(self, "完成", "训练流程已结束。")
+            QMessageBox.information(self, tr("msg.title.done"), tr("msg.train_done"))
         self._set_train_ui_state("idle")
         self._refresh_history()
 
     @Slot()
     def _on_train_stopped(self):
-        self._log_warn("训练已暂停 — 可点击「继续训练」恢复，或点击「结束训练」终止本次会话")
+        self._log_warn(tr("train.log.paused"))
         self._set_train_ui_state("stopped")
 
     @Slot()
     def _on_end_train(self):
-        self._log_info("本次训练会话已结束")
+        self._log_info(tr("train.log.ended"))
         self._set_train_ui_state("idle")
 
     @Slot()
@@ -1154,7 +1209,7 @@ class MainWindow(QWidget):
         outer.setSpacing(10)
 
         card1, lay1 = card()
-        lay1.addWidget(section_label("推理配置"))
+        lay1.addWidget(section_label("推理配置", i18n_key="infer.card.config"))
         lay1.addSpacing(14)
 
         for key in ["ir_model", "ir_source", "ir_save"]:
@@ -1167,18 +1222,18 @@ class MainWindow(QWidget):
         self.ir_imgsz  = spinner(32, 4096, 640, 96)
 
         ir_rows = [
-            ("模型 .pt", self.ir_model,  "ir_model",  False, "权重 (*.pt *.pth *.onnx)"),
-            ("输入源",   self.ir_source, "ir_source", True,  None),
-            ("保存目录", self.ir_save,   "ir_save",   True,  None),
+            ("模型 .pt", self.ir_model,  "ir_model",  False, "权重 (*.pt *.pth *.onnx)", "infer.field.model"),
+            ("输入源",   self.ir_source, "ir_source", True,  None, "infer.field.source"),
+            ("保存目录", self.ir_save,   "ir_save",   True,  None, "infer.field.save"),
         ]
-        for label, cb, hist_key, is_dir, flt in ir_rows:
+        for label, cb, hist_key, is_dir, flt, i18n_key in ir_rows:
             row = QHBoxLayout()
             row.setSpacing(10)
-            lbl = field_label(label)
+            lbl = field_label(label, i18n_key=i18n_key)
             lbl.setFixedWidth(72)
             row.addWidget(lbl)
             row.addWidget(cb, 1)
-            b = btn("浏览", primary=False)
+            b = btn("浏览", primary=False, i18n_key="train.btn.browse")
             b.setFixedWidth(60)
             b.clicked.connect(lambda checked, c=cb, d=is_dir, f=flt, k=hist_key: self._browse(c, d, f, k))
             row.addWidget(b)
@@ -1187,10 +1242,10 @@ class MainWindow(QWidget):
 
         conf_row = QHBoxLayout()
         conf_row.setSpacing(10)
-        conf_row.addWidget(field_label("Conf"))
+        conf_row.addWidget(field_label("Conf", i18n_key="infer.field.conf"))
         conf_row.addWidget(self.ir_conf)
         conf_row.addSpacing(24)
-        conf_row.addWidget(field_label("Imgsz"))
+        conf_row.addWidget(field_label("Imgsz", i18n_key="infer.field.imgsz"))
         conf_row.addWidget(self.ir_imgsz)
         conf_row.addStretch()
         lay1.addLayout(conf_row)
@@ -1199,12 +1254,12 @@ class MainWindow(QWidget):
         ir_btn_row = QHBoxLayout()
         ir_btn_row.setSpacing(10)
 
-        self.btn_infer = btn("开始推理")
+        self.btn_infer = btn("开始推理", i18n_key="infer.btn.start")
         self.btn_infer.setFixedHeight(38)
         self.btn_infer.clicked.connect(self._on_start_infer)
         ir_btn_row.addWidget(self.btn_infer)
 
-        self.btn_stop_ir = danger_btn("停止推理")
+        self.btn_stop_ir = danger_btn("停止推理", i18n_key="infer.btn.stop")
         self.btn_stop_ir.setFixedHeight(38)
         self.btn_stop_ir.setVisible(False)
         self.btn_stop_ir.clicked.connect(self._on_stop_infer)
@@ -1215,8 +1270,8 @@ class MainWindow(QWidget):
 
         # ── 进度条 ──
         outer.addSpacing(4)
-        self.ir_progress = progress_bar()
-        self.ir_progress.setFormat("Image %v / %m")
+        self.ir_progress = progress_bar(i18n_key="infer.progress.format")
+        self.ir_progress.setFormat(tr("infer.progress.format"))
         self.ir_progress.setVisible(False)
         outer.addWidget(self.ir_progress)
         self.ir_eta_label = QLabel("")
@@ -1224,14 +1279,14 @@ class MainWindow(QWidget):
         self.ir_eta_label.setVisible(False)
         outer.addWidget(self.ir_eta_label)
 
-        outer.addWidget(field_label("输出"))
+        outer.addWidget(field_label("输出", i18n_key="infer.log.output"))
         self.ir_log = log_area()
         outer.addWidget(self.ir_log, 1)
 
         return scroll_area(w)
 
     def _log_info_ir(self, msg):
-        self._log_append(self.ir_log, f'<span style="color:#6ec6ff;">[info]</span>  {msg}')
+        self._log_append(self.ir_log, f'<span style="color:#6ec6ff;">{tr("log.info_prefix")}</span>  {msg}')
 
     def _set_infer_ui_state(self, state: str) -> None:
         if state == "running":
@@ -1254,7 +1309,7 @@ class MainWindow(QWidget):
             return
         self._closing = True
         self.hide()
-        self._log_info("正在退出，终止训练/推理进程...")
+        self._log_info(tr("train.log.exiting"))
         workers_running = False
         if self._train_worker and self._train_worker.isRunning():
             self._train_worker.stop()
@@ -1288,10 +1343,10 @@ class MainWindow(QWidget):
             rows = list(reader)
         if not rows:
             MainWindow._log_append(log_widget,
-                '<span style="color:#6ec6ff;">[info]</span>  日志为空')
+                f'<span style="color:#6ec6ff;">{tr("log.info_prefix")}</span>  {tr("msg.log_empty")}')
             return
         MainWindow._log_append(log_widget,
-            f'<span style="color:#6ec6ff;">[info]</span>  加载: {csv_path.name}  ({len(rows)} 行)')
+            f'<span style="color:#6ec6ff;">{tr("log.info_prefix")}</span>  {tr("msg.log_loaded")}: {csv_path.name}  ({len(rows)} {tr("msg.log_rows")})')
         html = '<table style="font-size:11px; border-collapse:collapse; width:100%;">'
         for i, row in enumerate(rows):
             tag = "th" if i == 0 else "td"
@@ -1316,7 +1371,7 @@ class MainWindow(QWidget):
     @Slot()
     def _on_start_infer(self):
         if self._infer_worker and self._infer_worker.isRunning():
-            QMessageBox.warning(self, "提示", "推理正在进行中。")
+            QMessageBox.warning(self, tr("msg.title.hint"), tr("msg.infer_running"))
             return
 
         model_path = path_combo_get(self.ir_model)
@@ -1326,22 +1381,23 @@ class MainWindow(QWidget):
         try:
             conf_val = float(conf) if conf else 0.25
         except ValueError:
-            QMessageBox.critical(self, "错误", f"Conf 值无效: {conf}")
+            QMessageBox.critical(self, tr("msg.title.error"), f"{tr('msg.invalid_conf')} {conf}")
             return
         imgsz_val = int(self.ir_imgsz.value())
 
         if not self._model_file_ok(model_path):
-            QMessageBox.critical(self, "错误", f"找不到模型：\n{model_path}")
+            QMessageBox.critical(self, tr("msg.title.error"), f"{tr('msg.infer_model_not_found')}\n{model_path}")
             return
         if not Path(source).exists():
-            QMessageBox.critical(self, "错误", f"找不到输入：\n{source}")
+            QMessageBox.critical(self, tr("msg.title.error"), f"{tr('msg.infer_source_not_found')}\n{source}")
             return
 
         self.ir_log.clear()
-        self._log_info_ir(f"开始推理 — {model_path}")
+        self._log_info_ir(tr("infer.log.starting", model=model_path))
 
         cmd = [
             sys.executable, str(ROOT / "gui" / "infer_engine.py"),
+            "--lang", current_lang(),
             "--model", model_path,
             "--source", source,
             "--save-dir", save_dir,
@@ -1370,38 +1426,38 @@ class MainWindow(QWidget):
         import time
         self.ir_progress.setRange(0, total)
         self.ir_progress.setValue(cur)
-        self.ir_progress.setFormat(f"Image %v / {total}")
+        self.ir_progress.setFormat(tr("infer.progress.format"))
         elapsed = time.time() - getattr(self, "_infer_start_time", time.time())
         if cur > 0 and total > 0:
             eta = (elapsed / cur) * (total - cur)
             self.ir_eta_label.setText(
-                f"已耗时 {elapsed:.0f}s  |  预计剩余 {eta:.0f}s  |  共 {total} 张"
+                tr("infer.eta", elapsed=elapsed, eta=eta, total=total)
             )
 
     @Slot()
     def _on_stop_infer(self):
         if self._infer_worker and self._infer_worker.isRunning():
-            self._log_append(self.ir_log, f'<span style="color:#ffb86c;">[warn]</span>  正在停止推理...')
+            self._log_append(self.ir_log, f'<span style="color:#ffb86c;">{tr("log.warn_prefix")}</span>  {tr("infer.log.stopping")}')
             self._infer_worker.stop()
 
     @Slot(str)
     def _on_infer_failed(self, msg):
-        self._log_append(self.ir_log, f'<span style="color:#ff5555;">[err!]</span>  推理失败')
+        self._log_append(self.ir_log, f'<span style="color:#ff5555;">{tr("log.err_prefix")}</span>  {tr("msg.title.infer_failed")}')
         self._log_append(self.ir_log, f'<span style="color:#ff6e6e;">{msg[:1500]}</span>')
         self._set_infer_ui_state("idle")
         if not self._closing:
-            QMessageBox.critical(self, "推理失败", msg[:2000])
+            QMessageBox.critical(self, tr("msg.title.infer_failed"), msg[:2000])
 
     @Slot()
     def _on_infer_done(self):
-        self._log_append(self.ir_log, f'<span style="color:#50fa7b;">[ ok ]</span>  推理完成')
+        self._log_append(self.ir_log, f'<span style="color:#50fa7b;">{tr("log.ok_prefix")}</span>  {tr("msg.infer_done")}')
         self._set_infer_ui_state("idle")
         if not self._closing:
-            QMessageBox.information(self, "完成", "推理已结束。")
+            QMessageBox.information(self, tr("msg.title.done"), tr("msg.infer_done"))
 
     @Slot()
     def _on_infer_stopped(self):
-        self._log_append(self.ir_log, f'<span style="color:#ffb86c;">[warn]</span>  推理已停止')
+        self._log_append(self.ir_log, f'<span style="color:#ffb86c;">{tr("log.warn_prefix")}</span>  {tr("infer.log.stopped")}')
         self._set_infer_ui_state("idle")
 
     @Slot()
