@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
     QLabel,
+    QProgressBar,
     QPushButton,
     QRadioButton,
     QTabWidget,
@@ -73,6 +74,8 @@ class I18nManager(QObject):
                 item_key = w.itemData(i, Qt.ItemDataRole.UserRole + 1)
                 if item_key and isinstance(item_key, str):
                     w.setItemText(i, self.tr(item_key))
+        elif isinstance(w, QProgressBar):
+            w.setFormat(self.tr(base_key))
 
     def _load_locale(self, lang: str) -> None:
         path = LOCALE_DIR / f"{lang}.json"

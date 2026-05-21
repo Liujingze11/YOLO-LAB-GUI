@@ -1022,7 +1022,7 @@ class MainWindow(QWidget):
             self.btn_stop.clicked.connect(self._on_stop_train)
             self.tr_progress.setRange(0, 100)
             self.tr_progress.setValue(0)
-            self.tr_progress.setFormat("%p%")
+            self.tr_progress.setFormat(tr("train.progress.format"))
 
     def _build_config_from_train_ui(self):
         c = TrainConfig()
@@ -1140,7 +1140,7 @@ class MainWindow(QWidget):
         self._set_train_ui_state("running")
         self.tr_progress.setRange(0, cfg.epochs)
         self.tr_progress.setValue(0)
-        self.tr_progress.setFormat(f"Epoch %v / {cfg.epochs}")
+        self.tr_progress.setFormat(tr("train.progress.format"))
 
         self._train_worker = TrainWorker(cmd)
         self._train_worker.log_line.connect(self._append_train_log)
