@@ -19,6 +19,24 @@ from gui.paths import PREDICT_DIR, BEST_SEG_MODEL, TEST_IMAGES_DIR
 _ENGINE_DIR = Path(__file__).resolve().parent
 _DEFAULT_TASK_PARAMS = _ENGINE_DIR / "infer_task_params.json"
 
+# ── i18n locale helpers ─────────────────────────────────────
+_LOCALE_DIR = Path(__file__).resolve().parent.parent / "locales"
+_loc = None  # set in __main__
+
+def _load_locale(lang: str) -> dict:
+    path = _LOCALE_DIR / f"{lang}.json"
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+def _t(loc: dict, key: str, **kwargs) -> str:
+    text = loc.get(key, key)
+    if kwargs:
+        try:
+            text = text.format(**kwargs)
+        except (KeyError, ValueError):
+            pass
+    return text
+
 
 @dataclass
 class InferConfig:
@@ -38,13 +56,13 @@ class TaskParamLoader:
 
     def _load_json(self) -> dict:
         if not self.json_path.exists():
-            raise FileNotFoundError(f"找不到任务参数文件: {self.json_path}")
+            raise FileNotFoundError(_t(_loc, "找不到任务参数文件: {path}", path=self.json_path))
         with open(self.json_path, "r", encoding="utf-8") as f:
             return json.load(f)
 
     def get_task_params(self, task: str) -> dict:
         if task not in self.params:
-            raise KeyError(f"配置文件里没有 task={task} 的参数")
+            raise KeyError(_t(_loc, "配置文件里没有 task={task} 的参数", task=task))
         return self.params[task]
 
 
@@ -61,7 +79,7 @@ class YOLOInferencer:
     def _detect_task(self) -> str:
         task = getattr(self.model, "task", None)
         if not task:
-            raise ValueError("无法从模型中识别 task")
+            raise ValueError(_t(_loc, "无法从模型中识别 task"))
         return task
 
     def _build_predict_kwargs(self) -> dict:
@@ -79,10 +97,10 @@ class YOLOInferencer:
         return self.task_params.get("plot", {})
 
     def run(self):
-        print(f"模型: {self.cfg.model_path}")
-        print(f"自动识别任务: {self.task}")
-        print(f"输入源: {self.cfg.source}")
-        print(f"输出目录: {self.save_dir}")
+        print(_t(_loc, "infer.engine.model", path=self.cfg.model_path))
+        print(_t(_loc, "infer.engine.task", task=self.task))
+        print(_t(_loc, "infer.engine.source", source=self.cfg.source))
+        print(_t(_loc, "infer.engine.output", dir=self.save_dir))
 
         predict_kwargs = self._build_predict_kwargs()
         plot_kwargs = self._build_plot_kwargs()
@@ -97,7 +115,7 @@ class YOLOInferencer:
             out_path = self.save_dir / f"{stem}{self.cfg.out_suffix}"
             r.save(filename=str(out_path), **plot_kwargs)
 
-        print(f"推理完成，共保存 {len(results)} 张结果到: {self.save_dir}")
+        print(_t(_loc, "infer.engine.done", count=len(results), dir=self.save_dir))
 
 
 # ── 子进程入口 ────────────────────────────────────────────
@@ -109,7 +127,10 @@ if __name__ == "__main__":
     parser.add_argument("--save-dir", default=str(Path(PREDICT_DIR) / "predict_result"))
     parser.add_argument("--conf", type=float, default=0.406)
     parser.add_argument("--imgsz", type=int, default=640)
+    parser.add_argument("--lang", default="zh", help="Language code (zh/en/fr/es)")
     args = parser.parse_args()
+
+    _loc = _load_locale(args.lang)
 
     cfg = InferConfig(
         model_path=args.model,
