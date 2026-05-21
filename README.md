@@ -1,21 +1,21 @@
 # YOLO Lab GUI
 
-桌面端 YOLO 分割模型训练/推理工具，Apple 风格简约界面。
+[中文](README_zh.md) | [Français](README_fr.md) | [Español](README_es.md)
 
-[English version below](#english)
+Desktop YOLO segmentation training/inference tool with Apple-style minimalist UI.
 
-## 功能
+## Features
 
-- **训练** — 新训练/续训/微调三种模式，支持数据增强、预设管理
-- **推理** — 图像分割推理，可视化进度条
-- **工具** — 数据集分割、空标签创建等常用工具
-- **日志 & 结果** — 历史训练日志查看、实验结果浏览
-- 初始权重自动下载（下拉框选择）
-- 暗色/亮色模式切换
-- 中/英/法/西班牙 四语言切换（GUI + 终端输出）
-- 训练/推理在子进程中运行，可随时停止
+- **Train** — New/Resume/Fine-tune modes, data augmentation, preset management
+- **Inference** — Image segmentation with progress tracking
+- **Tools** — Dataset splitting, empty label creation
+- **Logs & Results** — Historical training logs and experiment browsing
+- Auto-download initial weights from dropdown
+- Dark/Light mode toggle
+- 4-language support (zh/en/fr/es) for GUI and terminal output
+- Subprocess execution with stop capability
 
-## 快速开始
+## Quick Start
 
 ```bash
 git clone https://github.com/Liujingze11/YOLO-LAB-GUI.git
@@ -25,15 +25,13 @@ conda activate yolo
 python gui/main.py
 ```
 
-## 依赖
+## Requirements
 
 - Python 3.10+
 - [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
-- ultralytics >= 8.0.0
-- PySide6 >= 6.5.0
-- PyYAML >= 6
+- ultralytics >= 8.0.0, PySide6 >= 6.5.0, PyYAML >= 6
 
-手动安装：
+Manual install:
 
 ```bash
 conda create -n yolo python=3.10 -y
@@ -41,62 +39,62 @@ conda activate yolo
 pip install -r requirements.txt
 ```
 
-## 项目结构
+## Project Structure
 
 ```
 YOLO-LAB-GUI/
-├── gui/                    # 桌面界面 (PySide6)
-│   ├── main.py             # 主窗口 + 程序入口
-│   ├── styles.py           # 颜色 & 样式常量（含亮/暗主题）
-│   ├── widgets.py          # 控件工厂函数
-│   ├── model_selector.py   # 模型选择器（含自动下载弹窗）
-│   ├── i18n.py             # 多语言翻译管理器
-│   ├── workers.py          # 后台训练/推理线程
-│   ├── config.py           # TrainConfig 训练配置数据类
-│   ├── device.py           # 设备自动检测
-│   ├── paths.py            # 路径定义
-│   ├── train_engine.py     # 训练编排（3 种模式）
-│   ├── train_logger.py     # CSV 日志
-│   └── infer_engine.py     # 推理引擎
-├── locales/                # 翻译文件 (zh/en/fr/es)
-├── tools/dataset_tools/    # 数据集分割 & 标签工具
-├── pretrained_models/      # 预训练模型缓存
-├── data.yaml               # 数据集配置
-├── setup.sh                # 一键环境搭建
-├── environment.yml         # conda 环境定义
+├── gui/                    # Desktop UI (PySide6)
+│   ├── main.py             # Main window + entry point
+│   ├── styles.py           # Colors & style constants (light/dark themes)
+│   ├── widgets.py          # Widget factory functions
+│   ├── model_selector.py   # Model selector with auto-download dialog
+│   ├── i18n.py             # Multi-language translation manager
+│   ├── workers.py          # Background training/inference threads
+│   ├── config.py           # TrainConfig data class
+│   ├── device.py           # Auto device detection
+│   ├── paths.py            # Path definitions
+│   ├── train_engine.py     # Training orchestration (3 modes)
+│   ├── train_logger.py     # CSV logging
+│   └── infer_engine.py     # Inference engine
+├── locales/                # Translation files (zh/en/fr/es)
+├── tools/dataset_tools/    # Dataset splitting & label utilities
+├── pretrained_models/      # Pretrained model cache
+├── data.yaml               # Dataset configuration
+├── setup.sh                # One-click environment setup
+├── environment.yml         # Conda environment definition
 └── requirements.txt
 ```
 
-## 使用说明
+## Usage
 
-### 训练
+### Training
 
-1. 切换到「训练」页签
-2. 设置 `data.yaml`、超参数和训练模式
-3. 点击「开始训练」
+1. Switch to the Train tab
+2. Configure `data.yaml`, hyperparameters, and training mode
+3. Click Start Training
 
-支持三种模式：
-- **新训练** — 从初始权重开始
-- **续训** — 从上次中断的 `last.pt` 继续
-- **微调** — 基于历史实验的 `best.pt`
+Three modes:
+- **New** — From initial weights
+- **Resume** — Continue from last.pt
+- **Fine-tune** — Based on a historical experiment's best.pt
 
-### 推理
+### Inference
 
-1. 切换到「推理」页签
-2. 选择模型、输入源和输出目录
-3. 点击「开始推理」
+1. Switch to the Inference tab
+2. Select model, source, and output directory
+3. Click Start Inference
 
-### 语言切换
+### Language
 
-右上角下拉框切换中文/English/Français/Español，界面文字和训练/推理终端输出均会同步切换。
+Use the dropdown in the top-right corner to switch between Chinese / English / Français / Español. All UI text and subprocess terminal output updates instantly.
 
-## 输出与日志
+## Outputs
 
-- 训练结果：`outputs/results/<experiment_name>/weights/` (best.pt, last.pt)
-- 推理结果：`outputs/predict/`
-- CSV 日志：`outputs/logs/`
+- Training results: `outputs/results/<experiment_name>/weights/` (best.pt, last.pt)
+- Inference results: `outputs/predict/`
+- CSV logs: `outputs/logs/`
 
-## data.yaml 格式
+## data.yaml Format
 
 ```yaml
 path: data/datasets
@@ -110,35 +108,3 @@ names:
 ## License
 
 MIT
-
----
-
-## English
-
-Desktop YOLO segmentation training/inference tool with Apple-style minimalist UI.
-
-### Features
-
-- **Train** — New/Resume/Fine-tune modes, data augmentation, preset management
-- **Inference** — Image segmentation with progress tracking
-- **Tools** — Dataset splitting, empty label creation
-- **Logs & Results** — Historical training logs and experiment browsing
-- Auto-download initial weights from dropdown
-- Dark/Light mode toggle
-- 4-language support (zh/en/fr/es) for GUI and terminal output
-- Subprocess execution with stop capability
-
-### Quick Start
-
-```bash
-git clone https://github.com/Liujingze11/YOLO-LAB-GUI.git
-cd YOLO-LAB-GUI
-bash setup.sh
-conda activate yolo
-python gui/main.py
-```
-
-### Requirements
-
-- Python 3.10+
-- Miniconda, ultralytics >= 8.0.0, PySide6 >= 6.5.0, PyYAML >= 6
