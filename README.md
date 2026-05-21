@@ -1,24 +1,37 @@
 # YOLO Lab GUI
 
-桌面端 YOLO 分割模型训练 / 推理工具，Apple 风格简约界面。
+桌面端 YOLO 分割模型训练/推理工具，Apple 风格简约界面。
+
+[English version below](#english)
+
+## 功能
+
+- **训练** — 新训练/续训/微调三种模式，支持数据增强、预设管理
+- **推理** — 图像分割推理，可视化进度条
+- **工具** — 数据集分割、空标签创建等常用工具
+- **日志 & 结果** — 历史训练日志查看、实验结果浏览
+- 初始权重自动下载（下拉框选择）
+- 暗色/亮色模式切换
+- 中/英/法/西班牙 四语言切换（GUI + 终端输出）
+- 训练/推理在子进程中运行，可随时停止
 
 ## 快速开始
 
 ```bash
 git clone https://github.com/Liujingze11/YOLO-LAB-GUI.git
-cd yolo_lab_gui
-bash setup.sh             # 一键搭建 conda 环境
+cd YOLO-LAB-GUI
+bash setup.sh
 conda activate yolo
-python gui/main.py        # 启动 GUI
+python gui/main.py
 ```
-
-首次训练时，YOLO 基础模型 (`yolov8n-seg.pt`) 会自动下载。
 
 ## 依赖
 
 - Python 3.10+
 - [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
-- ultralytics, PySide6, PyYAML
+- ultralytics >= 8.0.0
+- PySide6 >= 6.5.0
+- PyYAML >= 6
 
 手动安装：
 
@@ -31,23 +44,26 @@ pip install -r requirements.txt
 ## 项目结构
 
 ```
-yolo_lab_gui/
-├── gui/                        # 桌面界面 (PySide6)
-│   ├── main.py                 # 主窗口 + 程序入口
-│   ├── styles.py               # 颜色 & 样式常量
-│   ├── widgets.py              # 控件工厂函数
-│   ├── workers.py              # 后台训练/推理线程
-│   ├── config.py               # TrainConfig 训练配置数据类
-│   ├── paths.py                # 路径定义
-│   ├── train_engine.py         # 训练编排（3 种模式）
-│   ├── train_logger.py         # CSV 日志
-│   ├── infer_engine.py         # 推理引擎
-│   ├── infer_task_params.json  # 推理任务参数
-│   └── presets.json            # 用户预设（运行时生成）
-├── tools/dataset_tools/        # 数据集分割 & 标签工具
-├── data.yaml                   # 数据集配置
-├── setup.sh                    # 一键环境搭建
-├── environment.yml             # conda 环境定义
+YOLO-LAB-GUI/
+├── gui/                    # 桌面界面 (PySide6)
+│   ├── main.py             # 主窗口 + 程序入口
+│   ├── styles.py           # 颜色 & 样式常量（含亮/暗主题）
+│   ├── widgets.py          # 控件工厂函数
+│   ├── model_selector.py   # 模型选择器（含自动下载弹窗）
+│   ├── i18n.py             # 多语言翻译管理器
+│   ├── workers.py          # 后台训练/推理线程
+│   ├── config.py           # TrainConfig 训练配置数据类
+│   ├── device.py           # 设备自动检测
+│   ├── paths.py            # 路径定义
+│   ├── train_engine.py     # 训练编排（3 种模式）
+│   ├── train_logger.py     # CSV 日志
+│   └── infer_engine.py     # 推理引擎
+├── locales/                # 翻译文件 (zh/en/fr/es)
+├── tools/dataset_tools/    # 数据集分割 & 标签工具
+├── pretrained_models/      # 预训练模型缓存
+├── data.yaml               # 数据集配置
+├── setup.sh                # 一键环境搭建
+├── environment.yml         # conda 环境定义
 └── requirements.txt
 ```
 
@@ -70,15 +86,15 @@ yolo_lab_gui/
 2. 选择模型、输入源和输出目录
 3. 点击「开始推理」
 
-### 预设
+### 语言切换
 
-训练页支持保存 / 加载配置预设，方便在不同实验间快速切换。预设保存在 `gui/presets.json`。
+右上角下拉框切换中文/English/Français/Español，界面文字和训练/推理终端输出均会同步切换。
 
 ## 输出与日志
 
 - 训练结果：`outputs/results/<experiment_name>/weights/` (best.pt, last.pt)
 - 推理结果：`outputs/predict/`
-- CSV 日志：`outputs/logs/` (train_log, result_summary, result_per_class)
+- CSV 日志：`outputs/logs/`
 
 ## data.yaml 格式
 
@@ -87,12 +103,42 @@ path: data/datasets
 train: images/train
 val: images/val
 names:
-  0:
-  1: milk
-  2: crisp
-  ...
+  0: class_a
+  1: class_b
 ```
 
 ## License
 
 MIT
+
+---
+
+## English
+
+Desktop YOLO segmentation training/inference tool with Apple-style minimalist UI.
+
+### Features
+
+- **Train** — New/Resume/Fine-tune modes, data augmentation, preset management
+- **Inference** — Image segmentation with progress tracking
+- **Tools** — Dataset splitting, empty label creation
+- **Logs & Results** — Historical training logs and experiment browsing
+- Auto-download initial weights from dropdown
+- Dark/Light mode toggle
+- 4-language support (zh/en/fr/es) for GUI and terminal output
+- Subprocess execution with stop capability
+
+### Quick Start
+
+```bash
+git clone https://github.com/Liujingze11/YOLO-LAB-GUI.git
+cd YOLO-LAB-GUI
+bash setup.sh
+conda activate yolo
+python gui/main.py
+```
+
+### Requirements
+
+- Python 3.10+
+- Miniconda, ultralytics >= 8.0.0, PySide6 >= 6.5.0, PyYAML >= 6
