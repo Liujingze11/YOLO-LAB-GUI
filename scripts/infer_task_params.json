@@ -1,0 +1,66 @@
+{
+  "detect": {
+    "predict": {},
+    "plot": {
+      "labels": true,
+      "boxes": true,
+      "masks": false,
+      "probs": false,
+      "font_size": 10,
+      "line_width": 2,
+      "conf": true
+    }
+  },
+  "segment": {
+    "predict": {
+      "retina_masks": true
+    },
+    "plot": {
+      "labels": true,
+      "boxes": true,
+      "masks": true,
+      "probs": false,
+      "font_size": 10,
+      "line_width": 2,
+      "conf": true
+    }
+  },
+  "classify": {
+    "predict": {},
+    "plot": {
+      "labels": false,
+      "boxes": false,
+      "masks": false,
+      "probs": true,
+      "font_size": 10,
+      "line_width": 2,
+      "conf": false
+    }
+  },
+  "pose": {
+    "predict": {},
+    "plot": {
+      "labels": true,
+      "boxes": true,
+      "masks": false,
+      "probs": false,
+      "font_size": 10,
+      "line_width": 2,
+      "conf": true,
+      "kpt_radius": 5,
+      "kpt_line": true
+    }
+  },
+  "obb": {
+    "predict": {},
+    "plot": {
+      "labels": true,
+      "boxes": true,
+      "masks": false,
+      "probs": false,
+      "font_size": 10,
+      "line_width": 2,
+      "conf": true
+    }
+  }
+}
