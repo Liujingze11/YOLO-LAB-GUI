@@ -4,6 +4,7 @@ Model selector dropdown with auto-download capability.
 from __future__ import annotations
 
 import os
+import time
 import urllib.request
 from pathlib import Path
 
@@ -36,6 +37,8 @@ from gui.widgets import btn, danger_btn
 
 class _ModelDownloader(QThread):
     progress = Signal(int, int)
+    speed = Signal(float)  # bytes per second
+    phase = Signal(str)    # human-readable phase description
     finished = Signal(bool, str)
     error_msg = Signal(str)
 
@@ -50,9 +53,15 @@ class _ModelDownloader(QThread):
     def run(self) -> None:
         try:
             self._dest.parent.mkdir(parents=True, exist_ok=True)
+            self.phase.emit(tr("model.dialog.connecting"))
             with urllib.request.urlopen(self._url) as resp:
+                self.phase.emit(tr("model.dialog.downloading_phase"))
                 total = int(resp.headers.get("Content-Length", 0))
                 downloaded = 0
+                start_time = time.time()
+                # Speed calculation: sliding window of recent chunk sizes & times
+                window_bytes = 0
+                window_start = time.time()
                 with open(self._tmp, "wb") as f:
                     while True:
                         if self._aborted:
@@ -63,6 +72,14 @@ class _ModelDownloader(QThread):
                             break
                         f.write(chunk)
                         downloaded += len(chunk)
+                        window_bytes += len(chunk)
+                        now = time.time()
+                        elapsed = now - window_start
+                        if elapsed >= 0.5:  # update speed every 0.5s
+                            speed_val = window_bytes / elapsed if elapsed > 0 else 0
+                            self.speed.emit(speed_val)
+                            window_bytes = 0
+                            window_start = now
                         self.progress.emit(downloaded, total)
             if self._aborted:
                 self._cleanup()
@@ -89,18 +106,25 @@ class DownloadDialog(QDialog):
         super().__init__(parent)
         self._filename = filename
         self._cancelled = False
+        self._start_time = 0.0
+        self._last_speed = 0.0
         self.setWindowTitle(tr("model.dialog.title"))
-        self.setFixedSize(440, 130)
+        self.setFixedSize(440, 195)
         self.setModal(True)
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(24, 20, 24, 20)
-        layout.setSpacing(12)
+        layout.setSpacing(8)
 
         self._label = QLabel(tr("model.dialog.downloading", filename=filename))
         self._label.setProperty("themeClass", "field_label")
         self._label.setStyleSheet(f"font-size: 13px; color: {COLOR_TEXT};")
         layout.addWidget(self._label)
+
+        # Phase indicator (e.g. "Connecting..." / "Downloading...")
+        self._phase_label = QLabel("")
+        self._phase_label.setStyleSheet(f"font-size: 11px; color: {COLOR_TEXT_MUTED};")
+        layout.addWidget(self._phase_label)
 
         self._progress = QProgressBar()
         self._progress.setFixedHeight(14)
@@ -108,6 +132,11 @@ class DownloadDialog(QDialog):
         self._progress.setStyleSheet(PROGRESS_STYLE)
         self._progress.setTextVisible(False)
         layout.addWidget(self._progress)
+
+        # Speed / time status line
+        self._speed_label = QLabel("")
+        self._speed_label.setStyleSheet(f"font-size: 11px; color: {COLOR_TEXT_MUTED};")
+        layout.addWidget(self._speed_label)
 
         btn_row = QHBoxLayout()
         btn_row.setSpacing(10)
@@ -119,20 +148,61 @@ class DownloadDialog(QDialog):
         btn_row.addWidget(self._cancel_btn)
         layout.addLayout(btn_row)
 
+    def set_phase(self, text: str) -> None:
+        """Update the phase indicator (e.g. 'Connecting...' → 'Downloading...')."""
+        self._phase_label.setText(text)
+        self._start_time = time.time()
+
+    def set_speed(self, speed: float) -> None:
+        """Update the speed display."""
+        self._last_speed = speed
+
     def set_progress(self, current: int, total: int) -> None:
+        elapsed = time.time() - self._start_time if self._start_time > 0 else 0
+        speed_str = self._format_speed(self._last_speed)
         if total > 0:
             self._progress.setMaximum(total)
             self._progress.setValue(min(current, total))
             pct = current * 100 // total if total else 0
-            self._status.setText(f"{current // 1048576}MB / {total // 1048576}MB  ({pct}%)")
+            down_str = self._format_bytes(current)
+            total_str = self._format_bytes(total)
+            self._status.setText(
+                tr("model.dialog.speed_format",
+                   down=down_str, total=total_str, pct=pct,
+                   speed=speed_str, elapsed=int(elapsed)))
+            self._speed_label.setText("")
+        else:
+            # Unknown total size — still show meaningful progress
+            down_str = self._format_bytes(current)
+            self._speed_label.setText(
+                tr("model.dialog.speed_unknown",
+                   down=down_str, speed=speed_str, elapsed=int(elapsed)))
+
+    @staticmethod
+    def _format_bytes(b: int) -> str:
+        if b >= 1048576:
+            return f"{b / 1048576:.1f}MB"
+        elif b >= 1024:
+            return f"{b / 1024:.1f}KB"
+        return f"{b}B"
+
+    @staticmethod
+    def _format_speed(bps: float) -> str:
+        if bps >= 1048576:
+            return f"{bps / 1048576:.1f}MB"
+        elif bps >= 1024:
+            return f"{bps / 1024:.1f}KB"
+        return f"{bps:.0f}B"
 
     def set_error(self, msg: str) -> None:
         self._label.setText(tr("model.dialog.failed", filename=self._filename))
         self._status.setText(msg[:80])
+        self._phase_label.setText("")
 
     def set_cancelled(self) -> None:
         self._label.setText(tr("model.dialog.cancelled"))
         self._status.setText(self._filename)
+        self._phase_label.setText("")
 
     def _on_cancel(self) -> None:
         self._cancelled = True
@@ -378,6 +448,8 @@ class ModelSelector(QWidget):
 
         url = get_model_download_url(filename, tag)
         self._downloader = _ModelDownloader(filename, url, PRETRAINED_DIR)
+        self._downloader.phase.connect(self._on_download_phase)
+        self._downloader.speed.connect(self._on_download_speed)
         self._downloader.progress.connect(self._on_download_progress)
         self._downloader.finished.connect(self._on_download_finished)
         self._downloader.error_msg.connect(self._on_download_error)
@@ -389,6 +461,16 @@ class ModelSelector(QWidget):
         self._combo.setEnabled(False)
         self._browse_btn.setEnabled(False)
         self._downloader.start()
+
+    @Slot(str)
+    def _on_download_phase(self, text: str) -> None:
+        if self._download_dialog:
+            self._download_dialog.set_phase(text)
+
+    @Slot(float)
+    def _on_download_speed(self, speed: float) -> None:
+        if self._download_dialog:
+            self._download_dialog.set_speed(speed)
 
     @Slot(int, int)
     def _on_download_progress(self, current: int, total: int) -> None:
