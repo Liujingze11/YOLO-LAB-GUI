@@ -6,11 +6,14 @@ from __future__ import annotations
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QComboBox,
+    QFrame,
     QGraphicsDropShadowEffect,
+    QHBoxLayout,
     QLabel,
     QLineEdit,
     QProgressBar,
     QPushButton,
+    QScrollArea,
     QSpinBox,
     QTextEdit,
     QVBoxLayout,
@@ -55,6 +58,67 @@ def card(parent: QWidget | None = None) -> tuple[QWidget, QVBoxLayout]:
     lay.setContentsMargins(*CARD_PADDING)
     lay.setSpacing(0)
     return w, lay
+
+
+CARD_HEADER_HEIGHT = 40
+
+
+def resizable_card(title: str = "", parent: QWidget | None = None,
+                   i18n_key: str | None = None) -> tuple[QWidget, QHBoxLayout, QVBoxLayout]:
+    """可拖拽压缩的卡片：固定标题栏 + 内容滚动区。
+
+    被 QSplitter 挤压时内容区自动出现滚动条，最小可压缩至标题高度。
+
+    Returns (card_widget, header_layout, body_layout)
+    """
+    w = QWidget(parent)
+    w.setMinimumHeight(CARD_HEADER_HEIGHT)
+    w.setProperty("themeClass", "card")
+    w.setStyleSheet(f"QWidget {{ background: #ffffff; border-radius: {CARD_RADIUS}px; }}")
+    shadow = QGraphicsDropShadowEffect()
+    shadow.setBlurRadius(24)
+    shadow.setColor(Qt.gray)
+    shadow.setOffset(0, 1)
+    w.setGraphicsEffect(shadow)
+
+    outer = QVBoxLayout(w)
+    outer.setContentsMargins(0, 0, 0, 0)
+    outer.setSpacing(0)
+
+    # ── 标题栏（固定高度，始终可见）──
+    header = QWidget()
+    header.setFixedHeight(CARD_HEADER_HEIGHT)
+    header_layout = QHBoxLayout(header)
+    header_layout.setContentsMargins(CARD_PADDING[0], 4, CARD_PADDING[2], 4)
+    if title:
+        header_layout.addWidget(section_label(title, i18n_key=i18n_key))
+    header_layout.addStretch()
+    outer.addWidget(header)
+
+    # ── 内容滚动区 ──
+    scroll = QScrollArea()
+    scroll.setWidgetResizable(True)
+    scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+    scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+    scroll.setFrameShape(QFrame.NoFrame)
+    scroll.setStyleSheet(
+        f"QScrollArea {{ background: transparent; border: none; }} "
+        f"QScrollBar:vertical {{ width: 6px; }} "
+        f"QScrollBar::handle:vertical {{ background: #c0c0c0; border-radius: 3px; min-height: 20px; }} "
+        f"QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{ height: 0; }} "
+        f"QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {{ background: none; }}"
+    )
+
+    body = QWidget()
+    body.setStyleSheet("background: transparent;")
+    body_layout = QVBoxLayout(body)
+    body_layout.setContentsMargins(*CARD_PADDING)
+    body_layout.setSpacing(0)
+    scroll.setWidget(body)
+
+    outer.addWidget(scroll, 1)
+
+    return w, header_layout, body_layout
 
 
 def section_label(text: str, parent: QWidget | None = None,

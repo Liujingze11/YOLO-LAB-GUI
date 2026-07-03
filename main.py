@@ -29,6 +29,7 @@ from PySide6.QtWidgets import (
     QPushButton,
     QRadioButton,
     QSpinBox,
+    QSplitter,
     QStackedWidget,
     QTabWidget,
     QVBoxLayout,
@@ -61,6 +62,7 @@ from gui.widgets import (
     path_combo,
     path_combo_get,
     progress_bar,
+    resizable_card,
     scroll_area,
     section_label,
     simple_combo,
@@ -161,21 +163,41 @@ class MainWindow(QWidget):
         w.setMinimumSize(640, 920)
         outer = QVBoxLayout(w)
         outer.setContentsMargins(24, 16, 24, 24)
-        outer.setSpacing(10)
+        outer.setSpacing(0)
 
-        # ── 路径卡片 ──
-        card1, lay1 = card()
-        header1 = QHBoxLayout()
-        header1.addWidget(section_label("路径", i18n_key="train.card.paths"))
-        header1.addStretch()
+        splitter = QSplitter(Qt.Vertical)
+        splitter.setChildrenCollapsible(False)
+        splitter.setHandleWidth(5)
+        splitter.setStyleSheet("""
+            QSplitter::handle:vertical {
+                height: 5px;
+                background: transparent;
+            }
+            QSplitter::handle:vertical:hover {
+                background: #c8d6e5;
+            }
+        """)
+        self._splitter = splitter
+        self._splitter_defaults = [200, 140, 180, 400]
+
+        # ── 重置比例按钮 ──
+        reset_row = QHBoxLayout()
+        reset_row.addStretch()
+        reset_btn = tiny_btn("↺ 恢复默认比例", i18n_key="train.btn.reset_sizes")
+        reset_btn.clicked.connect(lambda: self._splitter.setSizes(self._splitter_defaults))
+        reset_row.addWidget(reset_btn)
+        outer.addLayout(reset_row)
+        outer.addSpacing(4)
+
+        # ── Panel 1: 路径 ──
+        card1, header1, lay1 = resizable_card("路径", i18n_key="train.card.paths")
+
         scan_models_btn = tiny_btn("扫描模型", i18n_key="train.btn.scan")
         scan_models_btn.clicked.connect(self._scan_trained_models)
         header1.addWidget(scan_models_btn)
         edit_yaml_btn = tiny_btn("编辑 data.yaml", i18n_key="train.btn.edit_yaml")
         edit_yaml_btn.clicked.connect(self._open_data_yaml)
         header1.addWidget(edit_yaml_btn)
-        lay1.addLayout(header1)
-        lay1.addSpacing(14)
 
         for key in ["data_yaml", "model", "results", "logs"]:
             self._path_history.setdefault(key, [])
@@ -208,7 +230,6 @@ class MainWindow(QWidget):
             lay1.addLayout(row)
             lay1.addSpacing(8)
 
-        # 初始权重 — 模型选择器
         model_row = QHBoxLayout()
         model_row.setSpacing(10)
         model_lbl = field_label("初始权重", i18n_key="train.field.init_weights")
@@ -216,14 +237,11 @@ class MainWindow(QWidget):
         model_row.addWidget(model_lbl)
         model_row.addWidget(self.tr_model, 1)
         lay1.addLayout(model_row)
-        lay1.addSpacing(8)
 
-        outer.addWidget(card1)
+        splitter.addWidget(card1)
 
-        # ── 超参数卡片 ──
-        card2, lay2 = card()
-        lay2.addWidget(section_label("超参数", i18n_key="train.card.hyperparams"))
-        lay2.addSpacing(14)
+        # ── Panel 2: 超参数 ──
+        card2, header2, lay2 = resizable_card("超参数", i18n_key="train.card.hyperparams")
 
         self.tr_epochs = spinner(1, 100000, 150, 100)
         self.tr_imgsz  = spinner(32, 4096, 640, 100)
@@ -248,7 +266,7 @@ class MainWindow(QWidget):
             grid.addLayout(col)
         grid.addStretch()
         lay2.addLayout(grid)
-        lay2.addSpacing(12)
+        lay2.addSpacing(10)
 
         exp_row = QHBoxLayout()
         exp_row.setSpacing(10)
@@ -256,12 +274,11 @@ class MainWindow(QWidget):
         self.tr_exp = input_(min_width=320)
         exp_row.addWidget(self.tr_exp, 1)
         lay2.addLayout(exp_row)
-        outer.addWidget(card2)
 
-        # ── 训练模式卡片 ──
-        card3, lay3 = card()
-        lay3.addWidget(section_label("训练模式", i18n_key="train.card.mode"))
-        lay3.addSpacing(12)
+        splitter.addWidget(card2)
+
+        # ── Panel 3: 训练模式 ──
+        card3, header3, lay3 = resizable_card("训练模式", i18n_key="train.card.mode")
 
         self.rb_new = QRadioButton(tr("train.rb.new"))
         self.rb_new.setProperty("i18nKey", "train.rb.new")
@@ -293,17 +310,22 @@ class MainWindow(QWidget):
         hist_row.addWidget(refresh)
         lay3.addSpacing(8)
         lay3.addLayout(hist_row)
-        outer.addWidget(card3)
 
-        # ── 数据增强 ──
+        splitter.addWidget(card3)
+
+        # ── Panel 4: 底部面板（数据增强 + 按钮 + 进度 + 日志）──
+        bottom = QWidget()
+        bottom_layout = QVBoxLayout(bottom)
+        bottom_layout.setContentsMargins(0, 8, 0, 0)
+        bottom_layout.setSpacing(6)
+
         self.tr_augment = QCheckBox(tr("train.augment"))
         self.tr_augment.setProperty("i18nKey", "train.augment")
         self.tr_augment.setChecked(True)
         self.tr_augment.setProperty("themeClass", "checkbox")
         self.tr_augment.setStyleSheet(CHECKBOX_STYLE)
-        outer.addWidget(self.tr_augment)
+        bottom_layout.addWidget(self.tr_augment)
 
-        # ── 操作按钮行 ──
         btn_row = QHBoxLayout()
         btn_row.setSpacing(10)
 
@@ -339,17 +361,18 @@ class MainWindow(QWidget):
         btn_row.addWidget(del_btn)
 
         btn_row.addStretch()
-        outer.addLayout(btn_row)
+        bottom_layout.addLayout(btn_row)
 
-        # ── 进度条 ──
-        outer.addSpacing(4)
         self.tr_progress = progress_bar(i18n_key="train.progress.format")
-        outer.addWidget(self.tr_progress)
+        bottom_layout.addWidget(self.tr_progress)
 
-        # ── 日志 ──
-        outer.addWidget(field_label("输出", i18n_key="train.log.output"))
+        bottom_layout.addWidget(field_label("输出", i18n_key="train.log.output"))
         self.tr_log = log_area()
-        outer.addWidget(self.tr_log, 1)
+        bottom_layout.addWidget(self.tr_log, 1)
+
+        splitter.addWidget(bottom)
+        splitter.setSizes([200, 140, 180, 400])
+        outer.addWidget(splitter)
 
         return scroll_area(w)
 
