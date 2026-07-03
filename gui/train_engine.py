@@ -7,6 +7,7 @@ import os
 import sys
 import tempfile
 import json
+import re
 import yaml
 import shutil
 import argparse
@@ -32,8 +33,8 @@ _fm.FontManager.addfont = _safe_addfont
 
 from ultralytics import YOLO
 
-from gui.config import TrainConfig
-from gui.train_logger import append_train_log, append_full_val_log
+from core.config import TrainConfig
+from core.train_logger import append_train_log, append_full_val_log
 
 # ── 国际化支持 ──────────────────────────────────────────────
 
@@ -57,7 +58,7 @@ _loc: dict = {}
 
 
 def list_experiments(results_dir):
-    """扫描 results_dir 目录下的所有子文件夹，获取历史实验文件夹列表。"""
+    """Scan results_dir for experiment subdirectories."""
     if not os.path.exists(results_dir):
         return []
     folders = sorted(
@@ -65,6 +66,31 @@ def list_experiments(results_dir):
         if os.path.isdir(os.path.join(results_dir, name))
     )
     return folders
+
+
+def find_latest_experiment_dir(results_dir, experiment_name):
+    """Find the latest auto-suffixed experiment directory."""
+    if not os.path.exists(results_dir):
+        return None
+
+    pattern = re.compile(r'^' + re.escape(experiment_name) + r'(?:-(\d+))?$')
+
+    best_dir = None
+    best_suffix = -1
+
+    for name in os.listdir(results_dir):
+        full_path = os.path.join(results_dir, name)
+        if not os.path.isdir(full_path):
+            continue
+        match = pattern.match(name)
+        if match:
+            suffix_str = match.group(1)
+            suffix = int(suffix_str) if suffix_str else 0
+            if suffix > best_suffix:
+                best_suffix = suffix
+                best_dir = name
+
+    return best_dir
 
 
 def override_config_from_args(config, args):
@@ -107,6 +133,10 @@ def build_train_kwargs(config, use_augment):
         "project": config.results_dir,
         "name": config.experiment_name,
         "exist_ok": True,  # 使用精确实验名，避免 YOLO 自动追加后缀
+        "plots": True,
+        "lr0": config.lr0,
+        "close_mosaic": config.close_mosaic,
+        "multi_scale": config.multi_scale,
     }
     if use_augment:
         kwargs.update({

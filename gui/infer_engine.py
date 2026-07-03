@@ -17,7 +17,7 @@ from ultralytics import YOLO
 from gui.paths import PREDICT_DIR, BEST_SEG_MODEL, TEST_IMAGES_DIR
 
 _ENGINE_DIR = Path(__file__).resolve().parent
-_DEFAULT_TASK_PARAMS = _ENGINE_DIR / "infer_task_params.json"
+_DEFAULT_TASK_PARAMS = _ENGINE_DIR.parent / "tools" / "infer_task_params.json"
 
 # ── i18n locale helpers ─────────────────────────────────────
 _LOCALE_DIR = Path(__file__).resolve().parent.parent / "locales"

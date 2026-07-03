@@ -20,18 +20,13 @@ else
     conda env create -f environment.yml
 fi
 
-# 3. 激活并安装依赖
-echo "[安装] Python 依赖..."
-conda run -n "$ENV_NAME" pip install -r requirements.txt
-
-# 4. 创建必要目录
+# 3. 创建必要目录
 mkdir -p outputs/results outputs/logs outputs/predict
 
 echo ""
 echo "=== 搭建完成 ==="
 echo "启动 GUI:"
 echo "  conda activate ${ENV_NAME}"
-echo "  python gui/main.py"
+echo "  bash run.sh"
 echo ""
 echo "首次运行训练时，YOLO 基础模型 (yolov8n-seg.pt) 会自动下载。"
-echo "如有本地权重文件，放到 pretrained_models/ 目录即可。"

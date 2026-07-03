@@ -23,7 +23,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from gui.paths import MODEL_REGISTRY, PRETRAINED_DIR, get_model_download_url
+from core.paths import MODEL_REGISTRY, get_model_download_url
+from gui.paths import PRETRAINED_DIR
 from gui.styles import (
     COLOR_DISABLED,
     COLOR_TEXT,

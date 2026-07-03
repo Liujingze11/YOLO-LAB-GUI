@@ -1,0 +1,16 @@
+# Dataset root — change this to your dataset's absolute path.
+# Example: /home/yourname/data/yolo_dataset
+path: /path/to/your/dataset
+train: images/train
+val: images/val
+
+names:
+  0:
+  1: button
+  2: switch
+  3: capacitor
+  4: DDBC
+  5: FAN
+  6: KV_1
+  7: KV_5
+  8: RMW0

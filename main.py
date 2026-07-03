@@ -1,6 +1,6 @@
 """
 YOLO 分割训练 / 推理桌面界面 — Apple 风格简约设计
-启动：在项目根目录执行  python gui/main.py
+启动：在项目根目录执行  python main.py
 """
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
@@ -35,8 +35,9 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from gui.config import TrainConfig
-from gui.device import get_available_devices, get_default_device
+from core.config import TrainConfig
+from core.device import get_available_devices, get_default_device
+from gui.paths import RESULTS_DIR, LOG_DIR
 from gui.train_engine import list_experiments
 
 from gui.styles import (
@@ -181,8 +182,8 @@ class MainWindow(QWidget):
 
         self.tr_data_yaml = path_combo(default="", history=self._path_history["data_yaml"])
         self.tr_model = ModelSelector()
-        self.tr_results   = path_combo(default="", history=self._path_history["results"])
-        self.tr_logs      = path_combo(default="", history=self._path_history["logs"])
+        self.tr_results   = path_combo(default=RESULTS_DIR, history=self._path_history["results"])
+        self.tr_logs      = path_combo(default=LOG_DIR, history=self._path_history["logs"])
 
         rows_data = [
             ("data.yaml", self.tr_data_yaml, "data_yaml", False, "YAML (*.yaml *.yml)"),
@@ -841,10 +842,13 @@ class MainWindow(QWidget):
             self.tr_device.setCurrentIndex(0)
 
     def _apply_config(self, c):
-        self.tr_data_yaml.setCurrentText(c.data_yaml)
+        if c.data_yaml:
+            self.tr_data_yaml.setCurrentText(c.data_yaml)
         self.tr_model.set_model(c.model_file)
-        self.tr_results.setCurrentText(c.results_dir)
-        self.tr_logs.setCurrentText(c.log_dir)
+        if c.results_dir:
+            self.tr_results.setCurrentText(c.results_dir)
+        if c.log_dir:
+            self.tr_logs.setCurrentText(c.log_dir)
         self.tr_epochs.setValue(int(c.epochs))
         self.tr_imgsz.setValue(int(c.imgsz))
         self.tr_batch.setValue(int(c.batch))
