@@ -6,12 +6,10 @@ Pretrained base models (e.g. yolov8n-seg.pt) use short names so that
 ultralytics auto-downloads them into its cache on first use.
 """
 from pathlib import Path
-from core.paths import MODEL_REGISTRY, get_model_download_url  # noqa: F401
 
 # Repository root: .../yolo_lab_gui
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
-DATA_YAML = str(REPO_ROOT / "data.yaml")
 # Short name → ultralytics auto-downloads to ~/.config/Ultralytics/
 MODEL_FILE = "yolov8n-seg.pt"
 RESULTS_DIR = str(REPO_ROOT / "outputs" / "results")

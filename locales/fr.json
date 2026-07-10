@@ -4,6 +4,7 @@
   "tab.infer": "Inférence",
   "tab.logs": "Journaux & Résultats",
   "tab.tools": "Outils",
+  "tab.settings": "Paramètres",
   "train.card.paths": "Chemins",
   "train.data_yaml": "data.yaml",
   "train.field.results_dir": "Dossier des résultats",
@@ -195,5 +196,8 @@
   "tool.log.done": "Exécution de l'outil terminée",
   "tool.log.failed": "Échec de l'exécution de l'outil",
   "tool.log.cancelled": "Outil arrêté",
-  "worker.process_failed": "Échec du démarrage du processus : {err}"
+  "worker.process_failed": "Échec du démarrage du processus : {err}",
+  "train.btn.reset_sizes": "Réinitialiser les tailles",
+  "settings.card.panels": "Paramètres des panneaux",
+  "settings.desc.reset_sizes": "Réinitialiser les quatre panneaux d'entraînement (Chemins, Hyperparams, Mode, Sortie) à des proportions égales."
 }

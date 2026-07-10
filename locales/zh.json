@@ -4,6 +4,7 @@
   "tab.infer": "推理",
   "tab.logs": "日志 & 结果",
   "tab.tools": "工具",
+  "tab.settings": "设置",
   "train.card.paths": "路径",
   "train.data_yaml": "data.yaml",
   "train.field.results_dir": "结果目录",
@@ -195,5 +196,8 @@
   "tool.log.done": "工具执行完成",
   "tool.log.failed": "工具执行失败",
   "tool.log.cancelled": "工具已停止",
-  "worker.process_failed": "启动进程失败: {err}"
+  "worker.process_failed": "启动进程失败: {err}",
+  "train.btn.reset_sizes": "恢复默认比例",
+  "settings.card.panels": "面板设置",
+  "settings.desc.reset_sizes": "将训练页的四个面板（路径、超参数、训练模式、输出）恢复为均分比例。"
 }

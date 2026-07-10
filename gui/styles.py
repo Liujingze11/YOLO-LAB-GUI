@@ -10,7 +10,7 @@ from PySide6.QtWidgets import QWidget
 # ═══════════════════════════════════════════════════════════
 
 LIGHT = {
-    "bg":               "#f5f5f7",
+    "bg":               "#ebecf0",
     "card_bg":          "#ffffff",
     "text":             "#1d1d1f",
     "text_secondary":   "#6e6e73",
@@ -100,7 +100,7 @@ def _style(theme: dict) -> dict:
             % (p["card_bg"], CARD_RADIUS)
         ),
         "section_label": (
-            "font-size: 11px; font-weight: 600; color: %s; letter-spacing: 0.4px;"
+            "font-size: 11px; font-weight: 700; color: %s; letter-spacing: 0.4px;"
             % p["text_secondary"]
         ),
         "field_label": "font-size: 13px; color: %s; font-weight: 400;" % p["text"],
@@ -226,7 +226,6 @@ _DARK_STYLES = _style(DARK)
 #  向后兼容的亮色样式常量
 # ═══════════════════════════════════════════════════════════
 
-CARD_STYLE         = _LIGHT_STYLES["card"]
 SECTION_LABEL_STYLE = _LIGHT_STYLES["section_label"]
 FIELD_LABEL_STYLE  = _LIGHT_STYLES["field_label"]
 INPUT_STYLE        = _LIGHT_STYLES["input"]
@@ -244,39 +243,11 @@ CHECKBOX_STYLE     = _LIGHT_STYLES["checkbox"]
 PROGRESS_STYLE     = _LIGHT_STYLES["progress"]
 SCROLL_AREA_STYLE  = _LIGHT_STYLES["scroll_area"]
 
-# 亮色模式颜色常量 (向后兼容)
-COLOR_BG              = LIGHT["bg"]
-COLOR_CARD_BG         = LIGHT["card_bg"]
+# 亮色模式颜色常量 (仅保留被引用的)
 COLOR_TEXT            = LIGHT["text"]
-COLOR_TEXT_SECONDARY  = LIGHT["text_secondary"]
 COLOR_TEXT_MUTED      = LIGHT["text_muted"]
-COLOR_BORDER          = LIGHT["border"]
-COLOR_BORDER_HOVER    = LIGHT["border_hover"]
 COLOR_ACCENT          = LIGHT["accent"]
-COLOR_ACCENT_HOVER    = LIGHT["accent_hover"]
-COLOR_ACCENT_PRESSED  = LIGHT["accent_pressed"]
-COLOR_SECONDARY_BG    = LIGHT["secondary_bg"]
-COLOR_SECONDARY_HOVER = LIGHT["secondary_hover"]
-COLOR_SECONDARY_PRESSED = LIGHT["secondary_pressed"]
-COLOR_DANGER          = LIGHT["danger"]
-COLOR_DANGER_HOVER    = LIGHT["danger_hover"]
-COLOR_DANGER_PRESSED  = LIGHT["danger_pressed"]
 COLOR_DISABLED        = LIGHT["disabled"]
-COLOR_LOG_BG          = LIGHT["log_bg"]
-COLOR_LOG_TEXT        = LIGHT["log_text"]
-COLOR_LOG_SELECTION   = LIGHT["log_selection"]
-COLOR_PROGRESS_TRACK  = LIGHT["progress_track"]
-
-# ═══════════════════════════════════════════════════════════
-#  旧版全局暗色样式 (已废弃，保留兼容)
-# ═══════════════════════════════════════════════════════════
-
-DARK_STYLE = """
-QWidget {
-    background-color: #1e1e1e;
-    color: #e0e0e0;
-}
-"""
 
 DARK_TOGGLE_STYLE = (
     "QPushButton { background: transparent; color: %s; border: none; "

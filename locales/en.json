@@ -4,6 +4,7 @@
   "tab.infer": "Inference",
   "tab.logs": "Logs & Results",
   "tab.tools": "Tools",
+  "tab.settings": "Settings",
   "train.card.paths": "Paths",
   "train.data_yaml": "data.yaml",
   "train.field.results_dir": "Results Directory",
@@ -195,5 +196,8 @@
   "tool.log.done": "Tool execution complete",
   "tool.log.failed": "Tool execution failed",
   "tool.log.cancelled": "Tool stopped",
-  "worker.process_failed": "Failed to start process: {err}"
+  "worker.process_failed": "Failed to start process: {err}",
+  "train.btn.reset_sizes": "Reset Panel Sizes",
+  "settings.card.panels": "Panel Settings",
+  "settings.desc.reset_sizes": "Reset the four training panels (Paths, Hyperparams, Mode, Output) to equal proportions."
 }

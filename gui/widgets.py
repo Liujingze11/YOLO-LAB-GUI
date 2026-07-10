@@ -48,7 +48,7 @@ def card(parent: QWidget | None = None) -> tuple[QWidget, QVBoxLayout]:
     w = QWidget(parent)
     w.setProperty("i18nKey", "")
     w.setProperty("themeClass", "card")
-    w.setStyleSheet(f"QWidget {{ background: #ffffff; border-radius: {CARD_RADIUS}px; }}")
+    w.setStyleSheet(f"QWidget {{ background: #ffffff; border: 1px solid #e0e0e0; border-radius: {CARD_RADIUS}px; }}")
     shadow = QGraphicsDropShadowEffect()
     shadow.setBlurRadius(24)
     shadow.setColor(Qt.gray)
@@ -74,7 +74,7 @@ def resizable_card(title: str = "", parent: QWidget | None = None,
     w = QWidget(parent)
     w.setMinimumHeight(CARD_HEADER_HEIGHT)
     w.setProperty("themeClass", "card")
-    w.setStyleSheet(f"QWidget {{ background: #ffffff; border-radius: {CARD_RADIUS}px; }}")
+    w.setStyleSheet(f"QWidget {{ background: #ffffff; border: 1px solid #e0e0e0; border-radius: {CARD_RADIUS}px; }}")
     shadow = QGraphicsDropShadowEffect()
     shadow.setBlurRadius(24)
     shadow.setColor(Qt.gray)
@@ -87,9 +87,10 @@ def resizable_card(title: str = "", parent: QWidget | None = None,
 
     # ── 标题栏（固定高度，始终可见）──
     header = QWidget()
+    header.setStyleSheet("background: transparent; border: none;")
     header.setFixedHeight(CARD_HEADER_HEIGHT)
     header_layout = QHBoxLayout(header)
-    header_layout.setContentsMargins(CARD_PADDING[0], 4, CARD_PADDING[2], 4)
+    header_layout.setContentsMargins(CARD_PADDING[0], 4, CARD_PADDING[2], 0)
     if title:
         header_layout.addWidget(section_label(title, i18n_key=i18n_key))
     header_layout.addStretch()
@@ -110,9 +111,9 @@ def resizable_card(title: str = "", parent: QWidget | None = None,
     )
 
     body = QWidget()
-    body.setStyleSheet("background: transparent;")
+    body.setStyleSheet("background: transparent; border: none;")
     body_layout = QVBoxLayout(body)
-    body_layout.setContentsMargins(*CARD_PADDING)
+    body_layout.setContentsMargins(CARD_PADDING[0], 4, CARD_PADDING[2], 4)
     body_layout.setSpacing(0)
     scroll.setWidget(body)
 
@@ -255,7 +256,6 @@ def progress_bar(parent: QWidget | None = None, i18n_key: str | None = None) -> 
 def scroll_area(widget: QWidget, parent: QWidget | None = None,
                 i18n_key: str | None = None) -> QScrollArea:
     """包裹一个 widget 的可滚动区域（细滚动条）。"""
-    from PySide6.QtWidgets import QScrollArea
     scroll = QScrollArea(parent)
     scroll.setWidgetResizable(True)
     scroll.setWidget(widget)

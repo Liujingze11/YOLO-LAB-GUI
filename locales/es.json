@@ -4,6 +4,7 @@
   "tab.infer": "Inferencia",
   "tab.logs": "Registros y Resultados",
   "tab.tools": "Herramientas",
+  "tab.settings": "Configuración",
   "train.card.paths": "Rutas",
   "train.data_yaml": "data.yaml",
   "train.field.results_dir": "Directorio de resultados",
@@ -195,5 +196,8 @@
   "tool.log.done": "Ejecución de la herramienta completada",
   "tool.log.failed": "Ejecución de la herramienta fallida",
   "tool.log.cancelled": "Herramienta detenida",
-  "worker.process_failed": "Error al iniciar el proceso: {err}"
+  "worker.process_failed": "Error al iniciar el proceso: {err}",
+  "train.btn.reset_sizes": "Restablecer tamaños",
+  "settings.card.panels": "Configuración de paneles",
+  "settings.desc.reset_sizes": "Restablecer los cuatro paneles de entrenamiento (Rutas, Hiperparámetros, Modo, Salida) a proporciones iguales."
 }

@@ -23,19 +23,7 @@ _DEFAULT_TASK_PARAMS = _ENGINE_DIR.parent / "tools" / "infer_task_params.json"
 _LOCALE_DIR = Path(__file__).resolve().parent.parent / "locales"
 _loc = None  # set in __main__
 
-def _load_locale(lang: str) -> dict:
-    path = _LOCALE_DIR / f"{lang}.json"
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
-
-def _t(loc: dict, key: str, **kwargs) -> str:
-    text = loc.get(key, key)
-    if kwargs:
-        try:
-            text = text.format(**kwargs)
-        except (KeyError, ValueError):
-            pass
-    return text
+from core.i18n import load_locale, t as _t
 
 
 @dataclass
@@ -130,7 +118,7 @@ if __name__ == "__main__":
     parser.add_argument("--lang", default="zh", help="Language code (zh/en/fr/es)")
     args = parser.parse_args()
 
-    _loc = _load_locale(args.lang)
+    _loc = load_locale(_LOCALE_DIR, args.lang)
 
     cfg = InferConfig(
         model_path=args.model,
@@ -138,7 +126,6 @@ if __name__ == "__main__":
         save_dir=args.save_dir,
         conf=args.conf,
         imgsz=args.imgsz,
-        task_param_file=str(_ENGINE_DIR / "infer_task_params.json"),
         out_suffix="_overlay.jpg",
     )
 

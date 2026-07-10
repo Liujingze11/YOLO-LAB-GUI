@@ -3,7 +3,6 @@ import os
 import re
 import yaml
 import shutil
-from pathlib import Path
 
 
 def list_experiments(results_dir: str) -> list:

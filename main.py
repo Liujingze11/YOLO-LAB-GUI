@@ -99,7 +99,8 @@ class MainWindow(QWidget):
         super().__init__()
         self.setWindowTitle(tr("app.title"))
         self._closing = False
-        self.resize(820, 700)
+        screen_h = QApplication.primaryScreen().availableGeometry().height()
+        self.resize(820, int(screen_h * 0.75))
         self.setMinimumSize(720, 520)
 
         self._train_worker: TrainWorker | None = None
@@ -112,7 +113,7 @@ class MainWindow(QWidget):
         self._tabs = QTabWidget()
         self._tabs.setProperty("themeClass", "tab_widget")
         self._tabs.setStyleSheet(TAB_WIDGET_STYLE)
-        tab_keys = ["tab.train", "tab.infer", "tab.logs", "tab.tools"]
+        tab_keys = ["tab.train", "tab.infer", "tab.logs", "tab.tools", "tab.settings"]
         self._tabs.addTab(self._build_train_tab(), tr(tab_keys[0]))
         self._tabs.tabBar().setTabData(0, tab_keys[0])
         self._tabs.addTab(self._build_infer_tab(), tr(tab_keys[1]))
@@ -121,6 +122,8 @@ class MainWindow(QWidget):
         self._tabs.tabBar().setTabData(2, tab_keys[2])
         self._tabs.addTab(self._build_tools_tab(), tr(tab_keys[3]))
         self._tabs.tabBar().setTabData(3, tab_keys[3])
+        self._tabs.addTab(self._build_settings_tab(), tr(tab_keys[4]))
+        self._tabs.tabBar().setTabData(4, tab_keys[4])
 
         self._dark_mode = False
         self._dark_btn = QPushButton("☀")
@@ -170,24 +173,11 @@ class MainWindow(QWidget):
         splitter.setHandleWidth(5)
         splitter.setStyleSheet("""
             QSplitter::handle:vertical {
-                height: 5px;
                 background: transparent;
-            }
-            QSplitter::handle:vertical:hover {
-                background: #c8d6e5;
             }
         """)
         self._splitter = splitter
-        self._splitter_defaults = [200, 140, 180, 400]
-
-        # ── 重置比例按钮 ──
-        reset_row = QHBoxLayout()
-        reset_row.addStretch()
-        reset_btn = tiny_btn("↺ 恢复默认比例", i18n_key="train.btn.reset_sizes")
-        reset_btn.clicked.connect(lambda: self._splitter.setSizes(self._splitter_defaults))
-        reset_row.addWidget(reset_btn)
-        outer.addLayout(reset_row)
-        outer.addSpacing(4)
+        self._splitter_defaults = [222, 167, 166, 185]
 
         # ── Panel 1: 路径 ──
         card1, header1, lay1 = resizable_card("路径", i18n_key="train.card.paths")
@@ -238,7 +228,8 @@ class MainWindow(QWidget):
         model_row.addWidget(self.tr_model, 1)
         lay1.addLayout(model_row)
 
-        splitter.addWidget(card1)
+        card1.setMinimumHeight(180)
+        splitter.addWidget(self._wrap_card(card1))
 
         # ── Panel 2: 超参数 ──
         card2, header2, lay2 = resizable_card("超参数", i18n_key="train.card.hyperparams")
@@ -275,7 +266,8 @@ class MainWindow(QWidget):
         exp_row.addWidget(self.tr_exp, 1)
         lay2.addLayout(exp_row)
 
-        splitter.addWidget(card2)
+        card2.setMinimumHeight(120)
+        splitter.addWidget(self._wrap_card(card2))
 
         # ── Panel 3: 训练模式 ──
         card3, header3, lay3 = resizable_card("训练模式", i18n_key="train.card.mode")
@@ -311,7 +303,8 @@ class MainWindow(QWidget):
         lay3.addSpacing(8)
         lay3.addLayout(hist_row)
 
-        splitter.addWidget(card3)
+        card3.setMinimumHeight(130)
+        splitter.addWidget(self._wrap_card(card3))
 
         # ── Panel 4: 底部面板（数据增强 + 按钮 + 进度 + 日志）──
         bottom = QWidget()
@@ -366,12 +359,12 @@ class MainWindow(QWidget):
         self.tr_progress = progress_bar(i18n_key="train.progress.format")
         bottom_layout.addWidget(self.tr_progress)
 
-        bottom_layout.addWidget(field_label("输出", i18n_key="train.log.output"))
         self.tr_log = log_area()
         bottom_layout.addWidget(self.tr_log, 1)
 
-        splitter.addWidget(bottom)
-        splitter.setSizes([200, 140, 180, 400])
+        bottom.setMinimumHeight(180)
+        splitter.addWidget(self._wrap_card(bottom))
+        splitter.setSizes([222, 167, 166, 185])
         outer.addWidget(splitter)
 
         return scroll_area(w)
@@ -591,6 +584,36 @@ class MainWindow(QWidget):
         self.btn_tool_stop.setEnabled(False)
 
     # ═══════════════════════════════════════════════════════
+    #  设置页
+    # ═══════════════════════════════════════════════════════
+
+    def _build_settings_tab(self):
+        w = QWidget()
+        w.setMinimumSize(400, 300)
+        outer = QVBoxLayout(w)
+        outer.setContentsMargins(24, 16, 24, 24)
+        outer.setSpacing(10)
+
+        card1, lay1 = card()
+        lay1.addWidget(section_label("面板设置", i18n_key="settings.card.panels"))
+        lay1.addSpacing(14)
+
+        desc = QLabel(tr("settings.desc.reset_sizes"))
+        desc.setStyleSheet(f"font-size: 13px; color: #6e6e73;")
+        desc.setWordWrap(True)
+        lay1.addWidget(desc)
+        lay1.addSpacing(12)
+
+        reset_btn = btn("↺ 恢复默认比例", primary=False, i18n_key="train.btn.reset_sizes")
+        reset_btn.clicked.connect(lambda: self._splitter.setSizes(self._splitter_defaults))
+        lay1.addWidget(reset_btn)
+        lay1.addStretch()
+        outer.addWidget(card1)
+
+        outer.addStretch()
+        return scroll_area(w)
+
+    # ═══════════════════════════════════════════════════════
     #  日志 & 结果 页
     # ═══════════════════════════════════════════════════════
 
@@ -731,7 +754,7 @@ class MainWindow(QWidget):
         combo.blockSignals(False)
 
     def _on_lv_exp_selected(self, idx: int):
-        pass  # handled by button clicks below
+        pass  # 选择实验时无需操作，实际动作由下方按钮触发
 
     def _lv_exp_path(self):
         from gui.paths import RESULTS_DIR
@@ -1352,6 +1375,16 @@ class MainWindow(QWidget):
         event.ignore()
 
     # ── 历史日志 & 结果查看 ──
+
+    @staticmethod
+    def _wrap_card(widget: QWidget) -> QWidget:
+        """给卡片包一层带上下间距的容器，让面板在背景上呈现独立白块的视觉效果。"""
+        container = QWidget()
+        container.setStyleSheet("background: transparent;")
+        lay = QVBoxLayout(container)
+        lay.setContentsMargins(0, 6, 0, 6)
+        lay.addWidget(widget)
+        return container
 
     @staticmethod
     def _open_dir_safe(path_str: str) -> None:
