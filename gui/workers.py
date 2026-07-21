@@ -77,8 +77,10 @@ class TrainWorker(_BaseWorker):
     """在子进程中运行训练脚本，解析 epoch 进度。"""
 
     progress = Signal(int)
+    metrics_update = Signal(dict)
 
     def _on_line(self, line: str) -> None:
+        self._parse_metrics_line(line)
         m = re.search(r"\b(\d+)\s*/\s*(\d+)\b", line)
         if not m:
             return
@@ -92,6 +94,43 @@ class TrainWorker(_BaseWorker):
             )
         ):
             self.progress.emit(cur)
+
+    def _parse_metrics_line(self, line: str) -> None:
+        """Parse Ultralytics per-epoch metrics from stdout table rows.
+
+        Example line:
+             1/150       2.5G      1.234      1.567     0.891      1.012        12        640
+        """
+        import re as _re
+
+        m = _re.match(
+            r"^\s*(\d+)\s*/\s*(\d+)\s+"    # epoch/total
+            r"[\d.]+[GM]?\s+"               # GPU_mem
+            r"([\d.]+)\s+"                  # box_loss
+            r"([\d.]+)\s+"                  # seg_loss
+            r"([\d.]+)\s+"                  # cls_loss
+            r"([\d.]+)\s+"                  # dfl_loss
+            r"\d+\s+"                       # Instances
+            r"\d+",                         # Size
+            line,
+        )
+        if not m:
+            return
+
+        try:
+            epoch = int(m.group(1))
+            total = int(m.group(2))
+            metrics = {
+                "epoch": epoch,
+                "total_epochs": total,
+                "box_loss": float(m.group(3)),
+                "seg_loss": float(m.group(4)),
+                "cls_loss": float(m.group(5)),
+                "dfl_loss": float(m.group(6)),
+            }
+            self.metrics_update.emit(metrics)
+        except (ValueError, IndexError):
+            pass  # skip unparseable rows silently
 
 
 class InferWorker(_BaseWorker):
