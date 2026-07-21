@@ -2,11 +2,7 @@
 YOLO 分割训练 / 推理桌面界面 — Apple 风格简约设计
 启动：在项目根目录执行  python main.py
 """
-from __future__ import annotations
-
 import json
-import os
-import subprocess
 import sys
 from pathlib import Path
 
@@ -16,7 +12,6 @@ if str(ROOT) not in sys.path:
 
 PRESET_FILE = ROOT / "gui" / "presets.json"
 
-from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont, QKeySequence, QShortcut
 from PySide6.QtWidgets import (
     QApplication, QComboBox, QHBoxLayout, QPushButton,
@@ -27,7 +22,7 @@ from gui.styles import (
     COMBO_STYLE, DARK_TOGGLE_STYLE, FONT_FAMILIES, FONT_SIZE,
     TAB_WIDGET_STYLE, apply_theme_to_widgets,
 )
-from gui.i18n import tr, set_language, apply_language, current_lang, AVAILABLE_LANGS
+from gui.i18n import tr, set_language, apply_language, AVAILABLE_LANGS
 from gui.tabs.train_tab import TrainTab
 from gui.tabs.infer_tab import InferTab
 from gui.tabs.logs_tab import LogsTab
@@ -145,15 +140,16 @@ class MainWindow(QWidget):
         self._closing = True
         self.hide()
         workers_running = False
-        if self._train_tab._train_worker and self._train_tab._train_worker.isRunning():
-            self._train_tab._train_worker.stop()
-            workers_running = True
-        if self._infer_tab._infer_worker and self._infer_tab._infer_worker.isRunning():
-            self._infer_tab._infer_worker.stop()
-            workers_running = True
-        if self._tools_tab._tool_worker and self._tools_tab._tool_worker.isRunning():
-            self._tools_tab._tool_worker.stop()
-            workers_running = True
+        for tab, attr in [
+            (self._train_tab, "_train_worker"),
+            (self._infer_tab, "_infer_worker"),
+            (self._tools_tab, "_tool_worker"),
+        ]:
+            worker = getattr(tab, attr, None)
+            if worker and worker.isRunning():
+                worker.finished.connect(QApplication.quit)
+                worker.stop()
+                workers_running = True
         if not workers_running:
             QApplication.quit()
         event.ignore()
