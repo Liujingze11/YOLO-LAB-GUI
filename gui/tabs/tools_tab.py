@@ -46,10 +46,10 @@ class ToolsTab(QWidget):
         "split_images_only/split_every_5th_images_only.py",
     ]
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, path_history: dict[str, list[str]] | None = None):
         super().__init__(parent)
         self._tool_worker: ToolWorker | None = None
-        self._path_history: dict[str, list[str]] = {}
+        self._path_history = path_history if path_history is not None else {}
         self._closing = False
         self._build_ui()
 

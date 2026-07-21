@@ -56,16 +56,17 @@ class MainWindow(QWidget):
         self.setMinimumSize(720, 520)
 
         self._presets = load_presets()
+        self._path_history: dict[str, list[str]] = {}
 
         # ── 标签页 ──
         self._tabs = QTabWidget()
         self._tabs.setProperty("themeClass", "tab_widget")
         self._tabs.setStyleSheet(TAB_WIDGET_STYLE)
 
-        self._train_tab = TrainTab()
-        self._infer_tab = InferTab()
-        self._logs_tab = LogsTab()
-        self._tools_tab = ToolsTab()
+        self._train_tab = TrainTab(path_history=self._path_history)
+        self._infer_tab = InferTab(path_history=self._path_history)
+        self._logs_tab = LogsTab(path_history=self._path_history)
+        self._tools_tab = ToolsTab(path_history=self._path_history)
         self._settings_tab = SettingsTab()
 
         tab_defs = [

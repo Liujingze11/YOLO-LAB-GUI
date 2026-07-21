@@ -34,9 +34,9 @@ from gui.i18n import tr
 class LogsTab(QWidget):
     """Training logs and experiment results viewer tab."""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, path_history: dict[str, list[str]] | None = None):
         super().__init__(parent)
-        self._path_history: dict[str, list[str]] = {}
+        self._path_history = path_history if path_history is not None else {}
         self._build_ui()
 
     # ── UI construction ─────────────────────────────────────

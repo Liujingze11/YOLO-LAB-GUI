@@ -83,11 +83,11 @@ def save_presets(presets: dict) -> None:
 class TrainTab(QWidget):
     """Training configuration, execution and monitoring tab."""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, path_history: dict[str, list[str]] | None = None):
         super().__init__(parent)
         self._train_worker: TrainWorker | None = None
         self._presets: dict = {}
-        self._path_history: dict[str, list[str]] = {}
+        self._path_history = path_history if path_history is not None else {}
         self._closing = False
         self._build_ui()
         self._load_train_defaults()
