@@ -17,6 +17,7 @@ from PySide6.QtWidgets import (
     QApplication,
     QCheckBox,
     QComboBox,
+    QDoubleSpinBox,
     QFileDialog,
     QHBoxLayout,
     QLabel,
@@ -37,6 +38,7 @@ from gui.styles import (
     CHECKBOX_STYLE,
     COMBO_STYLE,
     RADIO_STYLE,
+    SPINNER_STYLE,
 )
 from gui.train_engine import list_experiments
 from gui.widgets import (
@@ -115,7 +117,7 @@ class TrainTab(QWidget):
             }
         """)
         self._splitter = splitter
-        self._splitter_defaults = [222, 167, 166, 185]
+        self._splitter_defaults = [200, 180, 170, 130, 220]
 
         # ── Panel 1: 路径 ──
         card1, header1, lay1 = resizable_card("路径", i18n_key="train.card.paths")
@@ -207,7 +209,105 @@ class TrainTab(QWidget):
         card2.setMinimumHeight(120)
         splitter.addWidget(self._wrap_card(card2))
 
-        # ── Panel 3: 训练模式 ──
+        # ── Panel 3: 数据增强 ──
+
+        def _aug_spin(default, min_v, max_v, step, i18n_key):
+            """创建数据增强用的 DoubleSpinBox（步长更小，精度更高）。"""
+            s = QDoubleSpinBox()
+            s.setRange(min_v, max_v)
+            s.setValue(default)
+            s.setSingleStep(step)
+            s.setDecimals(4)
+            s.setMinimumWidth(80)
+            s.setProperty("i18nKey", i18n_key)
+            s.setProperty("themeClass", "spinner")
+            s.setStyleSheet(SPINNER_STYLE)
+            return s
+
+        def _aug_row(label_key, widget):
+            """数据增强参数行：标签 + 微调框。"""
+            row = QHBoxLayout()
+            row.setSpacing(6)
+            lbl = field_label("", i18n_key=label_key)
+            lbl.setFixedWidth(64)
+            row.addWidget(lbl)
+            row.addWidget(widget)
+            row.addStretch()
+            return row
+
+        card_aug, header_aug, lay_aug = resizable_card("数据增强", i18n_key="train.card.augment")
+
+        self.tr_augment = QCheckBox(tr("train.augment"))
+        self.tr_augment.setProperty("i18nKey", "train.augment")
+        self.tr_augment.setChecked(True)
+        self.tr_augment.setProperty("themeClass", "checkbox")
+        self.tr_augment.setStyleSheet(CHECKBOX_STYLE)
+        self.tr_augment.toggled.connect(self._on_augment_toggled)
+        header_aug.addWidget(self.tr_augment)
+
+        aug_grid = QHBoxLayout()
+        aug_grid.setSpacing(20)
+
+        # 列1: 颜色抖动
+        col1 = QVBoxLayout()
+        col1.setSpacing(4)
+        col1.addWidget(field_label("颜色抖动", i18n_key="train.aug.color"))
+        self.aug_hsv_h = _aug_spin(0.015, 0.0, 1.0, 0.001, "train.aug.hsv_h")
+        self.aug_hsv_s = _aug_spin(0.7, 0.0, 1.0, 0.1, "train.aug.hsv_s")
+        self.aug_hsv_v = _aug_spin(0.4, 0.0, 1.0, 0.1, "train.aug.hsv_v")
+        for lbl_key, w in [("train.aug.hsv_h", self.aug_hsv_h),
+                           ("train.aug.hsv_s", self.aug_hsv_s),
+                           ("train.aug.hsv_v", self.aug_hsv_v)]:
+            col1.addWidget(_aug_row(lbl_key, w))
+        col1.addStretch()
+        aug_grid.addLayout(col1)
+
+        # 列2: 几何变换
+        col2 = QVBoxLayout()
+        col2.setSpacing(4)
+        col2.addWidget(field_label("几何变换", i18n_key="train.aug.geometry"))
+        self.aug_degrees = _aug_spin(0.0, 0.0, 180.0, 1.0, "train.aug.degrees")
+        self.aug_translate = _aug_spin(0.1, 0.0, 1.0, 0.1, "train.aug.translate")
+        self.aug_scale = _aug_spin(0.5, 0.0, 2.0, 0.1, "train.aug.scale")
+        self.aug_shear = _aug_spin(0.0, 0.0, 30.0, 1.0, "train.aug.shear")
+        self.aug_perspective = _aug_spin(0.0, 0.0, 0.001, 0.0001, "train.aug.perspective")
+        self.aug_flipud = _aug_spin(0.0, 0.0, 1.0, 0.1, "train.aug.flipud")
+        self.aug_fliplr = _aug_spin(0.5, 0.0, 1.0, 0.1, "train.aug.fliplr")
+        for lbl_key, w in [
+            ("train.aug.degrees", self.aug_degrees),
+            ("train.aug.translate", self.aug_translate),
+            ("train.aug.scale", self.aug_scale),
+            ("train.aug.shear", self.aug_shear),
+            ("train.aug.perspective", self.aug_perspective),
+            ("train.aug.flipud", self.aug_flipud),
+            ("train.aug.fliplr", self.aug_fliplr),
+        ]:
+            col2.addWidget(_aug_row(lbl_key, w))
+        col2.addStretch()
+        aug_grid.addLayout(col2)
+
+        # 列3: 混合策略
+        col3 = QVBoxLayout()
+        col3.setSpacing(4)
+        col3.addWidget(field_label("混合策略", i18n_key="train.aug.mixing"))
+        self.aug_mosaic = _aug_spin(1.0, 0.0, 1.0, 0.1, "train.aug.mosaic")
+        self.aug_mixup = _aug_spin(0.0, 0.0, 1.0, 0.1, "train.aug.mixup")
+        self.aug_copy_paste = _aug_spin(0.0, 0.0, 1.0, 0.1, "train.aug.copy_paste")
+        for lbl_key, w in [
+            ("train.aug.mosaic", self.aug_mosaic),
+            ("train.aug.mixup", self.aug_mixup),
+            ("train.aug.copy_paste", self.aug_copy_paste),
+        ]:
+            col3.addWidget(_aug_row(lbl_key, w))
+        col3.addStretch()
+        aug_grid.addLayout(col3)
+
+        lay_aug.addLayout(aug_grid)
+
+        card_aug.setMinimumHeight(160)
+        splitter.addWidget(self._wrap_card(card_aug))
+
+        # ── Panel 4: 训练模式 ──
         card3, header3, lay3 = resizable_card("训练模式", i18n_key="train.card.mode")
 
         self.rb_new = QRadioButton(tr("train.rb.new"))
@@ -244,18 +344,11 @@ class TrainTab(QWidget):
         card3.setMinimumHeight(130)
         splitter.addWidget(self._wrap_card(card3))
 
-        # ── Panel 4: 底部面板（数据增强 + 按钮 + 进度 + 日志）──
+        # ── Panel 5: 底部面板（按钮 + 进度 + 日志）──
         bottom = QWidget()
         bottom_layout = QVBoxLayout(bottom)
         bottom_layout.setContentsMargins(0, 8, 0, 0)
         bottom_layout.setSpacing(6)
-
-        self.tr_augment = QCheckBox(tr("train.augment"))
-        self.tr_augment.setProperty("i18nKey", "train.augment")
-        self.tr_augment.setChecked(True)
-        self.tr_augment.setProperty("themeClass", "checkbox")
-        self.tr_augment.setStyleSheet(CHECKBOX_STYLE)
-        bottom_layout.addWidget(self.tr_augment)
 
         btn_row = QHBoxLayout()
         btn_row.setSpacing(10)
@@ -302,7 +395,7 @@ class TrainTab(QWidget):
 
         bottom.setMinimumHeight(180)
         splitter.addWidget(self._wrap_card(bottom))
-        splitter.setSizes([222, 167, 166, 185])
+        splitter.setSizes([200, 180, 170, 130, 220])
         il.addWidget(splitter)
 
         outer.addWidget(scroll_area(inner))
@@ -474,6 +567,19 @@ class TrainTab(QWidget):
             self.tr_device.setCurrentIndex(0)
         self.tr_exp.setText(c.experiment_name)
         self.tr_augment.setChecked(bool(c.use_augment))
+        self.aug_hsv_h.setValue(c.hsv_h)
+        self.aug_hsv_s.setValue(c.hsv_s)
+        self.aug_hsv_v.setValue(c.hsv_v)
+        self.aug_degrees.setValue(c.degrees)
+        self.aug_translate.setValue(c.translate)
+        self.aug_scale.setValue(c.scale)
+        self.aug_shear.setValue(c.shear)
+        self.aug_perspective.setValue(c.perspective)
+        self.aug_flipud.setValue(c.flipud)
+        self.aug_fliplr.setValue(c.fliplr)
+        self.aug_mosaic.setValue(c.mosaic)
+        self.aug_mixup.setValue(c.mixup)
+        self.aug_copy_paste.setValue(c.copy_paste)
         self._refresh_history()
 
     def _scan_trained_models(self):
@@ -504,6 +610,16 @@ class TrainTab(QWidget):
         for name in sorted(list_experiments(str(res))):
             self.cb_history.addItem(name)
 
+    def _on_augment_toggled(self, checked: bool):
+        """启用/禁用数据增强时切换参数区域可用性。"""
+        for attr_name in [
+            "aug_hsv_h", "aug_hsv_s", "aug_hsv_v",
+            "aug_degrees", "aug_translate", "aug_scale", "aug_shear",
+            "aug_perspective", "aug_flipud", "aug_fliplr",
+            "aug_mosaic", "aug_mixup", "aug_copy_paste",
+        ]:
+            getattr(self, attr_name).setEnabled(checked)
+
     # ── Presets ────────────────────────────────────────────
 
     def _get_current_config_dict(self):
@@ -518,6 +634,19 @@ class TrainTab(QWidget):
             "device": self.tr_device.currentData() or get_default_device(),
             "experiment_name": self.tr_exp.text().strip(),
             "use_augment": self.tr_augment.isChecked(),
+            "hsv_h": self.aug_hsv_h.value(),
+            "hsv_s": self.aug_hsv_s.value(),
+            "hsv_v": self.aug_hsv_v.value(),
+            "degrees": self.aug_degrees.value(),
+            "translate": self.aug_translate.value(),
+            "scale": self.aug_scale.value(),
+            "shear": self.aug_shear.value(),
+            "perspective": self.aug_perspective.value(),
+            "flipud": self.aug_flipud.value(),
+            "fliplr": self.aug_fliplr.value(),
+            "mosaic": self.aug_mosaic.value(),
+            "mixup": self.aug_mixup.value(),
+            "copy_paste": self.aug_copy_paste.value(),
         }
 
     def _apply_config_dict(self, d):
@@ -536,6 +665,19 @@ class TrainTab(QWidget):
             self.tr_device.setCurrentIndex(0)
         self.tr_exp.setText(d.get("experiment_name", ""))
         self.tr_augment.setChecked(d.get("use_augment", True))
+        self.aug_hsv_h.setValue(d.get("hsv_h", 0.015))
+        self.aug_hsv_s.setValue(d.get("hsv_s", 0.7))
+        self.aug_hsv_v.setValue(d.get("hsv_v", 0.4))
+        self.aug_degrees.setValue(d.get("degrees", 0.0))
+        self.aug_translate.setValue(d.get("translate", 0.1))
+        self.aug_scale.setValue(d.get("scale", 0.5))
+        self.aug_shear.setValue(d.get("shear", 0.0))
+        self.aug_perspective.setValue(d.get("perspective", 0.0))
+        self.aug_flipud.setValue(d.get("flipud", 0.0))
+        self.aug_fliplr.setValue(d.get("fliplr", 0.5))
+        self.aug_mosaic.setValue(d.get("mosaic", 1.0))
+        self.aug_mixup.setValue(d.get("mixup", 0.0))
+        self.aug_copy_paste.setValue(d.get("copy_paste", 0.0))
         self._refresh_history()
 
     def _refresh_preset_combo(self):
@@ -627,6 +769,19 @@ class TrainTab(QWidget):
         c.device = self.tr_device.currentData() or get_default_device()
         c.experiment_name = self.tr_exp.text().strip() or c.experiment_name
         c.use_augment = self.tr_augment.isChecked()
+        c.hsv_h = self.aug_hsv_h.value()
+        c.hsv_s = self.aug_hsv_s.value()
+        c.hsv_v = self.aug_hsv_v.value()
+        c.degrees = self.aug_degrees.value()
+        c.translate = self.aug_translate.value()
+        c.scale = self.aug_scale.value()
+        c.shear = self.aug_shear.value()
+        c.perspective = self.aug_perspective.value()
+        c.flipud = self.aug_flipud.value()
+        c.fliplr = self.aug_fliplr.value()
+        c.mosaic = self.aug_mosaic.value()
+        c.mixup = self.aug_mixup.value()
+        c.copy_paste = self.aug_copy_paste.value()
         return c
 
     # ── Train lifecycle ────────────────────────────────────
