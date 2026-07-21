@@ -28,6 +28,15 @@ def build_train_kwargs(config, use_augment: bool) -> dict:
         "lr0": config.lr0,
         "close_mosaic": config.close_mosaic,
         "multi_scale": config.multi_scale,
+        "optimizer": config.optimizer,
+        "momentum": config.momentum,
+        "weight_decay": config.weight_decay,
+        "lrf": config.lrf,
+        "cos_lr": config.cos_lr,
+        "warmup_epochs": config.warmup_epochs,
+        "warmup_momentum": config.warmup_momentum,
+        "dropout": config.dropout,
+        "label_smoothing": config.label_smoothing,
     }
     if use_augment:
         kwargs.update({
