@@ -199,5 +199,20 @@
   "worker.process_failed": "Échec du démarrage du processus : {err}",
   "train.btn.reset_sizes": "Réinitialiser les tailles",
   "settings.card.panels": "Paramètres des panneaux",
-  "settings.desc.reset_sizes": "Réinitialiser les quatre panneaux d'entraînement (Chemins, Hyperparams, Mode, Sortie) à des proportions égales."
+  "settings.desc.reset_sizes": "Réinitialiser les quatre panneaux d'entraînement (Chemins, Hyperparams, Mode, Sortie) à des proportions égales.",
+  "train.adv.title": "Avancé",
+  "train.adv.lr_opt": "Taux d'apprentissage & Optimiseur",
+  "train.adv.lr0": "LR initial",
+  "train.adv.lrf": "LR final",
+  "train.adv.momentum": "Momentum",
+  "train.adv.weight_decay": "Décroissance du poids",
+  "train.adv.optimizer": "Optimiseur",
+  "train.adv.cos_lr": "LR cosinus",
+  "train.adv.reg_strategy": "Régularisation & Stratégie",
+  "train.adv.close_mosaic": "Fermer Mosaic",
+  "train.adv.multi_scale": "Multi-échelle",
+  "train.adv.dropout": "Dropout",
+  "train.adv.label_smoothing": "Lissage d'étiquette",
+  "train.adv.warmup_epochs": "Époques d'échauffement",
+  "train.adv.warmup_momentum": "Momentum d'échauffement"
 }

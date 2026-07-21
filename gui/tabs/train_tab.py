@@ -43,6 +43,7 @@ from gui.styles import (
 from gui.train_engine import list_experiments
 from gui.widgets import (
     btn,
+    collapsible_section,
     danger_btn,
     field_label,
     input_,
@@ -206,7 +207,95 @@ class TrainTab(QWidget):
         exp_row.addWidget(self.tr_exp, 1)
         lay2.addLayout(exp_row)
 
-        card2.setMinimumHeight(120)
+        # ── 高级参数（可折叠）──
+        def _adv_spin(default, min_v, max_v, step, i18n_key):
+            """创建高级参数用的 DoubleSpinBox。"""
+            s = QDoubleSpinBox()
+            s.setDecimals(4)
+            s.setRange(min_v, max_v)
+            s.setValue(default)
+            s.setSingleStep(step)
+            s.setMinimumWidth(90)
+            s.setProperty("i18nKey", i18n_key)
+            s.setProperty("themeClass", "spinner")
+            s.setStyleSheet(SPINNER_STYLE)
+            return s
+
+        def _adv_row(label_key, widget):
+            """高级参数行：标签 + 微调框。"""
+            row = QHBoxLayout()
+            row.setSpacing(6)
+            lbl = field_label("", i18n_key=label_key)
+            lbl.setFixedWidth(90)
+            row.addWidget(lbl)
+            row.addWidget(widget)
+            row.addStretch()
+            return row
+
+        lay2.addSpacing(6)
+        coll, self._adv_toggle, self._adv_content, adv_lay = collapsible_section(
+            "高级参数", i18n_key="train.adv.title")
+        lay2.addWidget(coll)
+
+        adv_grid = QHBoxLayout()
+        adv_grid.setSpacing(20)
+
+        # 学习率 & 优化器列
+        col_lr = QVBoxLayout()
+        col_lr.setSpacing(4)
+        col_lr.addWidget(field_label("学习率 & 优化器", i18n_key="train.adv.lr_opt"))
+        self.adv_lr0 = _adv_spin(0.0005, 0.0, 0.1, 0.0001, "train.adv.lr0")
+        self.adv_lrf = _adv_spin(0.01, 0.0, 1.0, 0.001, "train.adv.lrf")
+        self.adv_momentum = _adv_spin(0.937, 0.0, 1.0, 0.001, "train.adv.momentum")
+        self.adv_weight_decay = _adv_spin(0.0005, 0.0, 0.1, 0.0001, "train.adv.weight_decay")
+
+        self.adv_optimizer = simple_combo(min_width=120, font_size=13)
+        self.adv_optimizer.addItems(["AdamW", "SGD", "Adam", "RMSProp"])
+        self.adv_optimizer.setCurrentText("AdamW")
+        self.adv_optimizer.setProperty("i18nKey", "train.adv.optimizer")
+
+        self.adv_cos_lr = QCheckBox(tr("train.adv.cos_lr"))
+        self.adv_cos_lr.setChecked(True)
+        self.adv_cos_lr.setProperty("i18nKey", "train.adv.cos_lr")
+        self.adv_cos_lr.setProperty("themeClass", "checkbox")
+        self.adv_cos_lr.setStyleSheet(CHECKBOX_STYLE)
+
+        for lbl_key, w in [
+            ("train.adv.lr0", self.adv_lr0), ("train.adv.lrf", self.adv_lrf),
+            ("train.adv.momentum", self.adv_momentum), ("train.adv.weight_decay", self.adv_weight_decay),
+        ]:
+            col_lr.addLayout(_adv_row(lbl_key, w))
+        col_lr.addLayout(_adv_row("train.adv.optimizer", self.adv_optimizer))
+        col_lr.addWidget(self.adv_cos_lr)
+        col_lr.addStretch()
+        adv_grid.addLayout(col_lr)
+
+        # 正则化 & 策略列
+        col_reg = QVBoxLayout()
+        col_reg.setSpacing(4)
+        col_reg.addWidget(field_label("正则化 & 策略", i18n_key="train.adv.reg_strategy"))
+        self.adv_close_mosaic = _adv_spin(10, 0, 100, 1, "train.adv.close_mosaic")
+        self.adv_multi_scale = _adv_spin(0.5, 0.0, 1.0, 0.1, "train.adv.multi_scale")
+        self.adv_dropout = _adv_spin(0.0, 0.0, 0.5, 0.05, "train.adv.dropout")
+        self.adv_label_smoothing = _adv_spin(0.0, 0.0, 0.2, 0.01, "train.adv.label_smoothing")
+        self.adv_warmup_epochs = _adv_spin(3.0, 0.0, 50.0, 0.5, "train.adv.warmup_epochs")
+        self.adv_warmup_momentum = _adv_spin(0.8, 0.0, 1.0, 0.05, "train.adv.warmup_momentum")
+
+        for lbl_key, w in [
+            ("train.adv.close_mosaic", self.adv_close_mosaic),
+            ("train.adv.multi_scale", self.adv_multi_scale),
+            ("train.adv.dropout", self.adv_dropout),
+            ("train.adv.label_smoothing", self.adv_label_smoothing),
+            ("train.adv.warmup_epochs", self.adv_warmup_epochs),
+            ("train.adv.warmup_momentum", self.adv_warmup_momentum),
+        ]:
+            col_reg.addLayout(_adv_row(lbl_key, w))
+        col_reg.addStretch()
+        adv_grid.addLayout(col_reg)
+
+        adv_lay.addLayout(adv_grid)
+
+        card2.setMinimumHeight(140)
         splitter.addWidget(self._wrap_card(card2))
 
         # ── Panel 3: 数据增强 ──
@@ -214,10 +303,10 @@ class TrainTab(QWidget):
         def _aug_spin(default, min_v, max_v, step, i18n_key):
             """创建数据增强用的 DoubleSpinBox（步长更小，精度更高）。"""
             s = QDoubleSpinBox()
+            s.setDecimals(4)
             s.setRange(min_v, max_v)
             s.setValue(default)
             s.setSingleStep(step)
-            s.setDecimals(4)
             s.setMinimumWidth(80)
             s.setProperty("i18nKey", i18n_key)
             s.setProperty("themeClass", "spinner")
@@ -258,7 +347,7 @@ class TrainTab(QWidget):
         for lbl_key, w in [("train.aug.hsv_h", self.aug_hsv_h),
                            ("train.aug.hsv_s", self.aug_hsv_s),
                            ("train.aug.hsv_v", self.aug_hsv_v)]:
-            col1.addWidget(_aug_row(lbl_key, w))
+            col1.addLayout(_aug_row(lbl_key, w))
         col1.addStretch()
         aug_grid.addLayout(col1)
 
@@ -282,7 +371,7 @@ class TrainTab(QWidget):
             ("train.aug.flipud", self.aug_flipud),
             ("train.aug.fliplr", self.aug_fliplr),
         ]:
-            col2.addWidget(_aug_row(lbl_key, w))
+            col2.addLayout(_aug_row(lbl_key, w))
         col2.addStretch()
         aug_grid.addLayout(col2)
 
@@ -298,7 +387,7 @@ class TrainTab(QWidget):
             ("train.aug.mixup", self.aug_mixup),
             ("train.aug.copy_paste", self.aug_copy_paste),
         ]:
-            col3.addWidget(_aug_row(lbl_key, w))
+            col3.addLayout(_aug_row(lbl_key, w))
         col3.addStretch()
         aug_grid.addLayout(col3)
 
@@ -580,6 +669,18 @@ class TrainTab(QWidget):
         self.aug_mosaic.setValue(c.mosaic)
         self.aug_mixup.setValue(c.mixup)
         self.aug_copy_paste.setValue(c.copy_paste)
+        self.adv_optimizer.setCurrentText(c.optimizer)
+        self.adv_lr0.setValue(c.lr0)
+        self.adv_lrf.setValue(c.lrf)
+        self.adv_momentum.setValue(c.momentum)
+        self.adv_weight_decay.setValue(c.weight_decay)
+        self.adv_cos_lr.setChecked(c.cos_lr)
+        self.adv_warmup_epochs.setValue(c.warmup_epochs)
+        self.adv_warmup_momentum.setValue(c.warmup_momentum)
+        self.adv_close_mosaic.setValue(c.close_mosaic)
+        self.adv_multi_scale.setValue(c.multi_scale)
+        self.adv_dropout.setValue(c.dropout)
+        self.adv_label_smoothing.setValue(c.label_smoothing)
         self._refresh_history()
 
     def _scan_trained_models(self):
@@ -647,6 +748,18 @@ class TrainTab(QWidget):
             "mosaic": self.aug_mosaic.value(),
             "mixup": self.aug_mixup.value(),
             "copy_paste": self.aug_copy_paste.value(),
+            "optimizer": self.adv_optimizer.currentText(),
+            "lr0": self.adv_lr0.value(),
+            "lrf": self.adv_lrf.value(),
+            "momentum": self.adv_momentum.value(),
+            "weight_decay": self.adv_weight_decay.value(),
+            "cos_lr": self.adv_cos_lr.isChecked(),
+            "warmup_epochs": self.adv_warmup_epochs.value(),
+            "warmup_momentum": self.adv_warmup_momentum.value(),
+            "close_mosaic": int(self.adv_close_mosaic.value()),
+            "multi_scale": self.adv_multi_scale.value(),
+            "dropout": self.adv_dropout.value(),
+            "label_smoothing": self.adv_label_smoothing.value(),
         }
 
     def _apply_config_dict(self, d):
@@ -678,6 +791,18 @@ class TrainTab(QWidget):
         self.aug_mosaic.setValue(d.get("mosaic", 1.0))
         self.aug_mixup.setValue(d.get("mixup", 0.0))
         self.aug_copy_paste.setValue(d.get("copy_paste", 0.0))
+        self.adv_optimizer.setCurrentText(d.get("optimizer", "AdamW"))
+        self.adv_lr0.setValue(d.get("lr0", 0.0005))
+        self.adv_lrf.setValue(d.get("lrf", 0.01))
+        self.adv_momentum.setValue(d.get("momentum", 0.937))
+        self.adv_weight_decay.setValue(d.get("weight_decay", 0.0005))
+        self.adv_cos_lr.setChecked(d.get("cos_lr", True))
+        self.adv_warmup_epochs.setValue(d.get("warmup_epochs", 3.0))
+        self.adv_warmup_momentum.setValue(d.get("warmup_momentum", 0.8))
+        self.adv_close_mosaic.setValue(d.get("close_mosaic", 10))
+        self.adv_multi_scale.setValue(d.get("multi_scale", 0.5))
+        self.adv_dropout.setValue(d.get("dropout", 0.0))
+        self.adv_label_smoothing.setValue(d.get("label_smoothing", 0.0))
         self._refresh_history()
 
     def _refresh_preset_combo(self):
@@ -782,6 +907,18 @@ class TrainTab(QWidget):
         c.mosaic = self.aug_mosaic.value()
         c.mixup = self.aug_mixup.value()
         c.copy_paste = self.aug_copy_paste.value()
+        c.optimizer = self.adv_optimizer.currentText()
+        c.lr0 = self.adv_lr0.value()
+        c.lrf = self.adv_lrf.value()
+        c.momentum = self.adv_momentum.value()
+        c.weight_decay = self.adv_weight_decay.value()
+        c.cos_lr = self.adv_cos_lr.isChecked()
+        c.warmup_epochs = self.adv_warmup_epochs.value()
+        c.warmup_momentum = self.adv_warmup_momentum.value()
+        c.close_mosaic = int(self.adv_close_mosaic.value())
+        c.multi_scale = self.adv_multi_scale.value()
+        c.dropout = self.adv_dropout.value()
+        c.label_smoothing = self.adv_label_smoothing.value()
         return c
 
     # ── Train lifecycle ────────────────────────────────────

@@ -199,5 +199,20 @@
   "worker.process_failed": "Failed to start process: {err}",
   "train.btn.reset_sizes": "Reset Panel Sizes",
   "settings.card.panels": "Panel Settings",
-  "settings.desc.reset_sizes": "Reset the four training panels (Paths, Hyperparams, Mode, Output) to equal proportions."
+  "settings.desc.reset_sizes": "Reset the four training panels (Paths, Hyperparams, Mode, Output) to equal proportions.",
+  "train.adv.title": "Advanced",
+  "train.adv.lr_opt": "Learning Rate & Optimizer",
+  "train.adv.lr0": "Initial LR",
+  "train.adv.lrf": "Final LR",
+  "train.adv.momentum": "Momentum",
+  "train.adv.weight_decay": "Weight Decay",
+  "train.adv.optimizer": "Optimizer",
+  "train.adv.cos_lr": "Cosine LR",
+  "train.adv.reg_strategy": "Regularization & Strategy",
+  "train.adv.close_mosaic": "Close Mosaic",
+  "train.adv.multi_scale": "Multi-Scale",
+  "train.adv.dropout": "Dropout",
+  "train.adv.label_smoothing": "Label Smoothing",
+  "train.adv.warmup_epochs": "Warmup Epochs",
+  "train.adv.warmup_momentum": "Warmup Momentum"
 }

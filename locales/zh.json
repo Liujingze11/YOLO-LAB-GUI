@@ -199,5 +199,20 @@
   "worker.process_failed": "启动进程失败: {err}",
   "train.btn.reset_sizes": "恢复默认比例",
   "settings.card.panels": "面板设置",
-  "settings.desc.reset_sizes": "将训练页的四个面板（路径、超参数、训练模式、输出）恢复为均分比例。"
+  "settings.desc.reset_sizes": "将训练页的四个面板（路径、超参数、训练模式、输出）恢复为均分比例。",
+  "train.adv.title": "高级参数",
+  "train.adv.lr_opt": "学习率 & 优化器",
+  "train.adv.lr0": "初始学习率",
+  "train.adv.lrf": "最终学习率",
+  "train.adv.momentum": "动量",
+  "train.adv.weight_decay": "权重衰减",
+  "train.adv.optimizer": "优化器",
+  "train.adv.cos_lr": "余弦退火",
+  "train.adv.reg_strategy": "正则化 & 策略",
+  "train.adv.close_mosaic": "关闭 Mosaic",
+  "train.adv.multi_scale": "多尺度",
+  "train.adv.dropout": "Dropout",
+  "train.adv.label_smoothing": "标签平滑",
+  "train.adv.warmup_epochs": "预热轮数",
+  "train.adv.warmup_momentum": "预热动量"
 }

@@ -199,5 +199,20 @@
   "worker.process_failed": "Error al iniciar el proceso: {err}",
   "train.btn.reset_sizes": "Restablecer tamaños",
   "settings.card.panels": "Configuración de paneles",
-  "settings.desc.reset_sizes": "Restablecer los cuatro paneles de entrenamiento (Rutas, Hiperparámetros, Modo, Salida) a proporciones iguales."
+  "settings.desc.reset_sizes": "Restablecer los cuatro paneles de entrenamiento (Rutas, Hiperparámetros, Modo, Salida) a proporciones iguales.",
+  "train.adv.title": "Avanzado",
+  "train.adv.lr_opt": "Tasa de aprendizaje & Optimizador",
+  "train.adv.lr0": "LR inicial",
+  "train.adv.lrf": "LR final",
+  "train.adv.momentum": "Momento",
+  "train.adv.weight_decay": "Decaimiento de peso",
+  "train.adv.optimizer": "Optimizador",
+  "train.adv.cos_lr": "LR coseno",
+  "train.adv.reg_strategy": "Regularización & Estrategia",
+  "train.adv.close_mosaic": "Cerrar Mosaic",
+  "train.adv.multi_scale": "Multi-escala",
+  "train.adv.dropout": "Dropout",
+  "train.adv.label_smoothing": "Suavizado de etiqueta",
+  "train.adv.warmup_epochs": "Épocas de calentamiento",
+  "train.adv.warmup_momentum": "Momento de calentamiento"
 }
