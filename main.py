@@ -71,6 +71,7 @@ from gui.widgets import (
 )
 from gui.model_selector import ModelSelector
 from gui.workers import InferWorker, ToolWorker, TrainWorker
+from gui.charts.training_chart import TrainingChart
 from gui.i18n import tr, set_language, apply_language, current_lang, AVAILABLE_LANGS
 
 
@@ -359,8 +360,24 @@ class MainWindow(QWidget):
         self.tr_progress = progress_bar(i18n_key="train.progress.format")
         bottom_layout.addWidget(self.tr_progress)
 
+        # ── 曲线 / 日志 水平分栏 ──
+        self._chart_splitter = QSplitter(Qt.Horizontal)
+        self._chart_splitter.setChildrenCollapsible(False)
+        self._chart_splitter.setHandleWidth(4)
+        self._chart_splitter.setStyleSheet("QSplitter::handle { background: #d0d0d0; }")
+
+        self._train_chart = TrainingChart(dark_mode=False)
+        self._chart_splitter.addWidget(self._train_chart)
+
+        log_container = QWidget()
+        log_layout = QVBoxLayout(log_container)
+        log_layout.setContentsMargins(0, 0, 0, 0)
         self.tr_log = log_area()
-        bottom_layout.addWidget(self.tr_log, 1)
+        log_layout.addWidget(self.tr_log)
+        self._chart_splitter.addWidget(log_container)
+        self._chart_splitter.setSizes([400, 360])
+
+        bottom_layout.addWidget(self._chart_splitter, 1)
 
         bottom.setMinimumHeight(180)
         splitter.addWidget(self._wrap_card(bottom))
@@ -858,6 +875,8 @@ class MainWindow(QWidget):
         self._dark_mode = not self._dark_mode
         self._dark_btn.setText("🌙" if self._dark_mode else "☀")
         apply_theme_to_widgets(self, self._dark_mode)
+        if hasattr(self, '_train_chart'):
+            self._train_chart.set_dark_mode(self._dark_mode)
 
     def _on_lang_changed(self, idx):
         lang = self._lang_combo.itemData(idx)
@@ -1050,7 +1069,7 @@ class MainWindow(QWidget):
             self.btn_stop.clicked.disconnect()
             self.btn_stop.clicked.connect(self._on_stop_train)
             self.tr_progress.setValue(0)
-        elif state == "stopped":
+            self._train_chart.reset()
             self.btn_start.setText(tr("train.btn.continue"))
             self.btn_start.setProperty("i18nKey", "train.btn.continue")
             self.btn_start.setEnabled(True)
@@ -1195,6 +1214,7 @@ class MainWindow(QWidget):
         self._train_worker = TrainWorker(cmd)
         self._train_worker.log_line.connect(self._append_train_log)
         self._train_worker.progress.connect(self._on_train_progress)
+        self._train_worker.metrics_update.connect(self._on_train_metrics)
         self._train_worker.failed.connect(self._on_train_failed)
         self._train_worker.finished_ok.connect(self._on_train_done)
         self._train_worker.stopped.connect(self._on_train_stopped)
@@ -1208,6 +1228,17 @@ class MainWindow(QWidget):
     @Slot(int)
     def _on_train_progress(self, pct: int) -> None:
         self.tr_progress.setValue(pct)
+
+    @Slot(dict)
+    def _on_train_metrics(self, metrics: dict):
+        """Update real-time training chart with new epoch metrics."""
+        self._train_chart.append_metrics(
+            epoch=metrics.get("epoch", 0),
+            box_loss=metrics.get("box_loss"),
+            seg_loss=metrics.get("seg_loss"),
+            cls_loss=metrics.get("cls_loss"),
+            dfl_loss=metrics.get("dfl_loss"),
+        )
 
     @Slot()
     def _on_stop_train(self):
