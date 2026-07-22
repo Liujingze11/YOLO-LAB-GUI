@@ -232,6 +232,15 @@ INPUT_STYLE        = _LIGHT_STYLES["input"]
 SPINNER_STYLE      = _LIGHT_STYLES["spinner"]
 COMBO_STYLE        = _LIGHT_STYLES["combo"]
 COMBO_SIMPLE_STYLE = _LIGHT_STYLES["combo_simple"]
+
+EXPORT_CARD_STYLE = (
+    "QFrame { background: #ffffff; border: 1px solid #d0d0d0; border-radius: 8px; }"
+    "QFrame:hover { border: 1px solid #0071e3; }"
+)
+
+EXPORT_CARD_SELECTED_STYLE = (
+    "QFrame { background: rgba(0,113,227,0.08); border: 2px solid #0071e3; border-radius: 8px; }"
+)
 PRIMARY_BTN_STYLE  = _LIGHT_STYLES["primary_btn"]
 SECONDARY_BTN_STYLE = _LIGHT_STYLES["secondary_btn"]
 TINY_BTN_STYLE     = _LIGHT_STYLES["tiny_btn"]

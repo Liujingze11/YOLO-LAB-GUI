@@ -152,3 +152,7 @@ class InferWorker(_BaseWorker):
 
 class ToolWorker(_BaseWorker):
     """在子进程中运行数据集工具脚本，只输出日志。"""
+
+
+class ExportWorker(_BaseWorker):
+    """在子进程中运行模型导出脚本，仅输出日志。"""

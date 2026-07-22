@@ -277,3 +277,36 @@ def simple_combo(min_width: int = 120, font_size: int = 12,
     cb.setProperty("themeClass", "combo_simple")
     cb.setStyleSheet(COMBO_SIMPLE_STYLE.replace("font-size: 13px", f"font-size: {font_size}px"))
     return cb
+
+
+def export_format_card(format_key: str, emoji: str, name: str, desc: str,
+                       parent: QWidget | None = None) -> QFrame:
+    """Clickable export format card — styled for Apple-like selection UI."""
+    card_w = QFrame(parent)
+    card_w.setProperty("format_key", format_key)
+    card_w.setFixedSize(140, 80)
+    card_w.setCursor(Qt.PointingHandCursor)
+    card_w.setStyleSheet(
+        "QFrame { background: #ffffff; border: 1px solid #d0d0d0; border-radius: 10px; }"
+        "QFrame:hover { border: 1px solid #0071e3; }"
+    )
+
+    layout = QVBoxLayout(card_w)
+    layout.setContentsMargins(12, 10, 12, 10)
+    layout.setSpacing(4)
+
+    emoji_lbl = QLabel(f"{emoji}")
+    emoji_lbl.setStyleSheet("font-size: 22px; border: none; background: transparent;")
+    layout.addWidget(emoji_lbl)
+
+    name_lbl = QLabel(name)
+    name_lbl.setStyleSheet("font-size: 13px; font-weight: 600; color: #1d1d1f; border: none; background: transparent;")
+    layout.addWidget(name_lbl)
+
+    desc_lbl = QLabel(desc)
+    desc_lbl.setStyleSheet("font-size: 10px; color: #8e8e93; border: none; background: transparent;")
+    desc_lbl.setWordWrap(True)
+    layout.addWidget(desc_lbl)
+
+    layout.addStretch()
+    return card_w

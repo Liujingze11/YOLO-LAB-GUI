@@ -71,6 +71,7 @@ from gui.widgets import (
 )
 from gui.model_selector import ModelSelector
 from gui.workers import InferWorker, ToolWorker, TrainWorker
+from gui.tabs.export_tab import ExportTab
 from gui.charts.training_chart import TrainingChart
 from gui.i18n import tr, set_language, apply_language, current_lang, AVAILABLE_LANGS
 
@@ -107,6 +108,7 @@ class MainWindow(QWidget):
         self._train_worker: TrainWorker | None = None
         self._infer_worker: InferWorker | None = None
         self._tool_worker: ToolWorker | None = None
+        self._export_tab = ExportTab()
         self._infer_defaults_done = False
         self._presets = load_presets()
         self._path_history: dict[str, list[str]] = {}
@@ -114,17 +116,19 @@ class MainWindow(QWidget):
         self._tabs = QTabWidget()
         self._tabs.setProperty("themeClass", "tab_widget")
         self._tabs.setStyleSheet(TAB_WIDGET_STYLE)
-        tab_keys = ["tab.train", "tab.infer", "tab.logs", "tab.tools", "tab.settings"]
+        tab_keys = ["tab.train", "tab.infer", "tab.export", "tab.logs", "tab.tools", "tab.settings"]
         self._tabs.addTab(self._build_train_tab(), tr(tab_keys[0]))
         self._tabs.tabBar().setTabData(0, tab_keys[0])
         self._tabs.addTab(self._build_infer_tab(), tr(tab_keys[1]))
         self._tabs.tabBar().setTabData(1, tab_keys[1])
-        self._tabs.addTab(self._build_log_viewer_tab(), tr(tab_keys[2]))
+        self._tabs.addTab(self._export_tab, tr(tab_keys[2]))
         self._tabs.tabBar().setTabData(2, tab_keys[2])
-        self._tabs.addTab(self._build_tools_tab(), tr(tab_keys[3]))
+        self._tabs.addTab(self._build_log_viewer_tab(), tr(tab_keys[3]))
         self._tabs.tabBar().setTabData(3, tab_keys[3])
-        self._tabs.addTab(self._build_settings_tab(), tr(tab_keys[4]))
+        self._tabs.addTab(self._build_tools_tab(), tr(tab_keys[4]))
         self._tabs.tabBar().setTabData(4, tab_keys[4])
+        self._tabs.addTab(self._build_settings_tab(), tr(tab_keys[5]))
+        self._tabs.tabBar().setTabData(5, tab_keys[5])
 
         self._dark_mode = False
         self._dark_btn = QPushButton("☀")
@@ -1400,6 +1404,9 @@ class MainWindow(QWidget):
             workers_running = True
         if self._tool_worker and self._tool_worker.isRunning():
             self._tool_worker.stop()
+            workers_running = True
+        if self._export_tab._export_worker and self._export_tab._export_worker.isRunning():
+            self._export_tab._export_worker.stop()
             workers_running = True
         if not workers_running:
             QApplication.quit()
