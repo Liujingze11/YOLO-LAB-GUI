@@ -439,7 +439,7 @@ if __name__ == "__main__":
 - [ ] **Step 2: 验证重构后应用正常启动**
 
 ```bash
-cd /home/ljz/vibe_coding/YOLO/YOLO-LAB-GUI && python -c "from gui.tabs.train_tab import TrainTab; from gui.tabs.infer_tab import InferTab; from gui.tabs.logs_tab import LogsTab; from gui.tabs.tools_tab import ToolsTab; from gui.tabs.settings_tab import SettingsTab; print('All tab imports OK')"
+cd ~/YOLO-LAB-GUI && python -c "from gui.tabs.train_tab import TrainTab; from gui.tabs.infer_tab import InferTab; from gui.tabs.logs_tab import LogsTab; from gui.tabs.tools_tab import ToolsTab; from gui.tabs.settings_tab import SettingsTab; print('All tab imports OK')"
 ```
 
 - [ ] **Step 3: Commit**
@@ -484,7 +484,7 @@ class TrainTab(QWidget):
 - [ ] **Step 3: 运行并确认无回归**
 
 ```bash
-cd /home/ljz/vibe_coding/YOLO/YOLO-LAB-GUI && timeout 3 python main.py 2>&1 || true
+cd ~/YOLO-LAB-GUI && timeout 3 python main.py 2>&1 || true
 ```
 
 - [ ] **Step 4: Commit**
@@ -531,7 +531,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 - [ ] **Step 2: 验证导入和数据类实例化**
 
 ```bash
-cd /home/ljz/vibe_coding/YOLO/YOLO-LAB-GUI && python -c "
+cd ~/YOLO-LAB-GUI && python -c "
 from core.config import TrainConfig
 c = TrainConfig()
 print(f'optimizer={c.optimizer}, lr0={c.lr0}, cos_lr={c.cos_lr}')
@@ -576,7 +576,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 - [ ] **Step 2: 验证 build_train_kwargs 返回完整字典**
 
 ```bash
-cd /home/ljz/vibe_coding/YOLO/YOLO-LAB-GUI && python -c "
+cd ~/YOLO-LAB-GUI && python -c "
 from core.config import TrainConfig
 from core.training import build_train_kwargs
 c = TrainConfig()
@@ -1208,7 +1208,7 @@ class TrainingChart(QWidget):
 - [ ] **Step 3: Verify chart module imports**
 
 ```bash
-cd /home/ljz/vibe_coding/YOLO/YOLO-LAB-GUI && python -c "
+cd ~/YOLO-LAB-GUI && python -c "
 from gui.charts.training_chart import TrainingChart
 print('TrainingChart import OK')
 "
@@ -2180,7 +2180,7 @@ tab_defs = [
 - [ ] **Step 3: 验证导入**
 
 ```bash
-cd /home/ljz/vibe_coding/YOLO/YOLO-LAB-GUI && python -c "
+cd ~/YOLO-LAB-GUI && python -c "
 from gui.tabs.export_tab import ExportTab
 from gui.export_engine import main as export_main
 from core.export import ExportConfig, EXPORT_FORMATS
@@ -2476,7 +2476,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 - [ ] **Step 4: 验证 JSON 文件格式正确**
 
 ```bash
-cd /home/ljz/vibe_coding/YOLO/YOLO-LAB-GUI && python -c "
+cd ~/YOLO-LAB-GUI && python -c "
 import json
 for lang in ['zh', 'en', 'fr', 'es']:
     with open(f'locales/{lang}.json', 'r') as f:
