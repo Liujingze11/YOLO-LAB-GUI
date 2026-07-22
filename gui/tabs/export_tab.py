@@ -28,11 +28,11 @@ ROOT = Path(__file__).resolve().parent.parent.parent
 class ExportTab(QWidget):
     """Data conversion tab for model export to various formats."""
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, path_history: dict[str, list[str]] | None = None):
         super().__init__(parent)
         self._export_worker: ExportWorker | None = None
         self._selected_format: str = "onnx"
-        self._path_history: dict[str, list[str]] = {}
+        self._path_history = path_history if path_history is not None else {}
         self._format_cards: dict[str, QFrame] = {}
         self._build_ui()
 

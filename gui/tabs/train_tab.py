@@ -31,6 +31,7 @@ from PySide6.QtWidgets import (
 
 from core.config import TrainConfig
 from core.device import get_available_devices, get_default_device
+from gui.charts.training_chart import TrainingChart
 from gui.i18n import tr, current_lang
 from gui.model_selector import ModelSelector
 from gui.paths import REPO_ROOT, RESULTS_DIR, LOG_DIR
@@ -479,8 +480,20 @@ class TrainTab(QWidget):
         self.tr_progress = progress_bar(i18n_key="train.progress.format")
         bottom_layout.addWidget(self.tr_progress)
 
+        # ── 曲线 / 日志 水平分栏 ──
+        self._chart_splitter = QSplitter(Qt.Horizontal)
+        self._chart_splitter.setChildrenCollapsible(False)
+        self._chart_splitter.setHandleWidth(4)
+        self._chart_splitter.setStyleSheet("QSplitter::handle { background: #d0d0d0; }")
+
+        self._train_chart = TrainingChart(dark_mode=False)
+        self._chart_splitter.addWidget(self._train_chart)
+
         self.tr_log = log_area()
-        bottom_layout.addWidget(self.tr_log, 1)
+        self._chart_splitter.addWidget(self.tr_log)
+        self._chart_splitter.setSizes([400, 360])
+
+        bottom_layout.addWidget(self._chart_splitter, 1)
 
         bottom.setMinimumHeight(180)
         splitter.addWidget(self._wrap_card(bottom))
@@ -518,6 +531,23 @@ class TrainTab(QWidget):
 
     def _log_err(self, msg):
         self._log_append(self.tr_log, f'<span style="color:#ff5555;">{tr("log.err_prefix")}</span>  {msg}')
+
+    def set_dark_mode(self, dark: bool):
+        """Propagate dark mode to the training chart."""
+        if hasattr(self, '_train_chart'):
+            self._train_chart.set_dark_mode(dark)
+
+    @Slot(dict)
+    def _on_train_metrics(self, metrics: dict):
+        """Update real-time training chart with new epoch metrics."""
+        if hasattr(self, '_train_chart'):
+            self._train_chart.append_metrics(
+                epoch=metrics.get("epoch", 0),
+                box_loss=metrics.get("box_loss"),
+                seg_loss=metrics.get("seg_loss"),
+                cls_loss=metrics.get("cls_loss"),
+                dfl_loss=metrics.get("dfl_loss"),
+            )
 
     def _add_to_history(self, key, value):
         if not value:
@@ -856,6 +886,8 @@ class TrainTab(QWidget):
             self.btn_stop.clicked.disconnect()
             self.btn_stop.clicked.connect(self._on_stop_train)
             self.tr_progress.setValue(0)
+            if hasattr(self, '_train_chart'):
+                self._train_chart.reset()
         elif state == "stopped":
             self.btn_start.setText(tr("train.btn.continue"))
             self.btn_start.setProperty("i18nKey", "train.btn.continue")
@@ -1030,6 +1062,7 @@ class TrainTab(QWidget):
         self._train_worker = TrainWorker(cmd)
         self._train_worker.log_line.connect(self._append_train_log)
         self._train_worker.progress.connect(self._on_train_progress)
+        self._train_worker.metrics_update.connect(self._on_train_metrics)
         self._train_worker.failed.connect(self._on_train_failed)
         self._train_worker.finished_ok.connect(self._on_train_done)
         self._train_worker.stopped.connect(self._on_train_stopped)
