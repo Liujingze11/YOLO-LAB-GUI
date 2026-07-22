@@ -3,7 +3,7 @@
 """
 from __future__ import annotations
 
-from PySide6.QtCore import QAbstractAnimation, QEasingCurve, QParallelAnimationGroup, QPropertyAnimation, Qt
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QComboBox,
     QFrame,
@@ -14,10 +14,8 @@ from PySide6.QtWidgets import (
     QProgressBar,
     QPushButton,
     QScrollArea,
-    QSizePolicy,
     QSpinBox,
     QTextEdit,
-    QToolButton,
     QVBoxLayout,
     QWidget,
 )
@@ -281,75 +279,34 @@ def simple_combo(min_width: int = 120, font_size: int = 12,
     return cb
 
 
-def collapsible_section(title: str, i18n_key: str = "",
-                        parent: QWidget | None = None) -> tuple[QWidget, QToolButton, QWidget, QVBoxLayout]:
-    """可折叠区域：点击标题按钮展开/收起内容区域。
-
-    Returns (container, toggle_button, content_widget, content_layout)
-    """
-    container = QWidget(parent)
-    container.setStyleSheet("background: transparent; border: none;")
-
-    outer = QVBoxLayout(container)
-    outer.setContentsMargins(0, 0, 0, 0)
-    outer.setSpacing(0)
-
-    # 切换按钮
-    btn = QToolButton()
-    display = tr(i18n_key) if i18n_key else title
-    btn.setText(f"▸ {display}")
-    btn.setProperty("i18nKey", i18n_key)
-    btn.setToolButtonStyle(Qt.ToolButtonTextOnly)
-    btn.setStyleSheet(
-        "QToolButton { background: transparent; border: none; font-size: 12px; "
-        "color: #6e6e73; font-weight: 500; padding: 4px 0; }"
-        "QToolButton:hover { color: #0071e3; }"
+def export_format_card(format_key: str, emoji: str, name: str, desc: str,
+                       parent: QWidget | None = None) -> QFrame:
+    """Clickable export format card — styled for Apple-like selection UI."""
+    card_w = QFrame(parent)
+    card_w.setProperty("format_key", format_key)
+    card_w.setFixedSize(140, 80)
+    card_w.setCursor(Qt.PointingHandCursor)
+    card_w.setStyleSheet(
+        "QFrame { background: #ffffff; border: 1px solid #d0d0d0; border-radius: 10px; }"
+        "QFrame:hover { border: 1px solid #0071e3; }"
     )
-    btn.setCheckable(True)
-    btn.setChecked(False)
-    outer.addWidget(btn)
 
-    # 内容区域
-    content = QWidget()
-    content.setStyleSheet("background: transparent; border: none;")
-    content.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-    content.setMaximumHeight(0)
-    content_layout = QVBoxLayout(content)
-    content_layout.setContentsMargins(0, 8, 0, 4)
-    content_layout.setSpacing(6)
-    outer.addWidget(content)
+    layout = QVBoxLayout(card_w)
+    layout.setContentsMargins(12, 10, 12, 10)
+    layout.setSpacing(4)
 
-    # 动画
-    btn.toggled.connect(lambda checked: _animate_collapse(content, checked, btn))
+    emoji_lbl = QLabel(f"{emoji}")
+    emoji_lbl.setStyleSheet("font-size: 22px; border: none; background: transparent;")
+    layout.addWidget(emoji_lbl)
 
-    return container, btn, content, content_layout
+    name_lbl = QLabel(name)
+    name_lbl.setStyleSheet("font-size: 13px; font-weight: 600; color: #1d1d1f; border: none; background: transparent;")
+    layout.addWidget(name_lbl)
 
+    desc_lbl = QLabel(desc)
+    desc_lbl.setStyleSheet("font-size: 10px; color: #8e8e93; border: none; background: transparent;")
+    desc_lbl.setWordWrap(True)
+    layout.addWidget(desc_lbl)
 
-def _animate_collapse(content: QWidget, expand: bool, btn: QToolButton) -> None:
-    """展开/收起动画：通过 QPropertyAnimation 过渡 maxHeight。"""
-    content.setUpdatesEnabled(False)
-
-    # 计算内容实际高度
-    content.setMaximumHeight(2000)  # 临时解除限制测量真实高度
-    target_h = content.sizeHint().height() if expand else 0
-
-    anim = QPropertyAnimation(content, b"maximumHeight")
-    anim.setDuration(250)
-    anim.setStartValue(content.maximumHeight() if not expand else 0)
-    anim.setEndValue(target_h)
-    anim.setEasingCurve(QEasingCurve.Type.OutCubic)
-
-    # 更新按钮文本箭头
-    display = btn.text()
-    if expand:
-        btn.setText(display.replace("▸", "▾"))
-    else:
-        btn.setText(display.replace("▾", "▸"))
-
-    def on_finished():
-        content.setUpdatesEnabled(True)
-        if not expand:
-            content.setMaximumHeight(0)
-
-    anim.finished.connect(on_finished)
-    anim.start()
+    layout.addStretch()
+    return card_w
