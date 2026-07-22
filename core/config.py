@@ -27,6 +27,19 @@ class TrainConfig:
     close_mosaic: int = 10
     multi_scale: float = 0.5
 
+    # === optimization & learning rate schedule ===
+    optimizer: str = "AdamW"
+    momentum: float = 0.937
+    weight_decay: float = 0.0005
+    lrf: float = 0.01
+    cos_lr: bool = True
+    warmup_epochs: float = 3.0
+    warmup_momentum: float = 0.8
+
+    # === regularization ===
+    dropout: float = 0.0
+    label_smoothing: float = 0.0
+
     experiment_name: str = "experiment"
 
     # === data augmentation ===
