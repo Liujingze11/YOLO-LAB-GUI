@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
+    QHBoxLayout,
     QLabel,
     QVBoxLayout,
     QWidget,
@@ -11,10 +12,13 @@ from PySide6.QtWidgets import (
 from gui.widgets import (
     btn,
     card,
+    field_label,
+    path_combo,
     scroll_area,
     section_label,
 )
 from gui.i18n import tr
+from gui.paths import REPO_ROOT
 
 
 class SettingsTab(QWidget):
@@ -54,6 +58,40 @@ class SettingsTab(QWidget):
         lay1.addStretch()
         il.addWidget(card1)
 
+        # ── 默认路径 ──
+        card2, lay2 = card()
+        lay2.addWidget(section_label("默认路径", i18n_key="settings.card.defaults"))
+        lay2.addSpacing(12)
+
+        # 数据集默认目录
+        ds_row = QHBoxLayout()
+        ds_row.setSpacing(10)
+        ds_row.addWidget(field_label("数据集", i18n_key="settings.field.dataset_dir"))
+        self.default_dataset = path_combo(default=str(REPO_ROOT / "data" / "dataset"))
+        ds_row.addWidget(self.default_dataset, 1)
+        lay2.addLayout(ds_row)
+
+        # 模型缓存目录
+        model_row = QHBoxLayout()
+        model_row.setSpacing(10)
+        model_row.addWidget(field_label("模型缓存", i18n_key="settings.field.model_dir"))
+        self.default_model_dir = path_combo(default=str(REPO_ROOT / "pretrained_models"))
+        model_row.addWidget(self.default_model_dir, 1)
+        lay2.addLayout(model_row)
+
+        lay2.addSpacing(12)
+        save_defaults_btn = btn("保存默认值", primary=False, i18n_key="settings.btn.save_defaults")
+        save_defaults_btn.clicked.connect(self._save_defaults)
+        lay2.addWidget(save_defaults_btn)
+
+        il.addWidget(card2)
+
         il.addStretch()
 
         outer.addWidget(scroll_area(inner))
+
+    # ── slots ──
+
+    def _save_defaults(self):
+        """Save current path defaults to settings store."""
+        _ = self
