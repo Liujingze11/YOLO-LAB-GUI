@@ -39,6 +39,14 @@ conda activate yolo
 pip install -r requirements.txt
 ```
 
+## Tests
+
+```bash
+python -m pytest tests/ -q            # regression checks (offscreen Qt)
+
+python tests/e2e_training_smoke.py    # optional: real 2-epoch training smoke
+```
+
 ## Project Structure
 
 ```
