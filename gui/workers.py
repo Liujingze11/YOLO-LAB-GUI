@@ -79,8 +79,13 @@ class TrainWorker(_BaseWorker):
     progress = Signal(int)
     metrics_update = Signal(dict)
 
+    def __init__(self, cmd: list[str]):
+        super().__init__(cmd)
+        self._last_epoch: int | None = None
+
     def _on_line(self, line: str) -> None:
         self._parse_metrics_line(line)
+        self._parse_val_line(line)
         m = re.search(r"\b(\d+)\s*/\s*(\d+)\b", line)
         if not m:
             return
@@ -120,6 +125,7 @@ class TrainWorker(_BaseWorker):
         try:
             epoch = int(m.group(1))
             total = int(m.group(2))
+            self._last_epoch = epoch
             metrics = {
                 "epoch": epoch,
                 "total_epochs": total,
@@ -131,6 +137,29 @@ class TrainWorker(_BaseWorker):
             self.metrics_update.emit(metrics)
         except (ValueError, IndexError):
             pass  # skip unparseable rows silently
+
+    def _parse_val_line(self, line: str) -> None:
+        """Parse the Ultralytics validation summary row and emit mAP metrics.
+
+        Example (segmentation, 8 metrics; detection has 4):
+                     all        123        456      0.654  ...   0.371      0.289
+        The trailing metric pair is the task-primary mAP50 / mAP50-95
+        (mask for segmentation, box for detection).
+        """
+        parts = line.split()
+        if len(parts) < 5 or parts[0] != "all":
+            return
+        try:
+            nums = [float(p) for p in parts[1:]]
+        except ValueError:
+            return
+        if len(nums) < 6 or self._last_epoch is None:
+            return
+        self.metrics_update.emit({
+            "epoch": self._last_epoch,
+            "mAP50": nums[-2],
+            "mAP50_95": nums[-1],
+        })
 
 
 class InferWorker(_BaseWorker):

@@ -70,6 +70,7 @@ class MainWindow(QWidget):
         self._logs_tab = LogsTab(path_history=self._path_history)
         self._tools_tab = ToolsTab(path_history=self._path_history)
         self._settings_tab = SettingsTab()
+        self._settings_tab.reset_splitter_requested.connect(self._train_tab.reset_splitter)
 
         tab_defs = [
             (self._train_tab,    "tab.train"),
@@ -170,6 +171,16 @@ def main():
     app.setFont(font)
     w = MainWindow()
     w.show()
+
+    # First-run welcome wizard
+    try:
+        from gui.welcome_wizard import is_first_run, WelcomeWizard
+        if is_first_run():
+            wizard = WelcomeWizard(w)
+            wizard.exec()
+    except Exception:
+        pass
+
     sys.exit(app.exec())
 
 

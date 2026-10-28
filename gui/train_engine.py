@@ -30,7 +30,7 @@ _fm.FontManager.addfont = _safe_addfont
 
 from ultralytics import YOLO
 
-from core.config import TrainConfig
+from core.config import load_effective_config
 from core.train_logger import append_train_log, append_full_val_log
 from core.training import (
     list_experiments, build_train_kwargs,
@@ -156,7 +156,7 @@ def run_non_interactive(args):
     """根据命令行参数直接运行训练，不弹出任何交互提示。"""
     global _loc
     _loc = load_locale(_LOCALE_DIR, args.lang)
-    config = TrainConfig()
+    config = load_effective_config(run_config_file=args.config_file)
     config = override_config_from_args(config, args)
 
     _original_data_yaml = config.data_yaml
@@ -213,6 +213,7 @@ def parse_args():
     parser.add_argument("--model-file", type=str, default=None)
     parser.add_argument("--results-dir", type=str, default=None)
     parser.add_argument("--log-dir", type=str, default=None)
+    parser.add_argument("--config-file", type=str, default=None)
     parser.add_argument("--no-interactive", action="store_true")
     parser.add_argument("--mode", type=int, choices=[1, 2, 3], default=None)
     parser.add_argument("--use-augment", action="store_true", default=None, dest="use_augment")

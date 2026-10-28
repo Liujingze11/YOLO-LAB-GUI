@@ -77,23 +77,33 @@ _USER_CONFIG_DIR = Path.home() / ".yolo-lab"
 _USER_CONFIG_PATH = _USER_CONFIG_DIR / "config.yaml"
 
 
-def load_user_config() -> dict | None:
-    """Load user config from ~/.yolo-lab/config.yaml.  Returns None if not found."""
-    if not _USER_CONFIG_PATH.is_file():
+def save_run_config(cfg: TrainConfig, path: str | Path) -> None:
+    """Write the full TrainConfig to a YAML file (per-run transport to the engine)."""
+    d = {k: v for k, v in asdict(cfg).items() if not k.startswith("_")}
+    with open(path, "w", encoding="utf-8") as f:
+        yaml.dump(d, f, allow_unicode=True, default_flow_style=False)
+
+
+def load_run_config(path: str | Path) -> dict | None:
+    """Load a run-config YAML written by save_run_config.  Returns None if not found/unreadable."""
+    if not Path(path).is_file():
         return None
     try:
-        with open(_USER_CONFIG_PATH, "r", encoding="utf-8") as f:
+        with open(path, "r", encoding="utf-8") as f:
             return yaml.safe_load(f)
     except Exception:
         return None
 
 
+def load_user_config() -> dict | None:
+    """Load user config from ~/.yolo-lab/config.yaml.  Returns None if not found."""
+    return load_run_config(_USER_CONFIG_PATH)
+
+
 def save_user_config(cfg: TrainConfig) -> None:
     """Save TrainConfig to ~/.yolo-lab/config.yaml."""
     _USER_CONFIG_DIR.mkdir(parents=True, exist_ok=True)
-    d = {k: v for k, v in asdict(cfg).items() if not k.startswith("_")}
-    with open(_USER_CONFIG_PATH, "w", encoding="utf-8") as f:
-        yaml.dump(d, f, allow_unicode=True, default_flow_style=False)
+    save_run_config(cfg, _USER_CONFIG_PATH)
 
 
 def merge_config(base: TrainConfig, overrides: dict) -> TrainConfig:
@@ -105,12 +115,33 @@ def merge_config(base: TrainConfig, overrides: dict) -> TrainConfig:
     return TrainConfig(**d)
 
 
-def load_effective_config(cli_args: dict | None = None) -> TrainConfig:
-    """Merge: defaults → ~/.yolo-lab/config.yaml → CLI args."""
+def load_effective_config(cli_args: dict | None = None, run_config_file: str | Path | None = None) -> TrainConfig:
+    """Merge: defaults → ~/.yolo-lab/config.yaml → per-run config file → CLI args."""
     cfg = TrainConfig()
     file_cfg = load_user_config()
     if file_cfg:
         cfg = merge_config(cfg, file_cfg)
+    if run_config_file:
+        run_cfg = load_run_config(run_config_file)
+        if run_cfg:
+            cfg = merge_config(cfg, run_cfg)
     if cli_args:
         cfg = merge_config(cfg, cli_args)
     return cfg
+
+
+# ── User settings file (~/.yolo-lab/settings.yaml) ──
+
+_SETTINGS_PATH = _USER_CONFIG_DIR / "settings.yaml"
+
+
+def load_user_settings() -> dict:
+    """Load app settings from ~/.yolo-lab/settings.yaml ({} if absent/unreadable)."""
+    return load_run_config(_SETTINGS_PATH) or {}
+
+
+def save_user_settings(settings: dict) -> None:
+    """Save app settings dict to ~/.yolo-lab/settings.yaml."""
+    _USER_CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+    with open(_SETTINGS_PATH, "w", encoding="utf-8") as f:
+        yaml.dump(settings, f, allow_unicode=True, default_flow_style=False)

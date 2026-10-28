@@ -179,6 +179,9 @@ class DownloadDialog(QDialog):
                 tr("model.dialog.speed_unknown",
                    down=down_str, speed=speed_str, elapsed=int(elapsed)))
 
+    def set_status_text(self, text: str) -> None:
+        self._status.setText(text[:100])
+
     @staticmethod
     def _format_bytes(b: int) -> str:
         if b >= 1048576:

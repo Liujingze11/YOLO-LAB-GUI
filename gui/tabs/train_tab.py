@@ -9,6 +9,7 @@ import os
 import platform
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 from PySide6.QtCore import Qt, Slot
@@ -29,8 +30,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from core.config import TrainConfig
-from core.device import get_available_devices, get_default_device
+from core.config import TrainConfig, save_run_config
+from gui.device import get_available_devices, get_default_device
 from gui.charts.training_chart import TrainingChart
 from gui.i18n import tr, current_lang
 from gui.model_selector import ModelSelector
@@ -93,6 +94,10 @@ class TrainTab(QWidget):
         self._presets: dict = {}
         self._path_history = path_history if path_history is not None else {}
         self._closing = False
+        self._gpu_download_dialog = None
+        self._gpu_install_dialog = None
+        self._gpu_worker = None
+        self._gpu_install_worker = None
         self._build_ui()
         self._load_train_defaults()
 
@@ -183,6 +188,7 @@ class TrainTab(QWidget):
         self.tr_device.setMinimumWidth(100)
         self.tr_device.setProperty("themeClass", "combo")
         self.tr_device.setStyleSheet(COMBO_STYLE)
+        self.tr_device.currentIndexChanged.connect(self._on_device_selected)
 
         grid = QHBoxLayout()
         grid.setSpacing(28)
@@ -491,7 +497,8 @@ class TrainTab(QWidget):
 
         self.tr_log = log_area()
         self._chart_splitter.addWidget(self.tr_log)
-        self._chart_splitter.setSizes([400, 360])
+        self._chart_splitter_defaults = [400, 360]
+        self._chart_splitter.setSizes(self._chart_splitter_defaults)
 
         bottom_layout.addWidget(self._chart_splitter, 1)
 
@@ -501,6 +508,11 @@ class TrainTab(QWidget):
         il.addWidget(splitter)
 
         outer.addWidget(scroll_area(inner))
+
+    def reset_splitter(self):
+        """Restore default panel sizes (wired to the settings tab)."""
+        self._splitter.setSizes(self._splitter_defaults)
+        self._chart_splitter.setSizes(self._chart_splitter_defaults)
 
     # ── Shared utility methods ──────────────────────────────
 
@@ -547,6 +559,8 @@ class TrainTab(QWidget):
                 seg_loss=metrics.get("seg_loss"),
                 cls_loss=metrics.get("cls_loss"),
                 dfl_loss=metrics.get("dfl_loss"),
+                mAP50=metrics.get("mAP50"),
+                mAP50_95=metrics.get("mAP50_95"),
             )
 
     def _add_to_history(self, key, value):
@@ -667,6 +681,95 @@ class TrainTab(QWidget):
             self.tr_device.setCurrentIndex(idx)
         else:
             self.tr_device.setCurrentIndex(0)
+
+    # ── GPU setup flow ─────────────────────────────────────
+
+    def _on_device_selected(self, idx: int) -> None:
+        device_id = self.tr_device.itemData(idx)
+        if device_id != "gpu":
+            return
+
+        from gui.gpu_manager import check_gpu_capability, GpuDownloadWorker, GpuInstallWorker, get_gpu_dir
+
+        capability = check_gpu_capability()
+
+        if capability["status"] == "needs_download":
+            reply = QMessageBox.question(
+                self, tr("gpu.download_title"),
+                capability["message"],
+                QMessageBox.Yes | QMessageBox.No,
+            )
+            if reply != QMessageBox.Yes:
+                self.tr_device.setCurrentIndex(0)
+                return
+
+            from gui.model_selector import DownloadDialog
+            self._gpu_download_dialog = DownloadDialog("CUDA components", self.window())
+            self._gpu_download_dialog.show()
+
+            RELEASE_URL = "https://github.com/Liujingze11/YOLO-LAB/releases/latest/download/gpu_bundle.zip"
+            self._gpu_worker = GpuDownloadWorker(RELEASE_URL, get_gpu_dir())
+            self._gpu_worker.progress.connect(self._gpu_download_dialog.set_progress)
+            self._gpu_worker.finished.connect(self._on_gpu_download_done)
+            self._gpu_worker.error_msg.connect(self._on_gpu_download_error)
+            self._gpu_worker.start()
+
+        elif capability["status"] == "needs_restart":
+            QMessageBox.information(self, tr("gpu.check_title"), tr("gpu.restart_needed"))
+            self.tr_device.setCurrentIndex(0)
+
+        elif capability["status"] == "dev_needs_cuda_torch":
+            reply = QMessageBox.question(
+                self, tr("gpu.install_title"),
+                capability["message"],
+                QMessageBox.Yes | QMessageBox.No,
+            )
+            if reply != QMessageBox.Yes:
+                self.tr_device.setCurrentIndex(0)
+                return
+
+            from gui.model_selector import DownloadDialog
+            self._gpu_install_dialog = DownloadDialog("CUDA PyTorch", self.window())
+            self._gpu_install_dialog.setWindowTitle(tr("gpu.install_title"))
+            self._gpu_install_dialog.show()
+
+            self._gpu_install_worker = GpuInstallWorker()
+            self._gpu_install_worker.log_line.connect(
+                self._gpu_install_dialog.set_status_text
+            )
+            self._gpu_install_worker.finished.connect(self._on_gpu_install_done)
+            self._gpu_install_worker.start()
+
+        elif capability["status"] in ("no_nvidia", "has_amd"):
+            QMessageBox.information(self, tr("gpu.check_title"), capability["message"])
+            self.tr_device.setCurrentIndex(0)
+
+    def _on_gpu_install_done(self, success: bool, msg: str) -> None:
+        if self._gpu_install_dialog:
+            self._gpu_install_dialog.accept()
+            self._gpu_install_dialog = None
+        if success:
+            QMessageBox.information(self, tr("gpu.install_title"), tr("gpu.install_success"))
+        else:
+            QMessageBox.critical(self, tr("gpu.install_failed"), msg[:500])
+        self.tr_device.setCurrentIndex(0)
+        self._refresh_devices()
+
+    def _on_gpu_download_done(self, success: bool, msg: str) -> None:
+        if self._gpu_download_dialog:
+            self._gpu_download_dialog.accept()
+            self._gpu_download_dialog = None
+        if success:
+            QMessageBox.information(self, tr("gpu.download_title"), tr("gpu.restart_needed"))
+        else:
+            QMessageBox.critical(self, tr("gpu.download_failed"), msg[:500])
+            QMessageBox.information(self, tr("gpu.download_title"), tr("gpu.install_manual"))
+        self.tr_device.setCurrentIndex(0)
+        self._refresh_devices()
+
+    def _on_gpu_download_error(self, msg: str) -> None:
+        if self._gpu_download_dialog:
+            self._gpu_download_dialog.set_error(msg)
 
     def _apply_config(self, c):
         if c.data_yaml:
@@ -1032,10 +1135,18 @@ class TrainTab(QWidget):
         self._log_info(tr("train.log.starting", name=cfg.experiment_name))
         self._log_info(tr("train.log.params", epochs=cfg.epochs, imgsz=cfg.imgsz, batch=cfg.batch, device=cfg.device))
 
+        # Full panel config travels as a per-run YAML; basic fields are also
+        # passed explicitly below so the engine's summary prints them.
+        fd, tmp_name = tempfile.mkstemp(suffix=".yaml", prefix="yolo_run_cfg_")
+        os.close(fd)
+        save_run_config(cfg, tmp_name)
+        self._run_config_tmp = tmp_name
+
         cmd = [
             sys.executable, str(REPO_ROOT / "gui" / "train_engine.py"),
             "--lang", current_lang(),
             "--no-interactive",
+            "--config-file", tmp_name,
             "--mode", str(mode),
             "--data-yaml", cfg.data_yaml,
             "--model-file", cfg.model_file,
@@ -1112,5 +1223,11 @@ class TrainTab(QWidget):
 
     @Slot()
     def _on_train_thread_finished(self):
+        if getattr(self, "_run_config_tmp", None):
+            try:
+                os.unlink(self._run_config_tmp)
+            except OSError:
+                pass
+            self._run_config_tmp = None
         if self._closing:
             QApplication.quit()

@@ -5,15 +5,18 @@ from PySide6.QtCore import Signal
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
+    QMessageBox,
     QVBoxLayout,
     QWidget,
 )
 
+from core.config import load_user_settings, save_user_settings
 from gui.widgets import (
     btn,
     card,
     field_label,
     path_combo,
+    path_combo_get,
     scroll_area,
     section_label,
 )
@@ -28,6 +31,7 @@ class SettingsTab(QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._settings = load_user_settings()
         self._build_ui()
 
     def _build_ui(self):
@@ -67,7 +71,8 @@ class SettingsTab(QWidget):
         ds_row = QHBoxLayout()
         ds_row.setSpacing(10)
         ds_row.addWidget(field_label("数据集", i18n_key="settings.field.dataset_dir"))
-        self.default_dataset = path_combo(default=str(REPO_ROOT / "data" / "dataset"))
+        self.default_dataset = path_combo(default=self._settings.get(
+            "default_dataset_dir", str(REPO_ROOT / "data" / "dataset")))
         ds_row.addWidget(self.default_dataset, 1)
         lay2.addLayout(ds_row)
 
@@ -75,7 +80,8 @@ class SettingsTab(QWidget):
         model_row = QHBoxLayout()
         model_row.setSpacing(10)
         model_row.addWidget(field_label("模型缓存", i18n_key="settings.field.model_dir"))
-        self.default_model_dir = path_combo(default=str(REPO_ROOT / "pretrained_models"))
+        self.default_model_dir = path_combo(default=self._settings.get(
+            "default_model_dir", str(REPO_ROOT / "pretrained_models")))
         model_row.addWidget(self.default_model_dir, 1)
         lay2.addLayout(model_row)
 
@@ -93,5 +99,9 @@ class SettingsTab(QWidget):
     # ── slots ──
 
     def _save_defaults(self):
-        """Save current path defaults to settings store."""
-        _ = self
+        """Save current path defaults to ~/.yolo-lab/settings.yaml."""
+        save_user_settings({
+            "default_dataset_dir": path_combo_get(self.default_dataset),
+            "default_model_dir": path_combo_get(self.default_model_dir),
+        })
+        QMessageBox.information(self, tr("msg.title.done"), tr("settings.msg.saved"))
