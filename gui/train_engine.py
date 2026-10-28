@@ -122,7 +122,8 @@ def execute_resume_training(config) -> None:
                      notes=_t(_loc, "train.engine.log_resume_started"))
     try:
         model = YOLO(config.last_pt)
-        model.train(resume=True)
+        model.train(resume=True, data=config.data_yaml, imgsz=config.imgsz,
+                    batch=config.batch, device=config.device)
         append_train_log(config, mode="resume_train", status="finished",
                          notes=_t(_loc, "train.engine.log_resume_finished"))
         log_validation_result(config, mode="resume_train", notes=_t(_loc, "train.engine.log_resume_val"))

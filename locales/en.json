@@ -291,5 +291,10 @@
   "welcome.models": "Pretrained models",
   "welcome.data_ready": "Data directories ready",
   "welcome.tip": "Tip: Select data.yaml → Choose a model → Set params → Start training",
-  "welcome.start": "Get Started"
+  "welcome.start": "Get Started",
+  "validate.no_data_yaml": "Please select a data.yaml configuration file",
+  "validate.data_yaml_missing": "data.yaml file not found:",
+  "validate.model_missing": "Model file not found:",
+  "validate.no_results_dir": "Please select a results directory",
+  "validate.no_exp_name": "Please enter an experiment name"
 }

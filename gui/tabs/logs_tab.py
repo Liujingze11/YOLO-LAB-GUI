@@ -143,6 +143,11 @@ class LogsTab(QWidget):
 
         outer.addWidget(scroll_area(inner))
 
+    def showEvent(self, e):
+        super().showEvent(e)
+        self._refresh_lv_csv_list()
+        self._refresh_lv_exp_list()
+
     # ── Shared utility methods (copied from MainWindow) ─────
 
     MAX_LOG_LINES = 5000

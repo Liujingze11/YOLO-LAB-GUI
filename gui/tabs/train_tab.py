@@ -167,6 +167,14 @@ class TrainTab(QWidget):
             lay1.addLayout(row)
             lay1.addSpacing(8)
 
+        # Dataset info hint
+        self.dataset_info = QLabel("")
+        self.dataset_info.setStyleSheet("font-size: 11px; color: #8e8e93; padding-left: 80px;")
+        self.dataset_info.setWordWrap(True)
+        lay1.addWidget(self.dataset_info)
+        self.tr_data_yaml.lineEdit().editingFinished.connect(self._update_dataset_info)
+        self.tr_data_yaml.currentIndexChanged.connect(self._update_dataset_info)
+
         model_row = QHBoxLayout()
         model_row.setSpacing(10)
         model_lbl = field_label("初始权重", i18n_key="train.field.init_weights")
@@ -562,6 +570,14 @@ class TrainTab(QWidget):
                 mAP50=metrics.get("mAP50"),
                 mAP50_95=metrics.get("mAP50_95"),
             )
+        epoch = metrics.get("epoch", "?")
+        total = metrics.get("total_epochs", "?")
+        parts = [f"Epoch {epoch}/{total}"]
+        for key, label in [("box_loss", "box"), ("seg_loss", "seg"), ("cls_loss", "cls"), ("dfl_loss", "dfl")]:
+            if key in metrics:
+                parts.append(f"{label}={metrics[key]:.3f}")
+        if len(parts) > 1:
+            self.tr_progress.setFormat("  ".join(parts))
 
     def _add_to_history(self, key, value):
         if not value:
@@ -1015,6 +1031,47 @@ class TrainTab(QWidget):
             self.tr_progress.setValue(0)
             self.tr_progress.setFormat(tr("train.progress.format"))
 
+    def _update_dataset_info(self):
+        p = Path(path_combo_get(self.tr_data_yaml))
+        if not p.is_file():
+            self.dataset_info.setText("")
+            return
+        try:
+            import yaml
+            with open(p, "r", encoding="utf-8") as f:
+                data = yaml.safe_load(f)
+            names = data.get("names", {})
+            nc = len(names) if isinstance(names, (dict, list)) else 0
+            root = data.get("path", "")
+            if root and not Path(root).is_absolute():
+                root = str((p.parent / root).resolve())
+            elif root:
+                root = str(Path(root).resolve())
+            parts = [f"nc={nc}"]
+            if root:
+                parts.append(root)
+            self.dataset_info.setText("  ".join(parts))
+        except Exception:
+            self.dataset_info.setText("")
+
+    def _validate_config(self, cfg) -> list[str]:
+        errors = []
+        # data.yaml
+        if not cfg.data_yaml:
+            errors.append(tr("validate.no_data_yaml"))
+        elif not Path(cfg.data_yaml).is_file():
+            errors.append(f"{tr('validate.data_yaml_missing')}\n  {cfg.data_yaml}")
+        # model file
+        if not self._model_file_ok(cfg.model_file):
+            errors.append(f"{tr('validate.model_missing')}\n  {cfg.model_file}")
+        # results dir
+        if not cfg.results_dir:
+            errors.append(tr("validate.no_results_dir"))
+        # experiment name
+        if not cfg.experiment_name.strip():
+            errors.append(tr("validate.no_exp_name"))
+        return errors
+
     # ── Config from UI ─────────────────────────────────────
 
     def _build_config_from_train_ui(self):
@@ -1066,6 +1123,12 @@ class TrainTab(QWidget):
 
         cfg = self._build_config_from_train_ui()
         use_aug = self.tr_augment.isChecked()
+
+        # Validate config before proceeding
+        errors = self._validate_config(cfg)
+        if errors:
+            QMessageBox.critical(self, tr("msg.title.error"), "\n".join(errors))
+            return
 
         if self.rb_new.isChecked():
             mode = 1

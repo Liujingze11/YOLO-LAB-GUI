@@ -291,5 +291,10 @@
   "welcome.models": "预训练模型",
   "welcome.data_ready": "数据目录已就绪",
   "welcome.tip": "提示：选择 data.yaml → 选模型 → 设参数 → 开始训练",
-  "welcome.start": "开始使用"
+  "welcome.start": "开始使用",
+  "validate.no_data_yaml": "请选择 data.yaml 配置文件",
+  "validate.data_yaml_missing": "data.yaml 文件不存在：",
+  "validate.model_missing": "模型文件不存在：",
+  "validate.no_results_dir": "请选择结果保存目录",
+  "validate.no_exp_name": "请输入实验名称"
 }
