@@ -5,7 +5,7 @@ Leg 1: DownloadDialog.set_status_text exists and truncates.
 Leg 2: device combo gets the pseudo GPU entry via gui.device.
 Leg 3: picking pseudo GPU with no driver shows info and resets combo.
 Leg 4: dev_needs_cuda_torch starts GpuInstallWorker with a status dialog.
-Leg 5: needs_download starts GpuDownloadWorker with the release URL.
+Leg 5: needs_download checks YOLO-LAB-GUI's own release metadata.
 """
 import os
 import sys
@@ -107,7 +107,7 @@ tt._on_device_selected(gpu_idx)
 expect(InstallStub.started == 1, f"install worker started (got {InstallStub.started})")
 expect(tt._gpu_install_dialog is not None, "install dialog created")
 
-# ── Leg 5: needs_download -> download worker with release URL ──
+# ── Leg 5: needs_download -> discover assets in this GUI's releases ──
 class DownloadStub:
     started = 0
 
@@ -129,7 +129,7 @@ gm.check_gpu_capability = lambda: {
 DownloadStub.started = 0
 tt._on_device_selected(gpu_idx)
 expect(DownloadStub.started == 1, f"download worker started (got {DownloadStub.started})")
-expect(tt._gpu_worker.url.endswith("gpu_bundle.zip"),
-       f"download worker uses gpu_bundle release URL (got {tt._gpu_worker.url})")
+expect(tt._gpu_worker.url == "https://api.github.com/repos/Liujingze11/YOLO-LAB-GUI/releases/latest",
+       f"download worker checks the standalone GUI release (got {tt._gpu_worker.url})")
 
 print("ALL PASS")

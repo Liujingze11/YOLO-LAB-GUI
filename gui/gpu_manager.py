@@ -6,6 +6,7 @@ import os
 import platform
 import subprocess
 import sys
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -13,6 +14,9 @@ from PySide6.QtCore import QThread, Signal
 
 from gui.paths import get_user_data_dir, is_frozen
 from gui.i18n import tr
+
+
+GPU_RELEASE_API_URL = "https://api.github.com/repos/Liujingze11/YOLO-LAB-GUI/releases/latest"
 
 
 def get_gpu_dir() -> Path:
@@ -137,17 +141,39 @@ class GpuDownloadWorker(QThread):
     finished = Signal(bool, str)
     error_msg = Signal(str)
 
-    def __init__(self, download_url: str, dest_dir: Path):
+    def __init__(self, release_api_url: str, dest_dir: Path):
         super().__init__()
-        self._url = download_url
+        self._release_api_url = release_api_url
         self._dest = dest_dir / "gpu_bundle.zip"
         self._tmp = dest_dir / "gpu_bundle.zip.tmp"
         self._aborted = False
 
+    def _resolve_download_url(self) -> str:
+        request = urllib.request.Request(
+            self._release_api_url,
+            headers={"Accept": "application/vnd.github+json", "User-Agent": "YOLO-LAB-GUI"},
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=30) as response:
+                release = json.load(response)
+        except urllib.error.HTTPError as exc:
+            if exc.code == 404:
+                raise RuntimeError(tr("gpu.bundle_unavailable")) from exc
+            raise
+        for asset in release.get("assets", []):
+            if asset.get("name") == "gpu_bundle.zip" and asset.get("browser_download_url"):
+                return asset["browser_download_url"]
+        raise RuntimeError(tr("gpu.bundle_unavailable"))
+
     def run(self) -> None:
         try:
+            if self._aborted:
+                return
+            download_url = self._resolve_download_url()
+            if self._aborted:
+                return
             self._dest.parent.mkdir(parents=True, exist_ok=True)
-            with urllib.request.urlopen(self._url) as resp:
+            with urllib.request.urlopen(download_url, timeout=30) as resp:
                 total = int(resp.headers.get("Content-Length", 0))
                 downloaded = 0
                 with open(self._tmp, "wb") as f:

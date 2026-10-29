@@ -705,7 +705,10 @@ class TrainTab(QWidget):
         if device_id != "gpu":
             return
 
-        from gui.gpu_manager import check_gpu_capability, GpuDownloadWorker, GpuInstallWorker, get_gpu_dir
+        from gui.gpu_manager import (
+            GPU_RELEASE_API_URL, check_gpu_capability,
+            GpuDownloadWorker, GpuInstallWorker, get_gpu_dir,
+        )
 
         capability = check_gpu_capability()
 
@@ -723,8 +726,7 @@ class TrainTab(QWidget):
             self._gpu_download_dialog = DownloadDialog("CUDA components", self.window())
             self._gpu_download_dialog.show()
 
-            RELEASE_URL = "https://github.com/Liujingze11/YOLO-LAB/releases/latest/download/gpu_bundle.zip"
-            self._gpu_worker = GpuDownloadWorker(RELEASE_URL, get_gpu_dir())
+            self._gpu_worker = GpuDownloadWorker(GPU_RELEASE_API_URL, get_gpu_dir())
             self._gpu_worker.progress.connect(self._gpu_download_dialog.set_progress)
             self._gpu_worker.finished.connect(self._on_gpu_download_done)
             self._gpu_worker.error_msg.connect(self._on_gpu_download_error)
