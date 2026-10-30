@@ -1,0 +1,73 @@
+{
+  "info": {
+    "description": "ISAT",
+    "folder": ".",
+    "name": "sample.png",
+    "width": 512,
+    "height": 384,
+    "depth": 3,
+    "note": "synthetic baseline"
+  },
+  "objects": [
+    {
+      "category": "person",
+      "group": 1,
+      "segmentation": [
+        [
+          60,
+          70
+        ],
+        [
+          230,
+          70
+        ],
+        [
+          230,
+          250
+        ],
+        [
+          60,
+          250
+        ]
+      ],
+      "area": 30600,
+      "layer": 1,
+      "bbox": [
+        60,
+        70,
+        230,
+        250
+      ],
+      "iscrowd": false,
+      "note": "rectangle"
+    },
+    {
+      "category": "knife",
+      "group": 2,
+      "segmentation": [
+        [
+          200,
+          290
+        ],
+        [
+          330,
+          60
+        ],
+        [
+          450,
+          290
+        ]
+      ],
+      "area": 28750,
+      "layer": 2,
+      "bbox": [
+        200,
+        60,
+        450,
+        290
+      ],
+      "iscrowd": true,
+      "note": "triangle"
+    }
+  ]
+}

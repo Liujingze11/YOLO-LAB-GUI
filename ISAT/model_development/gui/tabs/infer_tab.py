@@ -249,6 +249,10 @@ class InferTab(QWidget):
             QMessageBox.critical(self, tr("msg.title.error"), f"{tr('msg.infer_source_not_found')}\n{source}")
             return
 
+        from ISAT.model_development.gui.device import get_default_device
+        self._job_device = get_default_device()
+        if hasattr(self, "before_job") and not self.before_job("infer", self._job_device):
+            return
         self.ir_log.clear()
         self._log_info_ir(tr("infer.log.starting", model=model_path))
 

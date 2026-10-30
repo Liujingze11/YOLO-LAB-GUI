@@ -617,6 +617,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.check_latest_version_thread.tag.connect(self.latest_version_tip)
         self.check_latest_version_thread.start()
 
+        from ISAT.model_development.integration import install_model_development
+        self.model_development = install_model_development(self)
+
         self.plugin_manager_dialog.trigger_application_start()
 
     def init_segment_anything(self, model_path: str = None, checked: bool = True):
@@ -2243,17 +2246,31 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             pass
 
     def exit(self):
-        # 保存类别配置
-        self.save_cfg(self.config_file)
-        # 保存软件配置
-        self.save_software_cfg()
-
-        self.plugin_manager_dialog.trigger_application_shutdown()
-
         self.close()
 
-    def closeEvent(self, a0: QtGui.QCloseEvent):
-        self.exit()
+    def closeEvent(self, event: QtGui.QCloseEvent):
+        if hasattr(self, 'model_development') and not self.model_development.confirm_close():
+            event.ignore()
+            return
+        if not self.saved:
+            answer = QtWidgets.QMessageBox.question(
+                self, 'Unsaved annotations', 'Save the current annotations before closing?',
+                QtWidgets.QMessageBox.Save | QtWidgets.QMessageBox.Discard | QtWidgets.QMessageBox.Cancel,
+                QtWidgets.QMessageBox.Save,
+            )
+            if answer == QtWidgets.QMessageBox.Cancel:
+                event.ignore()
+                return
+            if answer == QtWidgets.QMessageBox.Save:
+                self.save()
+                if not self.saved:
+                    event.ignore()
+                    return
+        self.save_cfg(self.config_file)
+        self.save_software_cfg()
+        self.plugin_manager_dialog.trigger_application_shutdown()
+        self.check_latest_version_thread.wait(3500)
+        event.accept()
 
     def latest_version_tip(self, is_latest_version: bool, latest_version: str):
         """

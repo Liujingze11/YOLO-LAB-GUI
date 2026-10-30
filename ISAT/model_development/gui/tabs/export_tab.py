@@ -397,6 +397,9 @@ class ExportTab(QWidget):
                                  f"模型文件不存在:\n{cfg.model_path}")
             return
 
+        self._job_device = "0" if cfg.format == "engine" else "cpu"
+        if hasattr(self, "before_job") and not self.before_job("export", self._job_device):
+            return
         self.export_log.clear()
         self._log_info(f"开始导出: {cfg.model_path} → {cfg.format.upper()}")
 

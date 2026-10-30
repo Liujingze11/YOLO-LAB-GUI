@@ -19,6 +19,7 @@ class ModelDevelopmentWidget(QtWidgets.QWidget):
         self.setFont(QtGui.QFont('Noto Sans CJK SC', 10))
         self.setStyleSheet('QWidget#ModelDevelopment { background: #ebecf0; }')
         self._dark = False
+        self.job_guard = lambda kind, device: True
         history = {}
         self.tabs = QtWidgets.QTabWidget(self)
         self.tabs.setProperty('themeClass', 'tab_widget')
@@ -30,6 +31,8 @@ class ModelDevelopmentWidget(QtWidgets.QWidget):
         self.logs_tab = LogsTab(path_history=history)
         self.tools_tab = ToolsTab(path_history=history)
         self.settings_tab = SettingsTab()
+        for page in [self.train_tab, self.infer_tab, self.export_tab]:
+            page.before_job = self.authorize_job
         self.settings_tab.reset_splitter_requested.connect(self.train_tab.reset_splitter)
         for widget, key in [(self.train_tab, 'tab.train'), (self.infer_tab, 'tab.infer'), (self.export_tab, 'tab.export'), (self.logs_tab, 'tab.logs'), (self.tools_tab, 'tab.tools'), (self.settings_tab, 'tab.settings')]:
             index = self.tabs.addTab(widget, tr(key))
@@ -54,6 +57,9 @@ class ModelDevelopmentWidget(QtWidgets.QWidget):
         self._start_shortcut = QtWidgets.QShortcut(QtGui.QKeySequence('Ctrl+Return'), self)
         self._start_shortcut.setContext(QtCore.Qt.WidgetWithChildrenShortcut)
         self._start_shortcut.activated.connect(self._start_current)
+
+    def authorize_job(self, kind, device):
+        return self.job_guard(kind, device)
 
     def _change_language(self, index):
         set_language(self._language.itemData(index)); apply_language(self)

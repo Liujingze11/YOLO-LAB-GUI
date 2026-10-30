@@ -41,9 +41,9 @@
 **Files:** ISAT/model_development/integration.py、ISAT/widgets/mainwindow.py、tests/model_development/test_integration.py。
 **Interfaces:** install_model_development(mainwindow) -> controller；controller.show_annotation() / show_development()；复用 mainwindow.view 和 scene。
 
-- [ ] 先写真实 Qt 窗口切页检查：视口/对象保持；原隐藏 dock 保持隐藏；标注快捷键在模型页不生效，返回恢复。
-- [ ] 添加固定导航、懒加载六页和关闭任务处理；保持原主窗口与启动入口。GPU 任务预检处理 SAM 冲突。
-- [ ] 用临时设置和代表图片实际构造 ISAT 主窗口、切页、保存截图；确认原 software.yaml 摘要未变后提交。
+- [x] 先写真实 Qt 窗口切页检查：视口/对象保持；原隐藏 dock 保持隐藏；标注快捷键在模型页不生效，返回恢复。
+- [x] 添加固定导航、懒加载六页和关闭任务处理；保持原主窗口与启动入口。GPU 任务预检处理 SAM 冲突。
+- [x] 用临时设置和代表图片实际构造 ISAT 主窗口、切页、保存截图；确认原 software.yaml 摘要未变后提交。
 
 ## Task 3: 当前标注数据准备训练集
 

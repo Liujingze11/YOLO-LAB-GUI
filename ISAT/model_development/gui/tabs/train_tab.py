@@ -1197,6 +1197,9 @@ class TrainTab(QWidget):
         if r != QMessageBox.Yes:
             return
 
+        if hasattr(self, "before_job") and not self.before_job("train", cfg.device):
+            return
+        self._job_device = cfg.device
         self.tr_log.clear()
         self._log_info(tr("train.log.starting", name=cfg.experiment_name))
         self._log_info(tr("train.log.params", epochs=cfg.epochs, imgsz=cfg.imgsz, batch=cfg.batch, device=cfg.device))
