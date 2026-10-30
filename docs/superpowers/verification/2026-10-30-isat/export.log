@@ -11,7 +11,7 @@ ONNX: export success ✅ 0.5s, saved as '<smoke>/onnx/.isat-export-ohgc667i/best
 
 Export complete (0.6s)
 Results saved to <smoke>/onnx/.isat-export-ohgc667i/best.onnx
-Predict:         yolo predict task=segment model=<smoke>/onnx/.isat-export-ohgc667i/best.onnx imgsz=64 
-Validate:        yolo val task=segment model=<smoke>/onnx/.isat-export-ohgc667i/best.onnx imgsz=64 data=<smoke>/dataset/data.yaml  
+Predict:         yolo predict task=segment model=<smoke>/onnx/.isat-export-ohgc667i/best.onnx imgsz=64
+Validate:        yolo val task=segment model=<smoke>/onnx/.isat-export-ohgc667i/best.onnx imgsz=64 data=<smoke>/dataset/data.yaml
 Visualize:       https://netron.app
 导出完成: <smoke>/onnx/best.onnx

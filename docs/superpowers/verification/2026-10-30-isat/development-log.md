@@ -1,0 +1,27 @@
+# SDD ledger — plan: docs/superpowers/plans/2026-10-30-isat-model-development.md
+
+User explicitly instructed start on original ISAT after rejecting Electron rewrite. Base cf17763; branch feature/isat-model-development. Work in original directory; one agent only. Existing software.yaml SHA256 1ce3a431009baab6469c89da8ffe99d0c1f85f30d13e1417f9381c7c919355e1 must be preserved.
+
+Pre-flight: Task 1 -> 2 widget QWidget/active worker API consistent; Task 2 -> 3 mainwindow roots, save and categories are existing ISAT state; Task 3 -> 4 YAML absolute root ensures training cwd independent. Six legacy GUI pages depend on relocated script, locale, model cache paths: namespace/root rewrites must be exercised at runtime.
+
+Authorization: user's “没错，开始吧，以ISAT为主体” is direct execution authorization; no repeat brainstorm/design approval. Reuse original PyQt5; no extra worktree per current-directory preference. Final self-review by same agent per explicit no-delegation constraint.
+
+Task 1: runtime uses local .runtime/python overlay: six 1.17.0, urllib3 2.8.0, idna 3.20, no old environment upgrades. Five initial tests RED; pipe cleanup test added RED after observing live descendant held stdout; workers now cancel without GUI waiting and close logs/descendants. All six tests passed.
+Task 1: complete (commits 32b04be..3e846eb, tests: env QT_QPA_PLATFORM=offscreen PYTHONPATH=/home/ljz/vibe_coding/YOLO/isat-yolo-lab/.runtime/python:/home/ljz/vibe_coding/YOLO/isat-yolo-lab /home/ljz/miniconda3/envs/isat_env/bin/python -m unittest discover -s tests/model_development -v → OK)
+
+Task 2: real original ISAT tests GREEN. Same AnnotationView/scene/polygons and dirty state survive switches; view transform/center and explicit hidden dock restored; model inputs suppress annotation QAction shortcuts and drafts survive. Original software.yaml SHA unchanged. Captures in docs/superpowers/verification/2026-10-30-isat/.
+Task 2: Ruling: original closeEvent only recursively called exit/save preferences and did not guard dirty annotations — add Save/Discard/Cancel when closing, plus async model worker shutdown — minor behavior improvement required to avoid losing edits in integrated app.
+Task 2: complete (commits 3e846eb..701fdd0, tests: env QT_QPA_PLATFORM=offscreen PYTHONPATH=/home/ljz/vibe_coding/YOLO/isat-yolo-lab/.runtime/python:/home/ljz/vibe_coding/YOLO/isat-yolo-lab /home/ljz/miniconda3/envs/isat_env/bin/python -m unittest discover -s tests/model_development -v → loaded plugin:  AutoAnnotatePlugin)
+Task 3: complete (commits 701fdd0..9ec8415, tests: env QT_QPA_PLATFORM=offscreen PYTHONPATH=/home/ljz/vibe_coding/YOLO/isat-yolo-lab/.runtime/python:/home/ljz/vibe_coding/YOLO/isat-yolo-lab /home/ljz/miniconda3/envs/isat_env/bin/python -m unittest discover -s tests/model_development -v → loaded plugin:  AutoAnnotatePlugin)
+
+Task 4: real CPU chain passed with local yolov8n-seg.pt: 1 epoch, best/last checkpoints and metrics; six inference overlays; ONNX in selected directory and ONNX Runtime finite outputs shapes [1,38,84] and [1,32,16,16]. No downloads or environment upgrades.
+Task 4: observed and fixed existing GUI export output-dir bug (real smoke RED→GREEN), unchecked dynamic/simplify flag omission, augmentation-off default reactivation, local registry-named weight misselection, and missing optional dependency failure. Regression tests captured each. SAM release clears model/video refs and encoder cache; actual GPU memory behavior unverified because nvidia-smi cannot communicate with driver.
+Task 4: 22 full-suite tests passed; source launcher ran offscreen six seconds (expected timeout 124); package metadata includes locales/tools/provenance; software.yaml SHA unchanged. Evidence retained in docs/superpowers/verification/2026-10-30-isat/.
+Task 4: complete (commits 9ec8415..4989a3d, tests: env QT_QPA_PLATFORM=offscreen PYTHONPATH=/home/ljz/vibe_coding/YOLO/isat-yolo-lab/.runtime/python:/home/ljz/vibe_coding/YOLO/isat-yolo-lab /home/ljz/miniconda3/envs/isat_env/bin/python -m unittest discover -s tests -v → loaded plugin:  AutoAnnotatePlugin)
+
+Final review: self-review (user explicitly requires one agent). Important findings: (1) GPU development job did not guard reverse SAM loading from annotation; (2) remote SAM may still hold local decoder/tensors, so must not bypass the resource guard. Both reproduced by failing integration tests; fixing in one pass. No independent reviewer was used.
+
+Final: fixed reverse SAM loading and local decoder ownership — test_gpu_development_job_blocks_loading_sam_from_annotation_page and test_gpu_guard_keeps_cpu_available_and_checks_local_remote_decoder RED→GREEN; final full suite 23/23.
+Final review: no remaining Critical/Important findings for the verified local Linux workflow. Optional GPU/model/export backends stay explicitly unverified where dependencies or hardware are absent. No deferred minor code findings.
+Final: execution artifacts retained in docs/superpowers/verification/2026-10-30-isat/; tests now write screenshots only to ignored .runtime/test-captures so reruns do not modify tracked reference images. Existing pretrained yolov8n-seg.pt copied into native app cache without network download or overwriting an existing cache file.
+Final: keep feature/isat-model-development in the original local repository, no merge/push or remote recreation, in accordance with local-repository preservation. Original software.yaml remains uncommitted and byte-identical to the starting version.

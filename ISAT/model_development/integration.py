@@ -156,16 +156,28 @@ class ModelDevelopmentController(QtCore.QObject):
         if worker is not None and worker.isRunning(): workers.append(worker)
         return workers
 
-    def job_block_reason(self, device):
-        if self._waiting_close: return '正在停止任务并退出，请稍候。'
-        if str(device).lower() == 'cpu': return ''
+    def _gpu_task_running(self):
         if self.widget:
             for tab, name in [(self.widget.train_tab, '_train_worker'), (self.widget.infer_tab, '_infer_worker'), (self.widget.export_tab, '_export_worker')]:
                 worker = getattr(tab, name, None)
                 if worker and worker.isRunning() and getattr(tab, '_job_device', 'cpu') != 'cpu':
-                    return '已有 GPU 模型任务在运行。请先停止或等待它完成，也可选择 CPU。'
+                    return True
+        return False
+
+    def authorize_sam_load(self):
+        if self._gpu_task_running():
+            QtWidgets.QMessageBox.warning(self.window, 'GPU 资源', 'GPU 模型开发任务正在运行，请先停止或等待完成后再加载 SAM。手工标注仍可继续。')
+            return False
+        return True
+
+    def job_block_reason(self, device):
+        if self._waiting_close: return '正在停止任务并退出，请稍候。'
+        if str(device).lower() == 'cpu': return ''
+        if self._gpu_task_running():
+            return '已有 GPU 模型任务在运行。请先停止或等待它完成，也可选择 CPU。'
         sam = getattr(self.window, 'segany', None)
-        if not self.window.use_remote_sam and sam and str(sam.device) != 'cpu':
+        # Remote encoding may still keep a decoder and prompt tensors on this GPU.
+        if sam and str(sam.device) != 'cpu':
             return 'SAM 正在使用 GPU。请先点击顶部“释放 SAM 显存”，或选择 CPU 运行模型开发任务。'
         return ''
 

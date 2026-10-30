@@ -17,7 +17,7 @@
   ],
   "packages": {},
   "weights_sha256": "a7cd8f929e1903d78a12a48efecab430209f18dc46cb96c3599a5980c63c423c",
-  "unit_tests": 22,
+  "unit_tests": 23,
   "device": "cpu",
   "training_epochs": 1
 }

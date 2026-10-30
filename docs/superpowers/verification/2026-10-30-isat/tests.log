@@ -1,0 +1,45 @@
+test_cancel_or_validation_failure_never_publishes_half_a_dataset (model_development.test_dataset.DatasetTests) ... ok
+test_duplicate_stems_are_rejected_instead_of_reusing_one_annotation (model_development.test_dataset.DatasetTests) ... ok
+test_missing_labels_are_excluded_and_original_sources_remain_unchanged (model_development.test_dataset.DatasetTests) ... ok
+test_seeded_split_and_class_indices_are_reproducible (model_development.test_dataset.DatasetTests) ... ok
+test_disabled_augmentation_really_disables_each_transform (model_development.test_engine_options.EngineOptionTests) ... ok
+test_unchecked_export_flags_reach_the_subprocess (model_development.test_engine_options.EngineOptionTests) ... ok
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+test_annotation_shortcuts_do_not_run_inside_model_inputs (model_development.test_integration.IntegrationTests) ... ok
+test_close_cancel_keeps_unsaved_annotation_window_open (model_development.test_integration.IntegrationTests) ... ok
+test_gpu_development_job_blocks_loading_sam_from_annotation_page (model_development.test_integration.IntegrationTests) ... ok
+test_gpu_guard_keeps_cpu_available_and_checks_local_remote_decoder (model_development.test_integration.IntegrationTests) ... ok
+test_optional_panel_dependency_error_keeps_annotation_available (model_development.test_integration.IntegrationTests) ... ok
+test_release_idle_sam_frees_model_references_and_encoder_cache (model_development.test_integration.IntegrationTests) ... ok
+test_saved_annotation_dataset_is_connected_to_training_form (model_development.test_integration.IntegrationTests) ... ok
+test_switch_preserves_real_isat_canvas_polygons_and_hidden_docks (model_development.test_integration.IntegrationTests) ... ok
+test_algorithm_entry_modules_do_not_import_a_qt_binding (model_development.test_relocated_tools.RelocatedToolsTests) ... ok
+test_dataset_tools_preserve_existing_labels_and_move_matching_pairs (model_development.test_relocated_tools.RelocatedToolsTests) ... ok
+test_all_training_fields_roundtrip_into_config (model_development.test_widget.WidgetTests) ... ok
+test_export_options_and_translations_are_usable (model_development.test_widget.WidgetTests) ... ok
+test_local_registry_named_weights_remain_local (model_development.test_widget.WidgetTests) ... ok
+test_six_real_pages_work_with_pyqt5_and_keep_drafts (model_development.test_widget.WidgetTests) ... ok
+test_cancel_silent_process_is_nonblocking_and_cleans_children (model_development.test_workers.WorkerTests) ... ok
+test_leader_exit_does_not_hang_on_a_descendant_log_pipe (model_development.test_workers.WorkerTests) ... ok
+test_stop_before_start_never_launches_a_command (model_development.test_workers.WorkerTests) ... ok
+
+----------------------------------------------------------------------
+Ran 23 tests in 10.226s
+
+OK
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin

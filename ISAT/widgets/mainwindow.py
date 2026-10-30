@@ -640,6 +640,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 return
 
         model_name = os.path.basename(model_path)
+        if model_name and hasattr(self, "model_development") and not self.model_development.authorize_sam_load():
+            return
 
         if not self.saved:
             result = QtWidgets.QMessageBox.question(

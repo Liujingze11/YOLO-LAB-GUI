@@ -53,7 +53,7 @@ class IntegrationTests(unittest.TestCase):
         objects = list(w.polygons); self.assertEqual(len(objects), 2)
         before = w.view.transform(); center = w.view.mapToScene(w.view.viewport().rect().center())
         w.saved = False
-        capture = Path(__file__).parents[2]/'docs/superpowers/verification/2026-10-30-isat'
+        capture = Path(__file__).parents[2]/'.runtime/test-captures'
         capture.mkdir(parents=True, exist_ok=True)
         w.grab().save(str(capture/'annotation.png'))
         c.show_development(); self.app.processEvents()
@@ -86,14 +86,14 @@ class IntegrationTests(unittest.TestCase):
         c.show_annotation(); self.app.processEvents()
         self.assertEqual(w.actionPolygon.shortcut().toString(), shortcut)
 
-    def test_gpu_guard_keeps_cpu_and_remote_sam_available(self):
+    def test_gpu_guard_keeps_cpu_available_and_checks_local_remote_decoder(self):
         from types import SimpleNamespace
         c = self.controller(); w = self.window
         with patch.object(w, 'use_segment_anything', True), patch.object(w, 'segany', SimpleNamespace(device='cuda'), create=True):
             self.assertTrue(c.job_block_reason('0'))
             self.assertEqual(c.job_block_reason('cpu'), '')
             with patch.object(w, 'use_remote_sam', True):
-                self.assertEqual(c.job_block_reason('0'), '')
+                self.assertTrue(c.job_block_reason('0'), 'remote encoding can still keep a decoder on the local GPU')
 
     def test_close_cancel_keeps_unsaved_annotation_window_open(self):
         self.window.saved = False
@@ -154,3 +154,20 @@ class IntegrationTests(unittest.TestCase):
             self.assertEqual(encoder.results_dict, {})
             self.assertFalse(w.use_segment_anything); self.assertFalse(w.use_segment_anything_video)
             self.assertIs(w.view, view); self.assertEqual(c.job_block_reason('0'), '')
+
+    def test_gpu_development_job_blocks_loading_sam_from_annotation_page(self):
+        import sys
+        from ISAT.model_development.gui.workers import ToolWorker
+        w = self.window; c = self.controller(); c.show_development()
+        worker = ToolWorker([sys.executable, '-c', 'import time;time.sleep(90)'])
+        c.widget.train_tab._train_worker = worker
+        c.widget.train_tab._job_device = '0'
+        worker.start()
+        try:
+            c.show_annotation(); self.app.processEvents()
+            local = Path(self.temp.name)/'model.pth'; local.write_bytes(b'stub model, never loaded')
+            with patch.object(w.init_segany_thread, 'start', return_value=None), patch.object(QtWidgets.QMessageBox, 'warning', return_value=QtWidgets.QMessageBox.Ok):
+                w.init_segment_anything(str(local))
+            self.assertTrue(w.isEnabled(), 'blocked SAM load must leave the annotation window usable')
+        finally:
+            worker.stop(); worker.wait(8000); w.setEnabled(True)

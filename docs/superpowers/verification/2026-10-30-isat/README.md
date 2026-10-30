@@ -9,14 +9,14 @@
 - 训练配置字段通过表单往返，包括基础、高级优化和数据增强。关闭增强会显式禁用对应变换；本地注册表同名权重保留本地路径，不误触发下载。
 - 当前标注保存后异步生成独立训练集，原 JSON / 图片保留，缺标注图像排除；既有空主档是已确认负样本。类别固定，种子划分可复现；相同图像不跨 train/val；取消或失败不发布半成品。生成 YAML 自动填入训练页。
 - 真实子进程：静默取消、启动前取消、后代占用日志管道均已检查；取消不在 GUI 线程等待 5 秒，退出会等待工作线程结束。
-- 22 项自动化检查通过，包含真实 ISAT 窗口、数据集、完整参数、原有工具的实际调用，以及算法入口不导入 Qt。全量命令：`QT_QPA_PLATFORM=offscreen PYTHONPATH="$PWD/.runtime/python:$PWD" /home/ljz/miniconda3/envs/isat_env/bin/python -m unittest discover -s tests -v`。
+- 23 项自动化检查通过，包含真实 ISAT 窗口、数据集、完整参数、原有工具的实际调用，以及算法入口不导入 Qt。全量命令：`QT_QPA_PLATFORM=offscreen PYTHONPATH="$PWD/.runtime/python:$PWD" /home/ljz/miniconda3/envs/isat_env/bin/python -m unittest discover -s tests -v`。
 - 已有本地 `yolov8n-seg.pt` 在 CPU 上训练 1 epoch（64 像素、batch 2），产生 best.pt、last.pt、CSV；推理输出 6 张叠加图；ONNX 导出到选定目录，并通过 ONNX Runtime 计算两组有限数值输出。没有下载模型、没有自动安装算法依赖；这只是运行链路验证，不是准确率评估。
 - `run-isat.sh` 实际离屏启动 6 秒无崩溃后由验证进程超时停止，退出状态 124 符合此检查预期。`setup.py egg_info` 清单包含翻译、工具脚本和来源记录。
 - 既有 `ISAT/software.yaml` SHA256 保持 `1ce3a431009baab6469c89da8ffe99d0c1f85f30d13e1417f9381c7c919355e1`，未将其修改提交。
 
 ## 运行边界
 
-- 本机 `nvidia-smi` 目前无法连接 NVIDIA 驱动，未执行真实 GPU 训练、TensorRT 或 SAM 卸载后的显存测量。资源策略与引用/缓存清理有自动检查；不由此宣称所有 GPU 模型已验收。
+- 本机 `nvidia-smi` 目前无法连接 NVIDIA 驱动，未执行真实 GPU 训练、TensorRT 或 SAM 卸载后的显存测量。资源策略与引用/缓存清理有自动检查（含 GPU 开发任务阻止反向加载 SAM、Remote SAM 本地解码器占用）；不由此宣称所有 GPU 模型已验收。
 - 其他 SAM 模型、视频传播和既有插件实现均保留原 ISAT 版本，本轮未逐一用模型权重重跑；不是删除了这些功能。
 - OpenVINO、CoreML、TensorFlow 后端本机未安装，相关导出页与选项已保留，未记为实际导出通过。CoreML 还受操作系统支持限制。模型组件下载/GPU 安装入口未在本轮实际执行。
 - 可写配置、预设、缓存和输出位于平台应用数据目录 `ISAT/model-development`；与原 GUI 的用户配置独立。模型缓存路径设置在下次启动生效。
@@ -35,3 +35,5 @@
 - 原关闭增强仅省略参数，会恢复算法默认增强；现显式传零，保持用户的关闭意图。
 - 原本地绝对权重路径若与在线注册表同名会选择下载项，现优先识别已存在的本地文件。
 - 不升级已有 Python 环境：缺少的小依赖通过项目 `.runtime/python` overlay 补齐；算法子进程关闭自动 pip 安装。
+
+最终自审补充：修复了 GPU 开发任务运行时仍可从标注页加载 SAM 的反向冲突；Remote SAM 若保留本地 GPU 解码器也必须经过资源检查。两个用例先失败后通过，全量检查为 23/23。测试截图输出移到忽略目录，重新运行测试不会改写已提交参考图。已有本地 YOLOv8n-seg 权重复制到了原生应用缓存，未联网下载。
