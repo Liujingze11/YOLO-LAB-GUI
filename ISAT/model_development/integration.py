@@ -55,6 +55,7 @@ class ModelDevelopmentController(QtCore.QObject):
             from .widget import ModelDevelopmentWidget
             self.widget = ModelDevelopmentWidget(self.window)
             self.widget.job_guard = self.authorize_job
+            self.widget.prepare_dataset_requested.connect(self.open_dataset_dialog)
             self.stack.addWidget(self.widget)
         view = self.window.view
         self._viewport = (QtGui.QTransform(view.transform()), view.mapToScene(view.viewport().rect().center()))
@@ -86,6 +87,29 @@ class ModelDevelopmentController(QtCore.QObject):
             transform, center = self._viewport
             self.window.view.setTransform(transform)
             self.window.view.centerOn(center)
+
+    def create_dataset_dialog(self):
+        from .dataset_dialog import DatasetDialog
+        from ISAT.configs import STATUSMode
+        w = self.window
+        if not w.image_root or not w.label_root:
+            QtWidgets.QMessageBox.information(w, '准备训练数据', '请先在 ISAT 中打开图像目录和标注目录。')
+            return None
+        if w.scene.current_graph is not None and w.scene.mode in [STATUSMode.CREATE, STATUSMode.REPAINT]:
+            QtWidgets.QMessageBox.warning(w, '准备训练数据', '请先完成或取消正在绘制的轮廓。')
+            return None
+        if not w.saved:
+            w.save()
+            if not w.saved: return None
+        self.show_development()
+        dialog = DatasetDialog(w.image_root, w.label_root, [c['name'] for c in w.cfg['label']], w)
+        dialog.dataset_ready.connect(lambda result: self.widget.set_dataset(result['data_yaml']))
+        self._dataset_dialog = dialog
+        return dialog
+
+    def open_dataset_dialog(self):
+        dialog = self.create_dataset_dialog()
+        if dialog: dialog.show()
 
     def job_block_reason(self, device):
         if self._waiting_close: return '正在停止任务并退出，请稍候。'

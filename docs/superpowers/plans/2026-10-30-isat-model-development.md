@@ -50,9 +50,9 @@
 **Files:** ISAT/model_development/{dataset.py,dataset_dialog.py}、tests/model_development/test_dataset.py。
 **Interfaces:** prepare_dataset(image_root, label_root, destination, categories, val_ratio, seed, check_cancelled) -> {data_yaml,train,val,skipped,warnings}；窗口完成后填入 train_tab 数据路径。
 
-- [ ] 先写缺标注不入集、同种子划分相同、原 JSON/图片不变、中文路径及失败不发布的测试并运行 RED。
-- [ ] 用原 YOLO 转换规则导出，保留 ISAT 主档，固定类别，复制图片，临时目录原子发布；异步进度与取消。
-- [ ] 从 ISAT 窗口保存并准备数据，再验证 YAML 已进入训练表单；GREEN 后提交。
+- [x] 先写缺标注不入集、同种子划分相同、原 JSON/图片不变、中文路径及失败不发布的测试并运行 RED。
+- [x] 用原 YOLO 转换规则导出，保留 ISAT 主档，固定类别，复制图片，临时目录原子发布；异步进度与取消。
+- [x] 从 ISAT 窗口保存并准备数据，再验证 YAML 已进入训练表单；GREEN 后提交。
 
 ## Task 4: 真实任务、回归与说明
 

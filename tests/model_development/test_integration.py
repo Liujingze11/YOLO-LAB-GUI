@@ -101,3 +101,34 @@ class IntegrationTests(unittest.TestCase):
             self.assertFalse(self.window.close())
         self.assertTrue(self.window.isVisible())
         self.assertFalse(self.window.saved)
+
+    def test_saved_annotation_dataset_is_connected_to_training_form(self):
+        import shutil
+        import json
+        import time
+        from PIL import Image
+        w = self.window; c = self.controller()
+        root = Path(self.temp.name)/'图片 数据'; root.mkdir()
+        labels = Path(self.temp.name)/'标注 数据'; labels.mkdir()
+        fixtures = Path(__file__).parents[1]/'fixtures'
+        for i in range(3):
+            name = f'image{i}'
+            Image.new('RGB', (512, 384), (30 * i, 80, 90)).save(root/(name+'.png'))
+            raw = json.loads((fixtures/'sample.json').read_text()); raw['info']['name'] = name+'.png'
+            (labels/(name+'.json')).write_text(json.dumps(raw))
+        w.image_root = str(root); w.label_root = str(labels); w.files_list = ['image0.png']; w.current_index = 0
+        w.files_dock_widget.update_widget(); w.show_image(0); self.app.processEvents()
+        w.info_dock_widget.lineEdit_note.setText('保存后再生成训练集'); w.saved = False
+        self.assertTrue(hasattr(c, 'create_dataset_dialog'), 'current ISAT data can be prepared for training')
+        dialog = c.create_dataset_dialog()
+        self.assertTrue(w.saved)
+        self.assertEqual(json.loads((labels/'image0.json').read_text())['info']['note'], '保存后再生成训练集')
+        destination = Path(self.temp.name)/'训练 输入'
+        dialog.destination.setText(str(destination)); dialog.start()
+        deadline = time.monotonic() + 10
+        while dialog.worker.isRunning() and time.monotonic() < deadline:
+            self.app.processEvents(); time.sleep(.02)
+        self.assertTrue(dialog.worker.wait(1000)); self.app.processEvents()
+        self.assertEqual(c.widget.train_tab.tr_data_yaml.currentText(), str(destination/'data.yaml'))
+        self.assertTrue((destination/'manifest.json').is_file())
+        dialog.close()
