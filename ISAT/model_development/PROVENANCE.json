@@ -1,0 +1,177 @@
+{
+  "source_repository": "https://github.com/Liujingze11/YOLO-LAB-GUI",
+  "source_commit": "51f772c1e6c0bc2854fa7b4a79f8ab10aaa872f6",
+  "source_files": [
+    {
+      "source": "core/__init__.py",
+      "sha256": "e61ef288bda6ce6307e8a6e735139942a63c8ebd469cd2585a527ccc55151e15"
+    },
+    {
+      "source": "core/config.py",
+      "sha256": "8dbf2d16e4fd688a45f687c00c39f4a4e0cb84942154264848b92ac3c84f9d53"
+    },
+    {
+      "source": "core/device.py",
+      "sha256": "ac152a0ef124a1194fd4022c7c699f176e417014a2d28dcf7d10f7b9b11c6171"
+    },
+    {
+      "source": "core/export.py",
+      "sha256": "4c64e0b052a7c943c6557d97b3d8f008925e591cec5f395513551d1c38ad98b2"
+    },
+    {
+      "source": "core/i18n.py",
+      "sha256": "55eaada35231ec08157b812896d0fd003dd6c7802d1df3f7516852e09cde9c78"
+    },
+    {
+      "source": "core/paths.py",
+      "sha256": "06235ad7f6db8142587deec1d47afea1960bbaae015b9251d4d6a9d28f8af20a"
+    },
+    {
+      "source": "core/train_logger.py",
+      "sha256": "29ec849bcba4f07c2fb562b11e1ba7994dbda5746476e410161915620c538757"
+    },
+    {
+      "source": "core/training.py",
+      "sha256": "d7cc626d43424ae914afc7e6fdc756678960ef950f8980398963b8bef8551f00"
+    },
+    {
+      "source": "gui/__init__.py",
+      "sha256": "ae07eb03f09debd9f40463cf6567b30edde61a412e00603bcb4807275f132d97"
+    },
+    {
+      "source": "gui/charts/__init__.py",
+      "sha256": "40631652eca7cf2f35a0256b389f5c71bec51546fe33b3c524c640f2512e6c24"
+    },
+    {
+      "source": "gui/charts/training_chart.py",
+      "sha256": "db7faf8da03338c3e2efaae6425b90736f4cf8b592ff3384713f0e2f75d99cc1"
+    },
+    {
+      "source": "gui/device.py",
+      "sha256": "96dd94e023899e46e3ea979252ce71845745a2a9fc16d63c4809506db32e34af"
+    },
+    {
+      "source": "gui/export_engine.py",
+      "sha256": "9d8163fdcd03e284649de649b9162be6f48e0e40ae7ee0980e30e3f6beea7d6d"
+    },
+    {
+      "source": "gui/gpu_manager.py",
+      "sha256": "404d585c83ca41ca8cd26d4d5ba9d63427901ca84c0c5af7aae231e9cdf8d26a"
+    },
+    {
+      "source": "gui/i18n.py",
+      "sha256": "cbecfe54e00542da9e62b61d22387247f0b281b86058f7bce1b784048aa2b956"
+    },
+    {
+      "source": "gui/infer_engine.py",
+      "sha256": "9a04a122a92b82aa32ed6997107a3dfa682f2c27afde623f97baf1c4f3068ccf"
+    },
+    {
+      "source": "gui/model_selector.py",
+      "sha256": "ac1f92a6ba196dfce4ba1289f8a18b71b778863d1ccedb87e9c6adab7d72a093"
+    },
+    {
+      "source": "gui/paths.py",
+      "sha256": "5ca0215cde0cd010e0874a47aa2da78e4062f5c8a0ccff608495163b90327b8d"
+    },
+    {
+      "source": "gui/styles.py",
+      "sha256": "94b5833e757506a3761bf3b555bf0f5dc2cb3e5556e86302094641ed0c45749b"
+    },
+    {
+      "source": "gui/tabs/__init__.py",
+      "sha256": "781a5384bfeb2a0c6be05ddae37e42405c765ef292840120e2549da4a9459efa"
+    },
+    {
+      "source": "gui/tabs/export_tab.py",
+      "sha256": "12c1df7ae9d4cfc5cf989f71dfd4f609b03a425776a4acd2ec2eedca8017e5a9"
+    },
+    {
+      "source": "gui/tabs/infer_tab.py",
+      "sha256": "0f63dd5ad99e6ff9f199a5a2f9f97b402eae8a6e4377bd5a54ac7140302c485b"
+    },
+    {
+      "source": "gui/tabs/logs_tab.py",
+      "sha256": "7f9e953bee9bb326d74d640cf003755455f7460e52d43b8234fe88eebc870b16"
+    },
+    {
+      "source": "gui/tabs/settings_tab.py",
+      "sha256": "5b7402394736812dceb62cc64d1468aa008c1c5ae1689602cc6a0242aa9f7963"
+    },
+    {
+      "source": "gui/tabs/tools_tab.py",
+      "sha256": "c295755f93b7becde1beefdf4af55cc3b3aa9bd5fbdee3eea6c5ef4968189c90"
+    },
+    {
+      "source": "gui/tabs/train_tab.py",
+      "sha256": "63a137c9a00567e5abde8ceb04c7157c81caef0736cfb34c75f6cda7c89eb1b5"
+    },
+    {
+      "source": "gui/train_engine.py",
+      "sha256": "42262580e9dbbf0feada5eb1335847091a57a11e2a0e82a624782ab10c9ae1db"
+    },
+    {
+      "source": "gui/welcome_wizard.py",
+      "sha256": "13dc967a0e0418aa72df22e14887109cc15cd9939fcec3173707e330d2795e4f"
+    },
+    {
+      "source": "gui/widgets.py",
+      "sha256": "90996d17a2903630cff745220c004565dff61ec95eee01594e5e796be2801860"
+    },
+    {
+      "source": "gui/workers.py",
+      "sha256": "a4d365aeb6e760417f8c3e8f8bd1b25fc480f3b8e56cd2207326e8d7f311f1b9"
+    },
+    {
+      "source": "locales/en.json",
+      "sha256": "a03073938519babbd16c62812c8fef10f758ef68e1ce6dcf5c13548e25c0c9df"
+    },
+    {
+      "source": "locales/es.json",
+      "sha256": "6f492e803ed9189c2d8dd01ca430ce5eec5672eb61cd39264fc3691a8ed1a4ba"
+    },
+    {
+      "source": "locales/fr.json",
+      "sha256": "eddf7ec48fa8844c3c7193e91d8bff5e024acea30f4f166ddb8d5d44a7284b32"
+    },
+    {
+      "source": "locales/zh.json",
+      "sha256": "f62ab11dfa7e64250fe047d490fec90ae8c1ef44370206e69584c8368d44168a"
+    },
+    {
+      "source": "tools/dataset_tools/create_empty_labels.py",
+      "sha256": "bb09f6572944d97aee64b0690777cd1e21e8037b7600eb77e491a08e774e4ecc"
+    },
+    {
+      "source": "tools/dataset_tools/split_images_only/split_every_5th_images_only.py",
+      "sha256": "aab9262bf46ef88bac82eee3e222e08778b5bc29838992460fe1c72ec117daf9"
+    },
+    {
+      "source": "tools/dataset_tools/split_images_only/split_random_images_only.py",
+      "sha256": "52ead87474a14208038b59a12eadbc9d0a4613ed0ba39e9e7c3ba4c08f376aa4"
+    },
+    {
+      "source": "tools/dataset_tools/split_train_val/split_every_5th_with_labels.py",
+      "sha256": "1815ab9070cc24e8f6c9fd961ab38ce006856deeea778f9fd266370e81bab0c5"
+    },
+    {
+      "source": "tools/dataset_tools/split_train_val/split_random_with_labels.py",
+      "sha256": "9a26be2f285f8a25307a82c5a4ff3c3678ba511914e75850279c1f14da504888"
+    },
+    {
+      "source": "tools/dataset_tools/split_train_val_test/split_random_with_labels.py",
+      "sha256": "a34ed1351f538b1c0054f74949268626393cb959f5c12e0e2b8ce2194e996188"
+    },
+    {
+      "source": "tools/infer_task_params.json",
+      "sha256": "6131e2fb49a650253c52097b72bc74753afe89a0c4bd93fe120df96f103b6f92"
+    }
+  ],
+  "adaptations": [
+    "PySide6 -> PyQt5 with explicit signal and slot names",
+    "ISAT.model_development namespace",
+    "App data paths and native ISAT integration",
+    "Managed child process groups and cancellation"
+  ],
+  "license_note": "Source repository at this commit does not include a license file. Migrated within the owner-directed local project; original author/source attribution is retained."
+}

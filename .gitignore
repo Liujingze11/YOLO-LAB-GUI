@@ -14,3 +14,11 @@ dist/
 build.log
 *.egg-info/
 __pycache__/
+
+# Local desktop runtime, models and generated data
+.runtime/
+*.pt
+*.pth
+*.onnx
+*.engine
+outputs/

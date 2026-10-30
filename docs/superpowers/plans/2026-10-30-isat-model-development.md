@@ -31,10 +31,10 @@
 **Files:** ISAT/model_development/{widget.py,gui/,core/,tools/,locales/,PROVENANCE.json}；tests/model_development/test_widget.py、test_workers.py。
 **Interfaces:** ModelDevelopmentWidget(QWidget) 提供 train_tab、infer_tab、export_tab、tabs、active_workers()、stop_workers()；后台 Worker 继续输出日志、进度、完成和取消信号。
 
-- [ ] 先写失败检查：真实六页加载，训练配置表单往返，导出格式和工具入口存在，主进程未加载 PySide6；真实静默子进程取消不阻塞 UI 且后代退出。
-- [ ] 运行 QT_QPA_PLATFORM=offscreen Python unittest 确认 RED。
-- [ ] 按原 GUI 文件精确迁移，改命名空间及 Qt 绑定；可写数据放应用数据目录；记录来源摘要。修复为适配而遇到的运行问题，不删除旧功能。
-- [ ] 运行测试 GREEN；提交本任务（不含 software.yaml）。
+- [x] 先写失败检查：真实六页加载，训练配置表单往返，导出格式和工具入口存在，主进程未加载 PySide6；真实静默子进程取消不阻塞 UI 且后代退出。
+- [x] 运行 QT_QPA_PLATFORM=offscreen Python unittest 确认 RED。
+- [x] 按原 GUI 文件精确迁移，改命名空间及 Qt 绑定；可写数据放应用数据目录；记录来源摘要。修复为适配而遇到的运行问题，不删除旧功能。
+- [x] 运行测试 GREEN；提交本任务（不含 software.yaml）。
 
 ## Task 2: 接到 ISAT 主窗口与导航
 
