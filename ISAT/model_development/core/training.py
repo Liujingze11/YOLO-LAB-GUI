@@ -47,6 +47,9 @@ def build_train_kwargs(config, use_augment: bool) -> dict:
             "fliplr": config.fliplr, "mosaic": config.mosaic,
             "mixup": config.mixup, "copy_paste": config.copy_paste,
         })
+    else:
+        # Omitting these keys re-enables Ultralytics' augmentation defaults.
+        kwargs.update({key: 0.0 for key in ('hsv_h', 'hsv_s', 'hsv_v', 'degrees', 'translate', 'scale', 'shear', 'perspective', 'flipud', 'fliplr', 'mosaic', 'mixup', 'copy_paste')})
     return kwargs
 
 

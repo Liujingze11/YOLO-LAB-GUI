@@ -8,3 +8,6 @@ recursive-include ISAT/scripts *
 recursive-include ISAT/ icons.qrc
 recursive-include ISAT *.yaml
 recursive-include ISAT/segment_anything_fast *.
+recursive-include ISAT/model_development/locales *.json
+recursive-include ISAT/model_development/tools *.py *.json
+include ISAT/model_development/PROVENANCE.json

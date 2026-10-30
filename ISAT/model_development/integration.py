@@ -52,10 +52,18 @@ class ModelDevelopmentController(QtCore.QObject):
     def show_development(self):
         if not self._annotation: return
         if self.widget is None:
-            from .widget import ModelDevelopmentWidget
-            self.widget = ModelDevelopmentWidget(self.window)
+            try:
+                import sys
+                if sys.version_info < (3, 10): raise RuntimeError('Model development requires Python 3.10 or newer')
+                from .widget import ModelDevelopmentWidget
+                self.widget = ModelDevelopmentWidget(self.window)
+            except (ImportError, RuntimeError) as exc:
+                self.annotation_action.setChecked(True)
+                QtWidgets.QMessageBox.critical(self.window, 'Model development dependencies', '模型开发依赖未就绪，标注仍可使用。请检查当前解释器及 .[yolo] 依赖。\n'+str(exc))
+                return False
             self.widget.job_guard = self.authorize_job
             self.widget.prepare_dataset_requested.connect(self.open_dataset_dialog)
+            self.widget.release_sam_requested.connect(self.release_sam)
             self.stack.addWidget(self.widget)
         view = self.window.view
         self._viewport = (QtGui.QTransform(view.transform()), view.mapToScene(view.viewport().rect().center()))
@@ -111,6 +119,43 @@ class ModelDevelopmentController(QtCore.QObject):
         dialog = self.create_dataset_dialog()
         if dialog: dialog.show()
 
+    def release_sam(self):
+        from ISAT.configs import STATUSMode
+        w = self.window
+        for name in ['init_segany_thread', 'seganythread', 'segany_video_thread']:
+            thread = getattr(w, name, None)
+            if thread is not None and thread.isRunning():
+                QtWidgets.QMessageBox.warning(w, 'SAM', 'SAM 正在加载、编码或传播，请等待当前操作完成后释放。')
+                return False
+        if w.scene.current_graph is not None and w.scene.mode != STATUSMode.VIEW:
+            QtWidgets.QMessageBox.warning(w, 'SAM', '请先完成或取消当前轮廓，再释放 SAM。')
+            return False
+        encoder = getattr(w, 'seganythread', None)
+        if encoder is not None:
+            encoder.results_dict.clear()
+            encoder.index = None
+        w.segany = None
+        w.segany_video = None
+        w.use_segment_anything = False
+        w.use_segment_anything_video = False
+        for name in ['actionSegment_anything_point', 'actionSegment_anything_box', 'actionVideo_segment', 'actionVideo_segment_once', 'actionVideo_segment_five_times']:
+            getattr(w, name).setEnabled(False)
+        w.model_manager_dialog.update_ui()
+        import gc
+        import torch
+        gc.collect()
+        if torch.cuda.is_available(): torch.cuda.empty_cache()
+        w.labelGPUResource.setText('SAM unloaded')
+        w.labelGPUResource.setToolTip('')
+        return True
+
+    def active_workers(self):
+        workers = self.widget.active_workers() if self.widget else []
+        dialog = getattr(self, '_dataset_dialog', None)
+        worker = getattr(dialog, 'worker', None)
+        if worker is not None and worker.isRunning(): workers.append(worker)
+        return workers
+
     def job_block_reason(self, device):
         if self._waiting_close: return '正在停止任务并退出，请稍候。'
         if str(device).lower() == 'cpu': return ''
@@ -120,8 +165,8 @@ class ModelDevelopmentController(QtCore.QObject):
                 if worker and worker.isRunning() and getattr(tab, '_job_device', 'cpu') != 'cpu':
                     return '已有 GPU 模型任务在运行。请先停止或等待它完成，也可选择 CPU。'
         sam = getattr(self.window, 'segany', None)
-        if self.window.use_segment_anything and not self.window.use_remote_sam and sam and str(sam.device) != 'cpu':
-            return 'SAM 正在使用 GPU。请先在 ISAT 模型管理中卸载 SAM，或选择 CPU 运行模型开发任务。'
+        if not self.window.use_remote_sam and sam and str(sam.device) != 'cpu':
+            return 'SAM 正在使用 GPU。请先点击顶部“释放 SAM 显存”，或选择 CPU 运行模型开发任务。'
         return ''
 
     def authorize_job(self, kind, device):
@@ -132,20 +177,22 @@ class ModelDevelopmentController(QtCore.QObject):
         return True
 
     def confirm_close(self):
-        if not self.widget or not self.widget.active_workers(): return True
+        if not self.active_workers(): return True
         if not self._waiting_close:
             answer = QtWidgets.QMessageBox.question(self.window, '模型任务仍在运行', '停止正在运行的模型任务并退出？', QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, QtWidgets.QMessageBox.No)
             if answer != QtWidgets.QMessageBox.Yes: return False
             self._waiting_close = True
-            self.widget.setEnabled(False)
-            self.widget.stop_workers()
+            if self.widget: self.widget.setEnabled(False)
+            for worker in self.active_workers():
+                if hasattr(worker, 'stop'): worker.stop()
+                elif hasattr(worker, 'cancel'): worker.cancel()
             self._close_timer.start()
         return False
 
     def _finish_close(self):
-        if not self.widget.active_workers():
+        if not self.active_workers():
             self._close_timer.stop()
-            self.widget.setEnabled(True)
+            if self.widget: self.widget.setEnabled(True)
             self._waiting_close = False
             self.window.close()
 

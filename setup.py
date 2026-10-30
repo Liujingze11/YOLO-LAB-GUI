@@ -62,6 +62,7 @@ setup(
         "ftfy",
         "regex",
     ],
+    extras_require={"yolo": ["ultralytics>=8.0.0", "matplotlib>=3.8"]},
     classifiers=[
         "Intended Audience :: Developers",  # 目标用户:开发者
         "Intended Audience :: Science/Research",  # 目标用户:学者

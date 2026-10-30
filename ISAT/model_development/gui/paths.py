@@ -43,9 +43,11 @@ MODEL_FILE = "yolov8n-seg.pt"
 RESULTS_DIR = str(get_user_data_dir() / "results")
 LOG_DIR = str(get_user_data_dir() / "logs")
 
-PRETRAINED_DIR = get_user_data_dir() / "models"
+from ISAT.model_development.core.config import load_user_settings
+_saved_paths = load_user_settings()
+PRETRAINED_DIR = Path(_saved_paths.get("default_model_dir") or (get_user_data_dir() / "models")).expanduser()
 
 PREDICT_DIR = str(get_user_data_dir() / "predict")
 # No default best checkpoint — pick your trained model in the GUI.
 BEST_SEG_MODEL = ""
-TEST_IMAGES_DIR = str(REPO_ROOT / "data" / "dataset" / "images" / "test")
+TEST_IMAGES_DIR = str(Path(_saved_paths.get("default_dataset_dir") or (get_user_data_dir() / "datasets")) / "images" / "test")

@@ -132,3 +132,25 @@ class IntegrationTests(unittest.TestCase):
         self.assertEqual(c.widget.train_tab.tr_data_yaml.currentText(), str(destination/'data.yaml'))
         self.assertTrue((destination/'manifest.json').is_file())
         dialog.close()
+
+    def test_optional_panel_dependency_error_keeps_annotation_available(self):
+        c = self.controller()
+        from ISAT.model_development import widget
+        with patch.object(widget, 'ModelDevelopmentWidget', side_effect=ModuleNotFoundError('matplotlib')), patch.object(QtWidgets.QMessageBox, 'critical', return_value=QtWidgets.QMessageBox.Ok):
+            self.assertFalse(c.show_development())
+        self.assertIsNone(c.widget)
+        self.assertTrue(c.annotation_action.isChecked())
+        self.assertIs(c.stack.currentWidget(), self.window.view)
+
+    def test_release_idle_sam_frees_model_references_and_encoder_cache(self):
+        from types import SimpleNamespace
+        c = self.controller(); w = self.window
+        self.assertTrue(callable(getattr(c, 'release_sam', None)), 'SAM can be released before a GPU development job')
+        encoder = QtCore.QThread(); encoder.results_dict = {0: 'encoded feature cache'}
+        with patch.object(w, 'segany', SimpleNamespace(device='cuda'), create=True), patch.object(w, 'segany_video', object(), create=True), patch.object(w, 'seganythread', encoder, create=True), patch.object(w, 'use_segment_anything', True), patch.object(w, 'use_segment_anything_video', True):
+            view = w.view
+            self.assertTrue(c.release_sam())
+            self.assertIsNone(w.segany); self.assertIsNone(w.segany_video)
+            self.assertEqual(encoder.results_dict, {})
+            self.assertFalse(w.use_segment_anything); self.assertFalse(w.use_segment_anything_video)
+            self.assertIs(w.view, view); self.assertEqual(c.job_block_reason('0'), '')

@@ -12,6 +12,7 @@ from .gui.tabs.settings_tab import SettingsTab
 
 class ModelDevelopmentWidget(QtWidgets.QWidget):
     prepare_dataset_requested = QtCore.pyqtSignal()
+    release_sam_requested = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -47,6 +48,9 @@ class ModelDevelopmentWidget(QtWidgets.QWidget):
         theme.clicked.connect(self._change_theme)
         toolbar = QtWidgets.QHBoxLayout()
         toolbar.addWidget(self.prepare_button)
+        release = QtWidgets.QPushButton('释放 SAM 显存')
+        release.clicked.connect(self.release_sam_requested)
+        toolbar.addWidget(release)
         toolbar.addStretch()
         toolbar.addWidget(self._language)
         toolbar.addWidget(theme)

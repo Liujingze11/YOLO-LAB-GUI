@@ -1,3 +1,11 @@
+> **Local extension: ISAT + YOLO model development (2026-10-30)**
+>
+> Original ISAT remains the main application. A native sidebar switches between annotation and six PyQt5 development pages: training, inference, export, logs/results, dataset tools and settings. Saved ISAT annotations can be prepared as a separate YOLO dataset and passed directly to training.
+>
+> Run `./run-isat.sh`. If the existing environment misses small startup dependencies, run `./setup-model-runtime.sh`; it installs only into this project's `.runtime/python` overlay. Select an interpreter with `ISAT_PYTHON=/absolute/path/to/python ./run-isat.sh`. Model development requires Python 3.10+, PyQt5, Ultralytics and Matplotlib; a fresh installation can use the `[yolo]` extra. Custom model-cache paths take effect on the next launch.
+>
+> CPU training, inference and ONNX export/runtime have been tested. See [verification and limits](docs/superpowers/verification/2026-10-30-isat/README.md) for GPU and optional export backends. No remote repository was created or pushed.
+
 <h1 align='center'>ISAT_with_segment_anything [isat-sam]</h1>
 <h2 align='center'>An Interactive Semi-Automatic Annotation Tool Based on Segment Anything</h2>
 <p align='center'>

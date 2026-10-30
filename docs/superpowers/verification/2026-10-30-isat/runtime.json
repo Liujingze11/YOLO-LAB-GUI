@@ -1,0 +1,23 @@
+{
+  "train": "temporary smoke run: best.pt",
+  "inference_images": 6,
+  "onnx": "temporary smoke export: best.onnx",
+  "onnx_runtime_outputs": [
+    [
+      1,
+      38,
+      84
+    ],
+    [
+      1,
+      32,
+      16,
+      16
+    ]
+  ],
+  "packages": {},
+  "weights_sha256": "a7cd8f929e1903d78a12a48efecab430209f18dc46cb96c3599a5980c63c423c",
+  "unit_tests": 22,
+  "device": "cpu",
+  "training_epochs": 1
+}

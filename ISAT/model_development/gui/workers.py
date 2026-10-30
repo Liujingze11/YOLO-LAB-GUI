@@ -46,7 +46,7 @@ class _BaseWorker(QThread):
                 creationflags=subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0,
                 bufsize=1,
                 cwd=str(ROOT),
-                env={**os.environ, "PYTHONUNBUFFERED": "1"},
+                env={**os.environ, "PYTHONUNBUFFERED": "1", "MPLBACKEND": "Agg", "YOLO_AUTOINSTALL": "false"},
             )
         except Exception as e:
             self.failed.emit(f"启动进程失败: {e}")

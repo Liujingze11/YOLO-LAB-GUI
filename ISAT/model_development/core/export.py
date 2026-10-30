@@ -84,3 +84,23 @@ def build_export_kwargs(cfg: ExportConfig) -> dict:
         if cfg.fp16:
             kwargs["half"] = True
     return kwargs
+
+
+def build_export_arguments(cfg: ExportConfig) -> list[str]:
+    arguments = ['--model', cfg.model_path, '--format', cfg.format, '--imgsz', str(cfg.imgsz), '--output-dir', cfg.output_dir]
+    if cfg.format == 'onnx':
+        arguments += ['--opset', str(cfg.opset), '--dynamic' if cfg.dynamic else '--no-dynamic', '--simplify' if cfg.simplify else '--no-simplify']
+        if cfg.nms: arguments.append('--nms')
+    elif cfg.format == 'engine':
+        if cfg.fp16: arguments.append('--fp16')
+        if cfg.int8: arguments.append('--int8')
+        arguments += ['--workspace', str(cfg.workspace)]
+    elif cfg.format == 'openvino':
+        if cfg.int8: arguments.append('--int8')
+        arguments.append('--dynamic' if cfg.dynamic else '--no-dynamic')
+    elif cfg.format == 'coreml':
+        if cfg.nms: arguments.append('--nms')
+    elif cfg.format == 'tflite':
+        if cfg.int8: arguments.append('--int8')
+        if cfg.fp16: arguments.append('--fp16')
+    return arguments

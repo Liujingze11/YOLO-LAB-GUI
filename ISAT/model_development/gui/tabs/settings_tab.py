@@ -21,7 +21,8 @@ from ISAT.model_development.gui.widgets import (
     section_label,
 )
 from ISAT.model_development.gui.i18n import tr
-from ISAT.model_development.gui.paths import REPO_ROOT
+from ISAT.model_development.gui.paths import REPO_ROOT, PRETRAINED_DIR
+from ISAT.model_development.paths import data_dir
 
 
 class SettingsTab(QWidget):
@@ -72,7 +73,7 @@ class SettingsTab(QWidget):
         ds_row.setSpacing(10)
         ds_row.addWidget(field_label("数据集", i18n_key="settings.field.dataset_dir"))
         self.default_dataset = path_combo(default=self._settings.get(
-            "default_dataset_dir", str(REPO_ROOT / "data" / "dataset")))
+            "default_dataset_dir", str(data_dir() / "datasets")))
         ds_row.addWidget(self.default_dataset, 1)
         lay2.addLayout(ds_row)
 
@@ -81,7 +82,7 @@ class SettingsTab(QWidget):
         model_row.setSpacing(10)
         model_row.addWidget(field_label("模型缓存", i18n_key="settings.field.model_dir"))
         self.default_model_dir = path_combo(default=self._settings.get(
-            "default_model_dir", str(REPO_ROOT / "pretrained_models")))
+            "default_model_dir", str(PRETRAINED_DIR)))
         model_row.addWidget(self.default_model_dir, 1)
         lay2.addLayout(model_row)
 

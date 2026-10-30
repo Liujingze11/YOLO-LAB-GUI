@@ -1,3 +1,11 @@
+> **本地扩展：ISAT + YOLO 模型开发（2026-10-30）**
+>
+> 以原版 ISAT 为主体，新增左侧“数据标注 / 模型开发”导航。原标注界面继续保留；模型开发包含训练、推理、模型导出、日志结果、工具和设置。可从当前已保存标注生成独立 YOLO 数据集并直接用于训练。
+>
+> 启动：`./run-isat.sh`。如已有环境缺少少量启动依赖，先执行 `./setup-model-runtime.sh`（仅安装到本项目 `.runtime/python`）；可用 `ISAT_PYTHON=/absolute/path/to/python ./run-isat.sh` 选择解释器。模型开发需要 Python 3.10+、PyQt5、Ultralytics 和 Matplotlib；完整首次安装可使用项目的 `[yolo]` 可选依赖。模型缓存路径设置在下次启动生效。
+>
+> 本机 CPU 训练、推理及 ONNX / ONNX Runtime 已验证；GPU 和其他导出后端的实际支持见 [验证记录](docs/superpowers/verification/2026-10-30-isat/README.md)。未创建或推送新远程仓库。
+
 <h1 align='center'>ISAT_with_segment_anything [isat-sam]</h1>
 <h2 align='center'>一款基于SAM的交互式半自动图像分割标注工具</h2>
 <p align='center'>

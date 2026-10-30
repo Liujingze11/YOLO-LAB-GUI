@@ -1,0 +1,4 @@
+# Small compatibility overlay; no Torch / Qt upgrades.
+six==1.17.0
+urllib3==2.8.0
+idna==3.20

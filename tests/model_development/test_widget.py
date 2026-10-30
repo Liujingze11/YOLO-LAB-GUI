@@ -65,3 +65,12 @@ class WidgetTests(unittest.TestCase):
         self.assertEqual(self.widget.tabs.tabText(0), 'Train')
         set_language('zh'); apply_language(self.widget)
         self.assertEqual(self.widget.tabs.tabText(0), '训练')
+
+    def test_local_registry_named_weights_remain_local(self):
+        from unittest.mock import patch
+        from ISAT.model_development.gui.model_selector import ModelSelector
+        with tempfile.TemporaryDirectory() as temp:
+            weights = Path(temp)/'yolov8n-seg.pt'; weights.write_bytes(b'local model fixture')
+            with patch.object(ModelSelector, '_start_download', lambda self, name: None):
+                self.widget.train_tab.tr_model.set_model(str(weights))
+            self.assertEqual(self.widget.train_tab.tr_model.current_model_path(), str(weights))

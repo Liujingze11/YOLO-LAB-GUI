@@ -5,6 +5,8 @@ Usage: python gui/export_engine.py --model best.pt --format onnx --imgsz 640 --o
 """
 import sys
 import argparse
+import shutil
+import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
@@ -55,22 +57,24 @@ def main():
     )
 
     print(_t(loc, "export.engine.loading", model=cfg.model_path))
-    model = YOLO(cfg.model_path)
-
-    task = getattr(model, "task", "detect")
-    print(_t(loc, "export.engine.task", task=task))
-
-    if cfg.output_dir:
-        Path(cfg.output_dir).mkdir(parents=True, exist_ok=True)
-
-    kwargs = build_export_kwargs(cfg)
-
-    print(_t(loc, "export.engine.exporting", format=cfg.format, imgsz=cfg.imgsz))
+    destination = Path(cfg.output_dir).expanduser().resolve() if cfg.output_dir else Path(cfg.model_path).resolve().parent
+    destination.mkdir(parents=True, exist_ok=True)
     try:
-        result_path = model.export(**kwargs)
-        print(_t(loc, "export.engine.done", path=result_path))
-    except Exception as e:
-        print(_t(loc, "export.engine.failed", err=str(e)))
+        # Export from a private copy: Ultralytics writes beside its input checkpoint.
+        with tempfile.TemporaryDirectory(prefix='.isat-export-', dir=destination) as temporary:
+            source = Path(temporary)/Path(cfg.model_path).name
+            shutil.copyfile(cfg.model_path, source)
+            model = YOLO(str(source))
+            print(_t(loc, "export.engine.task", task=getattr(model, 'task', 'detect')))
+            print(_t(loc, "export.engine.exporting", format=cfg.format, imgsz=cfg.imgsz))
+            generated = Path(model.export(**build_export_kwargs(cfg))).resolve()
+            output = destination/generated.name
+            if output.exists():
+                raise FileExistsError('Output already exists; select a new directory: '+str(output))
+            generated.rename(output)
+        print(_t(loc, "export.engine.done", path=str(output)))
+    except Exception as exc:
+        print(_t(loc, "export.engine.failed", err=str(exc)))
         sys.exit(1)
 
 

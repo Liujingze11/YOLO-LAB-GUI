@@ -1,0 +1,13 @@
+模型: <smoke>/runs/smoke/weights/best.pt
+自动识别任务: segment
+输入源: <smoke>/source-images
+输出目录: <smoke>/predict
+
+image 1/6 <smoke>/source-images/image0.png: 64x64 (no detections), 10.8ms
+image 2/6 <smoke>/source-images/image1.png: 64x64 (no detections), 8.2ms
+image 3/6 <smoke>/source-images/image2.png: 64x64 (no detections), 7.4ms
+image 4/6 <smoke>/source-images/image3.png: 64x64 (no detections), 7.7ms
+image 5/6 <smoke>/source-images/image4.png: 64x64 (no detections), 7.4ms
+image 6/6 <smoke>/source-images/image5.png: 64x64 (no detections), 7.6ms
+Speed: 0.4ms preprocess, 8.2ms inference, 0.4ms postprocess per image at shape (1, 3, 64, 64)
+推理完成，共保存 6 张结果到: <smoke>/predict

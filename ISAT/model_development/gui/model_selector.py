@@ -274,6 +274,9 @@ class ModelSelector(QWidget):
     def set_model(self, name_or_path: str) -> None:
         if not name_or_path:
             return
+        if Path(name_or_path).is_file():
+            self.add_custom_path(str(Path(name_or_path).resolve()))
+            return
         for fn, _display, _tag in MODEL_REGISTRY:
             if name_or_path == fn or name_or_path.endswith(f"/{fn}") or name_or_path.endswith(f"\\{fn}"):
                 self._select_item_by_data(fn)

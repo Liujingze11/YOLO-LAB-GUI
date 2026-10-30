@@ -11,7 +11,8 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtGui import QFont
 
-from ISAT.model_development.core.export import EXPORT_FORMATS, ExportConfig
+from ISAT.model_development.core.export import EXPORT_FORMATS, ExportConfig, build_export_arguments
+from ISAT.model_development.paths import data_dir
 from ISAT.model_development.gui.paths import REPO_ROOT
 from ISAT.model_development.gui.styles import CHECKBOX_STYLE, COMBO_STYLE, SPINNER_STYLE
 from ISAT.model_development.gui.widgets import (
@@ -108,7 +109,7 @@ class ExportTab(QWidget):
         lay_out.addSpacing(12)
 
         self._path_history.setdefault("export_output", [])
-        self.export_output = path_combo(default=str(REPO_ROOT / "outputs" / "export"),
+        self.export_output = path_combo(default=str(data_dir() / "exports"),
                                          history=self._path_history["export_output"])
         out_row = QHBoxLayout()
         out_row.setSpacing(10)
@@ -403,29 +404,7 @@ class ExportTab(QWidget):
         self.export_log.clear()
         self._log_info(f"开始导出: {cfg.model_path} → {cfg.format.upper()}")
 
-        cmd = [
-            sys.executable, str(ROOT / "gui" / "export_engine.py"),
-            "--model", cfg.model_path,
-            "--format", cfg.format,
-            "--imgsz", str(cfg.imgsz),
-            "--output-dir", cfg.output_dir,
-        ]
-        if cfg.format == "onnx":
-            cmd.extend(["--opset", str(cfg.opset)])
-            if cfg.dynamic: cmd.append("--dynamic")
-            if cfg.simplify: cmd.append("--simplify")
-            if cfg.nms: cmd.append("--nms")
-        elif cfg.format == "engine":
-            if cfg.fp16: cmd.append("--fp16")
-            if cfg.int8: cmd.append("--int8")
-            cmd.extend(["--workspace", str(cfg.workspace)])
-        elif cfg.format == "openvino":
-            if cfg.int8: cmd.append("--int8")
-        elif cfg.format == "coreml":
-            if cfg.nms: cmd.append("--nms")
-        elif cfg.format == "tflite":
-            if cfg.int8: cmd.append("--int8")
-            if cfg.fp16: cmd.append("--fp16")
+        cmd = [sys.executable, str(ROOT / 'gui' / 'export_engine.py'), *build_export_arguments(cfg)]
 
         self.btn_export.setEnabled(False)
         self.btn_stop_export.setEnabled(True)

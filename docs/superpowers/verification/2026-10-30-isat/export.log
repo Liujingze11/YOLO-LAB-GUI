@@ -1,0 +1,17 @@
+加载模型: <smoke>/runs/smoke/weights/best.pt
+检测到任务类型: segment
+正在导出 onnx (imgsz=64)…
+Ultralytics 8.4.82 🚀 Python-3.10.20 torch-2.12.0+cu130 CPU (13th Gen Intel Core i5-13500H)
+YOLOv8n-seg summary (fused): 86 layers, 3,258,454 parameters, 0 gradients, 11.3 GFLOPs
+
+PyTorch: starting from '<smoke>/onnx/.isat-export-ohgc667i/best.pt' with input shape (1, 3, 64, 64) BCHW and output shape(s) ((1, 38, 84), (1, 32, 16, 16)) (6.4 MB)
+
+ONNX: starting export with onnx 1.22.0 opset 12...
+ONNX: export success ✅ 0.5s, saved as '<smoke>/onnx/.isat-export-ohgc667i/best.onnx' (12.5 MB)
+
+Export complete (0.6s)
+Results saved to <smoke>/onnx/.isat-export-ohgc667i/best.onnx
+Predict:         yolo predict task=segment model=<smoke>/onnx/.isat-export-ohgc667i/best.onnx imgsz=64 
+Validate:        yolo val task=segment model=<smoke>/onnx/.isat-export-ohgc667i/best.onnx imgsz=64 data=<smoke>/dataset/data.yaml  
+Visualize:       https://netron.app
+导出完成: <smoke>/onnx/best.onnx
