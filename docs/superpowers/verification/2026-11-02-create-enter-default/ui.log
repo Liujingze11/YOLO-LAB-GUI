@@ -1,0 +1,7 @@
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+PASS: native dialogs + keyboard create and enter 新项目
+PASS: native dialogs + keyboard create and enter 新项目 2
+PASS: native dialogs + keyboard create and enter 零件检测
+PASS: default names advance, cancellation creates nothing, parent and existing files remain untouched.

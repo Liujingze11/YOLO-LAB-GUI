@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from PyQt5.QtCore import QEasingCurve, QPropertyAnimation, Qt
+from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import (
     QComboBox,
     QFrame,
@@ -16,6 +17,7 @@ from PyQt5.QtWidgets import (
     QScrollArea,
     QSizePolicy,
     QSpinBox,
+    QSplitter,
     QTextEdit,
     QToolButton,
     QVBoxLayout,
@@ -42,6 +44,7 @@ from ISAT.model_development.gui.styles import (
     SPINNER_STYLE,
     TINY_BTN_STYLE,
     COMBO_STYLE,
+    _LIGHT_STYLES,
 )
 
 
@@ -50,11 +53,12 @@ def card(parent: QWidget | None = None) -> tuple[QWidget, QVBoxLayout]:
     w = QWidget(parent)
     w.setProperty("i18nKey", "")
     w.setProperty("themeClass", "card")
-    w.setStyleSheet(f"QWidget {{ background: #ffffff; border: 1px solid #e0e0e0; border-radius: {CARD_RADIUS}px; }}")
+    w.setAttribute(Qt.WA_StyledBackground, True)
+    w.setStyleSheet(_LIGHT_STYLES['card'])
     shadow = QGraphicsDropShadowEffect()
-    shadow.setBlurRadius(24)
-    shadow.setColor(Qt.gray)
-    shadow.setOffset(0, 1)
+    shadow.setBlurRadius(18)
+    shadow.setColor(QColor(0, 0, 0, 18))
+    shadow.setOffset(0, 3)
     w.setGraphicsEffect(shadow)
     lay = QVBoxLayout(w)
     lay.setContentsMargins(*CARD_PADDING)
@@ -65,6 +69,40 @@ def card(parent: QWidget | None = None) -> tuple[QWidget, QVBoxLayout]:
 CARD_HEADER_HEIGHT = 40
 
 
+class FoldableCard(QWidget):
+    """A resizable parameter group that keeps its controls alive when folded."""
+    def set_expanded(self, expanded):
+        self.toggle.setChecked(expanded)
+
+    def _toggle_body(self, expanded):
+        wrapper = self.parentWidget()
+        splitter = wrapper.parentWidget() if wrapper is not None else None
+        splitter = splitter if isinstance(splitter, QSplitter) else None
+        sizes = splitter.sizes() if splitter is not None else None
+        index = splitter.indexOf(wrapper) if splitter is not None else -1
+        if not expanded:
+            self._expanded_limits = (self.minimumHeight(), self.maximumHeight())
+            if splitter is not None:
+                self._expanded_size = sizes[index]
+                self._wrapper_limits = (wrapper.minimumHeight(), wrapper.maximumHeight())
+            self.body_scroll.hide()
+            self.setFixedHeight(CARD_HEADER_HEIGHT)
+            if splitter is not None:
+                margins = wrapper.layout().contentsMargins()
+                wrapper.setFixedHeight(CARD_HEADER_HEIGHT + margins.top() + margins.bottom())
+                sizes[index] = wrapper.height()
+        else:
+            minimum, maximum = getattr(self, '_expanded_limits', (CARD_HEADER_HEIGHT, 16777215))
+            self.setMinimumHeight(minimum); self.setMaximumHeight(maximum)
+            self.body_scroll.show()
+            if splitter is not None and hasattr(self, '_wrapper_limits'):
+                minimum, maximum = self._wrapper_limits
+                wrapper.setMinimumHeight(minimum); wrapper.setMaximumHeight(maximum)
+                sizes[index] = max(self._expanded_size, wrapper.minimumSizeHint().height())
+        self.toggle.setArrowType(Qt.DownArrow if expanded else Qt.RightArrow)
+        if splitter is not None: splitter.setSizes(sizes)
+
+
 def resizable_card(title: str = "", parent: QWidget | None = None,
                    i18n_key: str | None = None) -> tuple[QWidget, QHBoxLayout, QVBoxLayout]:
     """可拖拽压缩的卡片：固定标题栏 + 内容滚动区。
@@ -73,14 +111,15 @@ def resizable_card(title: str = "", parent: QWidget | None = None,
 
     Returns (card_widget, header_layout, body_layout)
     """
-    w = QWidget(parent)
+    w = FoldableCard(parent)
     w.setMinimumHeight(CARD_HEADER_HEIGHT)
     w.setProperty("themeClass", "card")
-    w.setStyleSheet(f"QWidget {{ background: #ffffff; border: 1px solid #e0e0e0; border-radius: {CARD_RADIUS}px; }}")
+    w.setAttribute(Qt.WA_StyledBackground, True)
+    w.setStyleSheet(_LIGHT_STYLES['card'])
     shadow = QGraphicsDropShadowEffect()
-    shadow.setBlurRadius(24)
-    shadow.setColor(Qt.gray)
-    shadow.setOffset(0, 1)
+    shadow.setBlurRadius(12)
+    shadow.setColor(QColor(0, 0, 0, 10))
+    shadow.setOffset(0, 2)
     w.setGraphicsEffect(shadow)
 
     outer = QVBoxLayout(w)
@@ -93,13 +132,22 @@ def resizable_card(title: str = "", parent: QWidget | None = None,
     header.setFixedHeight(CARD_HEADER_HEIGHT)
     header_layout = QHBoxLayout(header)
     header_layout.setContentsMargins(CARD_PADDING[0], 4, CARD_PADDING[2], 0)
-    if title:
-        header_layout.addWidget(section_label(title, i18n_key=i18n_key))
+    w.toggle = QToolButton()
+    w.toggle.setText(tr(i18n_key) if i18n_key else title)
+    w.toggle.setProperty('i18nKey', i18n_key or '')
+    w.toggle.setProperty('themeClass', 'section_toggle')
+    w.toggle.setStyleSheet(_LIGHT_STYLES['section_toggle'])
+    w.toggle.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+    w.toggle.setArrowType(Qt.DownArrow)
+    w.toggle.setCheckable(True); w.toggle.setChecked(True)
+    w.toggle.setFocusPolicy(Qt.StrongFocus)
+    header_layout.addWidget(w.toggle)
     header_layout.addStretch()
     outer.addWidget(header)
 
     # ── 内容滚动区 ──
     scroll = QScrollArea()
+    w.body_scroll = scroll
     scroll.setWidgetResizable(True)
     scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
     scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
@@ -118,8 +166,11 @@ def resizable_card(title: str = "", parent: QWidget | None = None,
     body_layout.setContentsMargins(CARD_PADDING[0], 4, CARD_PADDING[2], 4)
     body_layout.setSpacing(0)
     scroll.setWidget(body)
+    body.setAutoFillBackground(False)
+    scroll.viewport().setAutoFillBackground(False)
 
     outer.addWidget(scroll, 1)
+    w.toggle.toggled.connect(w._toggle_body)
 
     return w, header_layout, body_layout
 
@@ -261,6 +312,8 @@ def scroll_area(widget: QWidget, parent: QWidget | None = None,
     scroll = QScrollArea(parent)
     scroll.setWidgetResizable(True)
     scroll.setWidget(widget)
+    widget.setAutoFillBackground(False)
+    scroll.viewport().setAutoFillBackground(False)
     scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
     scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
     scroll.setProperty("i18nKey", i18n_key or "")
@@ -321,14 +374,16 @@ def collapsible_section(title: str, i18n_key: str = "",
 
 def _animate_collapse(content: QWidget, expand: bool, btn: QToolButton) -> None:
     """Animate maxHeight for smooth expand/collapse."""
-    content.setUpdatesEnabled(False)
+    previous = getattr(content, '_collapse_animation', None)
+    if previous is not None:
+        previous.stop(); previous.deleteLater()
+    start_h = content.height()
+    target_h = content.layout().sizeHint().height() if expand else 0
 
-    content.setMaximumHeight(2000)
-    target_h = content.sizeHint().height() if expand else 0
-
-    anim = QPropertyAnimation(content, b"maximumHeight")
-    anim.setDuration(250)
-    anim.setStartValue(content.maximumHeight() if not expand else 0)
+    anim = QPropertyAnimation(content, b"maximumHeight", content)
+    content._collapse_animation = anim
+    anim.setDuration(160)
+    anim.setStartValue(start_h)
     anim.setEndValue(target_h)
     anim.setEasingCurve(QEasingCurve.Type.OutCubic)
 
@@ -339,9 +394,7 @@ def _animate_collapse(content: QWidget, expand: bool, btn: QToolButton) -> None:
         btn.setText(display.replace("▾", "▸"))
 
     def on_finished():
-        content.setUpdatesEnabled(True)
-        if not expand:
-            content.setMaximumHeight(0)
+        content.setMaximumHeight(16777215 if expand else 0)
 
     anim.finished.connect(on_finished)
     anim.start()
@@ -352,12 +405,10 @@ def export_format_card(format_key: str, emoji: str, name: str, desc: str,
     """Clickable export format card — styled for Apple-like selection UI."""
     card_w = QFrame(parent)
     card_w.setProperty("format_key", format_key)
+    card_w.setProperty("themeClass", "export_card")
     card_w.setFixedSize(140, 80)
     card_w.setCursor(Qt.PointingHandCursor)
-    card_w.setStyleSheet(
-        "QFrame { background: #ffffff; border: 1px solid #d0d0d0; border-radius: 10px; }"
-        "QFrame:hover { border: 1px solid #0071e3; }"
-    )
+    card_w.setStyleSheet(_LIGHT_STYLES['export_card'])
 
     layout = QVBoxLayout(card_w)
     layout.setContentsMargins(12, 10, 12, 10)
@@ -368,11 +419,13 @@ def export_format_card(format_key: str, emoji: str, name: str, desc: str,
     layout.addWidget(emoji_lbl)
 
     name_lbl = QLabel(name)
-    name_lbl.setStyleSheet("font-size: 13px; font-weight: 600; color: #1d1d1f; border: none; background: transparent;")
+    name_lbl.setProperty('themeClass', 'format_title')
+    name_lbl.setStyleSheet(_LIGHT_STYLES['format_title'])
     layout.addWidget(name_lbl)
 
     desc_lbl = QLabel(desc)
-    desc_lbl.setStyleSheet("font-size: 10px; color: #8e8e93; border: none; background: transparent;")
+    desc_lbl.setProperty('themeClass', 'format_desc')
+    desc_lbl.setStyleSheet(_LIGHT_STYLES['format_desc'])
     desc_lbl.setWordWrap(True)
     layout.addWidget(desc_lbl)
 

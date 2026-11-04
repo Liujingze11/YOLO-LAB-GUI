@@ -5,61 +5,7 @@ from __future__ import annotations
 
 from PyQt5.QtWidgets import QWidget
 
-# ═══════════════════════════════════════════════════════════
-#  亮色主题颜色
-# ═══════════════════════════════════════════════════════════
-
-LIGHT = {
-    "bg":               "#ebecf0",
-    "card_bg":          "#ffffff",
-    "text":             "#1d1d1f",
-    "text_secondary":   "#6e6e73",
-    "text_muted":       "#8e8e93",
-    "border":           "#c7c7cc",
-    "border_hover":     "#999999",
-    "accent":           "#0071e3",
-    "accent_hover":     "#0077ed",
-    "accent_pressed":   "#006edb",
-    "secondary_bg":     "#e8e8ed",
-    "secondary_hover":  "#dedee3",
-    "secondary_pressed":"#d4d4d9",
-    "danger":           "#ff3b30",
-    "danger_hover":     "#ff453a",
-    "danger_pressed":   "#d63028",
-    "disabled":         "#aeaeb2",
-    "log_bg":           "#1e1e1e",
-    "log_text":         "#e0e0e0",
-    "log_selection":    "#3a3a3a",
-    "progress_track":   "#e8e8ed",
-}
-
-# ═══════════════════════════════════════════════════════════
-#  暗色主题颜色
-# ═══════════════════════════════════════════════════════════
-
-DARK = {
-    "bg":               "#1e1e1e",
-    "card_bg":          "#2d2d2d",
-    "text":             "#e0e0e0",
-    "text_secondary":   "#8e8e93",
-    "text_muted":       "#999999",
-    "border":           "#444444",
-    "border_hover":     "#666666",
-    "accent":           "#4da6ff",
-    "accent_hover":     "#5db8ff",
-    "accent_pressed":   "#3d96ef",
-    "secondary_bg":     "#3a3a3a",
-    "secondary_hover":  "#4a4a4a",
-    "secondary_pressed":"#333333",
-    "danger":           "#ff453a",
-    "danger_hover":     "#ff5e55",
-    "danger_pressed":   "#d63028",
-    "disabled":         "#666666",
-    "log_bg":           "#1e1e1e",
-    "log_text":         "#e0e0e0",
-    "log_selection":    "#3a3a3a",
-    "progress_track":   "#444444",
-}
+from ISAT.ui_theme import LIGHT, DARK, surface
 
 # ═══════════════════════════════════════════════════════════
 #  字体 & 尺寸
@@ -67,15 +13,15 @@ DARK = {
 
 FONT_FAMILIES = ["-apple-system", "Segoe UI", "Noto Sans CJK SC", "sans-serif"]
 FONT_MONO = "'SF Mono', 'JetBrains Mono', 'Consolas', monospace"
-FONT_SIZE_SM = 10
-FONT_SIZE = 13
+FONT_SIZE_SM = 12
+FONT_SIZE = 14
 
-CARD_PADDING = (20, 16, 20, 16)
+CARD_PADDING = (16, 14, 16, 14)
 CARD_RADIUS = 12
-INPUT_RADIUS = 6
-INPUT_PADDING = "7px 10px"
-BTN_RADIUS = 6
-BTN_PADDING = "8px 20px"
+INPUT_RADIUS = 8
+INPUT_PADDING = "6px 10px"
+BTN_RADIUS = 9
+BTN_PADDING = "6px 14px"
 BTN_HEIGHT = 38
 LOG_RADIUS = 10
 LOG_PADDING = "14px 16px"
@@ -96,14 +42,23 @@ def _style(theme: dict) -> dict:
     p = theme
     return {
         "card": (
-            "QWidget { background: %s; border-radius: %dpx; }"
-            % (p["card_bg"], CARD_RADIUS)
+            'QWidget[themeClass="card"] { background: %s; border: 1px solid %s; border-radius: %dpx; }'
+            % (p['card_bg'], p["border"], CARD_RADIUS)
         ),
+        "export_card": (
+            'QFrame[themeClass="export_card"] { background: %s; border: 1px solid %s; border-radius: 10px; }'
+            'QFrame[themeClass="export_card"]:hover { border-color: %s; }'
+            'QFrame[themeClass="export_card"][selected="true"] { background: %s; border: 2px solid %s; }'
+            % (surface(theme is DARK), p['border'], p['accent'], p['secondary_pressed'], p['accent'])
+        ),
+        "format_title": "font-size: 13px; font-weight: 600; background: transparent; border: none; color: %s;" % p['text'],
+        "format_desc": "font-size: 10px; background: transparent; border: none; color: %s;" % p['text_muted'],
         "section_label": (
-            "font-size: 11px; font-weight: 700; color: %s; letter-spacing: 0.4px;"
-            % p["text_secondary"]
+            "font-size: 14px; font-weight: 600; color: %s;"
+            % p["text"]
         ),
         "field_label": "font-size: 13px; color: %s; font-weight: 400;" % p["text"],
+        "muted_label": "font-size: 13px; color: %s;" % p["text_secondary"],
         "input": (
             "QLineEdit { background: %s; border: 1px solid %s; border-radius: %dpx; "
             "padding: %s; font-size: 13px; color: %s; }"
@@ -111,9 +66,9 @@ def _style(theme: dict) -> dict:
             % (p["card_bg"], p["border"], INPUT_RADIUS, INPUT_PADDING, p["text"], p["accent"])
         ),
         "spinner": (
-            "QSpinBox { background: %s; border: 1px solid %s; border-radius: %dpx; "
+            "QSpinBox, QDoubleSpinBox { background: %s; border: 1px solid %s; border-radius: %dpx; "
             "padding: %s; font-size: 13px; color: %s; }"
-            "QSpinBox:focus { border: 1px solid %s; }"
+            "QSpinBox:focus, QDoubleSpinBox:focus { border: 1px solid %s; }"
             % (p["card_bg"], p["border"], INPUT_RADIUS, INPUT_PADDING, p["text"], p["accent"])
         ),
         "combo": (
@@ -122,7 +77,6 @@ def _style(theme: dict) -> dict:
             "QComboBox:hover { border: 1px solid %s; }"
             "QComboBox:focus { border: 1px solid %s; }"
             "QComboBox::drop-down { border: none; width: 22px; }"
-            "QComboBox::down-arrow { image: none; border: none; }"
             "QComboBox QAbstractItemView { background: %s; border: 1px solid %s; "
             "border-radius: %dpx; padding: 4px; selection-background-color: %s; "
             "font-size: 13px; outline: none; color: %s; }"
@@ -159,6 +113,7 @@ def _style(theme: dict) -> dict:
             "border-radius: %dpx; padding: %s; font-size: 13px; font-weight: 400; }"
             "QPushButton:hover { background: %s; }"
             "QPushButton:pressed { background: %s; }"
+            "QPushButton:disabled { color: #98989d; }"
             % (p["secondary_bg"], p["text"], BTN_RADIUS, BTN_PADDING,
                p["secondary_hover"], p["secondary_pressed"])
         ),
@@ -184,12 +139,18 @@ def _style(theme: dict) -> dict:
                p["log_text"], p["log_selection"])
         ),
         "tab_widget": (
-            "QTabWidget::pane { border: none; background: %s; padding: 20px 24px; }"
-            "QTabBar::tab { background: transparent; color: %s; padding: 8px 16px; "
-            "margin-right: 2px; border-bottom: 2px solid transparent; font-size: 14px; font-weight: 500; }"
-            "QTabBar::tab:selected { color: %s; border-bottom: 2px solid %s; }"
-            "QTabBar::tab:hover:!selected { color: %s; }"
-            % (p["bg"], p["text_muted"], p["accent"], p["accent"], p["text"])
+            "QTabWidget::pane { border: none; background: %s; padding: 8px 0 0 0; }"
+            "QTabBar { background: %s; border-radius: 12px; }"
+            "QTabBar::tab { background: transparent; color: %s; padding: 7px 18px; "
+            "margin: 3px; border: 1px solid transparent; border-radius: 9px; font-size: 14px; font-weight: 500; }"
+            "QTabBar::tab:selected { color: %s; border-color: %s; background: %s; }"
+            "QTabBar::tab:hover:!selected { color: %s; background: %s; }"
+            % (p["bg"], p['progress_track'], p["text_secondary"], p["text"], p['border'], p['card_bg'], p["text"], p['secondary_bg'])
+        ),
+        "section_toggle": (
+            'QToolButton { color: %s; font-size: 14px; font-weight: 600; padding: 2px; border: none; background: transparent; }'
+            'QToolButton:hover { color: %s; } QToolButton:focus { border: 1px solid %s; border-radius: 5px; }'
+            % (p['text'], p['accent'], p['accent'])
         ),
         "radio": "QRadioButton { spacing: 6px; padding: 4px 0; font-size: 13px; color: %s; }" % p["text"],
         "checkbox": "QCheckBox { spacing: 8px; font-size: 13px; color: %s; }" % p["text"],
@@ -228,6 +189,7 @@ _DARK_STYLES = _style(DARK)
 
 SECTION_LABEL_STYLE = _LIGHT_STYLES["section_label"]
 FIELD_LABEL_STYLE  = _LIGHT_STYLES["field_label"]
+MUTED_LABEL_STYLE = _LIGHT_STYLES['muted_label']
 INPUT_STYLE        = _LIGHT_STYLES["input"]
 SPINNER_STYLE      = _LIGHT_STYLES["spinner"]
 COMBO_STYLE        = _LIGHT_STYLES["combo"]
@@ -271,8 +233,13 @@ DARK_TOGGLE_STYLE = (
 
 THEME_CLASS_TO_KEY: dict[str, str] = {
     "card":           "card",
+    "export_card":    "export_card",
+    "format_title":   "format_title",
+    "format_desc":    "format_desc",
     "section_label":  "section_label",
+    "section_toggle": "section_toggle",
     "field_label":    "field_label",
+    "muted_label":    "muted_label",
     "input":          "input",
     "spinner":        "spinner",
     "combo":          "combo",
@@ -292,7 +259,6 @@ THEME_CLASS_TO_KEY: dict[str, str] = {
 
 def apply_theme_to_widgets(root: QWidget, is_dark: bool) -> None:
     """递归遍历 widget 树，根据 themeClass 属性重新应用样式。"""
-    from PyQt5.QtCore import Qt as QtCore
     from PyQt5.QtGui import QColor
     styles = _DARK_STYLES if is_dark else _LIGHT_STYLES
     stack = [root]
@@ -306,7 +272,7 @@ def apply_theme_to_widgets(root: QWidget, is_dark: bool) -> None:
         if tc == "card":
             effect = w.graphicsEffect()
             if effect is not None:
-                effect.setColor(QColor("#000000" if is_dark else QtCore.gray))
+                effect.setColor(QColor(0, 0, 0, 50) if is_dark else QColor(0, 0, 0, 18))
         for child in w.children():
             if isinstance(child, QWidget):
                 stack.append(child)

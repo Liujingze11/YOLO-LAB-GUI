@@ -1,0 +1,13 @@
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+PASS: empty name and Return cannot create; named child enters workbench; parent untouched.
+PASS: all cards 300 x 284 at 800, 1180 and 1600 pixels, including repeated resize.
+PASS: old desktop selection removed from configuration; files and marker untouched.
+This plugin does not support raise()
+This plugin does not support grabbing the keyboard
+PASS: real legacy right-click menu disables deletion; remove keeps original files.
+This plugin does not support propagateSizeHints()
+PASS: actual system trash only moves the created named project; exit does not recreate it.

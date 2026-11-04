@@ -1,0 +1,67 @@
+test_bad_yolo_paths_categories_and_labels_are_rejected_without_fallback (tests.workspaces.test_external.ExternalProjectTests) ... ok
+test_empty_lookalike_corrupt_images_and_symlinks_are_not_projects (tests.workspaces.test_external.ExternalProjectTests) ... ok
+test_external_source_removal_hides_record_and_never_recreates_source (tests.workspaces.test_external.ExternalProjectTests) ... ERROR
+test_external_state_and_cover_persist_separately_and_source_is_never_deletable (tests.workspaces.test_external.ExternalProjectTests) ... ERROR
+test_images_without_marker_or_annotation_structure_can_be_selected_read_only (tests.workspaces.test_external.ExternalProjectTests) ... ERROR
+test_isat_images_and_json_are_valid_without_software_marker (tests.workspaces.test_external.ExternalProjectTests) ... ERROR
+test_nested_isat_json_is_matched_and_invalid_annotations_are_rejected (tests.workspaces.test_external.ExternalProjectTests) ... ok
+test_valid_yolo_dataset_is_recognized_without_modifying_source_or_creating_labels (tests.workspaces.test_external.ExternalProjectTests) ... ERROR
+
+======================================================================
+ERROR: test_external_source_removal_hides_record_and_never_recreates_source (tests.workspaces.test_external.ExternalProjectTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_external.py", line 64, in test_external_source_removal_hides_record_and_never_recreates_source
+    self.image(); self.store.open_location(self.root)
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/ISAT/workspaces/store.py", line 168, in open_location
+    self.read_existing(location)
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/ISAT/workspaces/store.py", line 176, in read_existing
+    raise ValueError('请选择创建时命名的项目文件夹。')
+ValueError: 请选择创建时命名的项目文件夹。
+
+======================================================================
+ERROR: test_external_state_and_cover_persist_separately_and_source_is_never_deletable (tests.workspaces.test_external.ExternalProjectTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_external.py", line 48, in test_external_state_and_cover_persist_separately_and_source_is_never_deletable
+    self.store.open_location(self.root)
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/ISAT/workspaces/store.py", line 168, in open_location
+    self.read_existing(location)
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/ISAT/workspaces/store.py", line 176, in read_existing
+    raise ValueError('请选择创建时命名的项目文件夹。')
+ValueError: 请选择创建时命名的项目文件夹。
+
+======================================================================
+ERROR: test_images_without_marker_or_annotation_structure_can_be_selected_read_only (tests.workspaces.test_external.ExternalProjectTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_external.py", line 37, in test_images_without_marker_or_annotation_structure_can_be_selected_read_only
+    info = self.store.read_existing(self.root)
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/ISAT/workspaces/store.py", line 176, in read_existing
+    raise ValueError('请选择创建时命名的项目文件夹。')
+ValueError: 请选择创建时命名的项目文件夹。
+
+======================================================================
+ERROR: test_isat_images_and_json_are_valid_without_software_marker (tests.workspaces.test_external.ExternalProjectTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_external.py", line 76, in test_isat_images_and_json_are_valid_without_software_marker
+    info = self.store.read_existing(self.root)
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/ISAT/workspaces/store.py", line 176, in read_existing
+    raise ValueError('请选择创建时命名的项目文件夹。')
+ValueError: 请选择创建时命名的项目文件夹。
+
+======================================================================
+ERROR: test_valid_yolo_dataset_is_recognized_without_modifying_source_or_creating_labels (tests.workspaces.test_external.ExternalProjectTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_external.py", line 92, in test_valid_yolo_dataset_is_recognized_without_modifying_source_or_creating_labels
+    info = self.store.read_existing(self.root)
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/ISAT/workspaces/store.py", line 176, in read_existing
+    raise ValueError('请选择创建时命名的项目文件夹。')
+ValueError: 请选择创建时命名的项目文件夹。
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.040s
+
+FAILED (errors=5)

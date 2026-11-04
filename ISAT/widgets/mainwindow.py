@@ -24,7 +24,6 @@ from ISAT.segment_any.gpu_resource import GPUResource_Thread, osplatform
 from ISAT.segment_any.segment_any import SegAny, SegAnyVideo
 from ISAT.ui.MainWindow import Ui_MainWindow
 from ISAT.utils.dicom import load_dcm_as_image
-from ISAT.widgets.about_dialog import AboutDialog
 from ISAT.widgets.annos_dock_widget import AnnosDockWidget
 from ISAT.widgets.annos_validator_dialog import AnnosValidatorDialog
 from ISAT.widgets.auto_segment_dialog import AutoSegmentDialog
@@ -619,6 +618,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         from ISAT.model_development.integration import install_model_development
         self.model_development = install_model_development(self)
+        from ISAT.ui_theme import install_window_theme
+        install_window_theme(self)
 
         self.plugin_manager_dialog.trigger_application_start()
 
@@ -1181,7 +1182,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.right_button_menu.addAction(self.actionDelete)
 
         self.shortcut_dialog = ShortcutDialog(self, self)
-        self.about_dialog = AboutDialog(self)
         self.setting_dialog = SettingDialog(self, self)
 
         self.labelGPUResource = QtWidgets.QLabel("")
@@ -1285,7 +1285,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.model_manager_dialog.retranslateUi(self.model_manager_dialog)
         self.remote_sam_dialog.retranslateUi(self.remote_sam_dialog)
         self.plugin_manager_dialog.retranslateUi(self.plugin_manager_dialog)
-        self.about_dialog.retranslateUi(self.about_dialog)
         self.shortcut_dialog.retranslateUi(self.shortcut_dialog)
         self.Converter_dialog.retranslateUi(self.Converter_dialog)
         self.video2frames_dialog.retranslateUi(self.video2frames_dialog)
@@ -2154,10 +2153,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.shortcut_dialog.update_ui()
         self.shortcut_dialog.show()
 
-    def about(self):
-        """Open about interface."""
-        self.about_dialog.show()
-
     def setting(self):
         """Open setting interface."""
         # self.setting_dialog.update_ui()
@@ -2235,18 +2230,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         save_config(self.cfg, self.software_config_file)
 
-    def open_docs(self):
-        """Open the docs."""
-        try:
-            if self.cfg["software"]["language"] == "zh":
-                url = "https://isat-sam.readthedocs.io/zh-cn/latest/"
-            else:
-                url = "https://isat-sam.readthedocs.io/en/latest/"
-            QtGui.QDesktopServices.openUrl(QtCore.QUrl(url))
-
-        except Exception:
-            pass
-
     def exit(self):
         self.close()
 
@@ -2268,6 +2251,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 if not self.saved:
                     event.ignore()
                     return
+        if hasattr(self, 'model_development') and not self.model_development.workspace_home.save_current():
+            event.ignore()
+            return
         self.save_cfg(self.config_file)
         self.save_software_cfg()
         self.plugin_manager_dialog.trigger_application_shutdown()
@@ -2302,7 +2288,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
         )
         main_path = os.path.join(pkg_root, "ISAT/main.py")
-        icon_path = os.path.join(pkg_root, "ISAT/ISAT_new_64.svg")
 
         if osplatform == "Windows":
             try:
@@ -2323,26 +2308,9 @@ set PYTHONPATH=%PROJECT_ROOT%;%PYTHONPATH%
 
         elif osplatform == "Linux":
             try:
-                with open(
-                    os.path.join(
-                        os.path.expanduser("~"),
-                        ".local/share/applications/ISAT.desktop",
-                    ),
-                    "w",
-                ) as f:
-                    f.write(
-                        """[Desktop Entry]
-Name=ISAT
-Type=Application
-Comment=ISAT with segment anything
-Exec=env PYTHONPATH={} {} {}
-Terminal=false
-Icon={}
-Categories=Development;System;
-                    """.format(
-                            pkg_root, python_path, main_path, icon_path
-                        )
-                    )
+                from ISAT.desktop import install_launcher
+
+                install_launcher()
             except Exception as e:
                 print("Create app shortcut error: {}".format(e))
 
@@ -2420,10 +2388,8 @@ Categories=Development;System;
         self.actionProcess_EXIF_tag.triggered.connect(self.process_exif)
 
         self.actionShortcut.triggered.connect(self.shortcut)
-        self.actionAbout.triggered.connect(self.about)
 
         self.actionLanguage.triggered.connect(self.change_language)
-        self.actionDocs.triggered.connect(self.open_docs)
         self.actionCreate_a_desktop_shortcut.triggered.connect(
             self.create_desktop_shortcut
         )

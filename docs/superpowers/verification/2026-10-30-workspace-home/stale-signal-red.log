@@ -1,0 +1,17 @@
+test_late_previous_workspace_signal_does_not_replace_new_workspace_history (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+FAIL
+
+======================================================================
+FAIL: test_late_previous_workspace_signal_does_not_replace_new_workspace_history (tests.workspaces.test_integration.WorkspaceIntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_integration.py", line 177, in test_late_previous_workspace_signal_does_not_replace_new_workspace_history
+    self.assertNotIn('project_name', info['state'])
+AssertionError: 'project_name' unexpectedly found in {'project_name': 'original_筛选'}
+
+----------------------------------------------------------------------
+Ran 1 test in 4.099s
+
+FAILED (failures=1)
+loading plugins
+loaded plugin:  AutoAnnotatePlugin

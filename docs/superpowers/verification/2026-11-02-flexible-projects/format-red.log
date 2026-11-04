@@ -1,0 +1,51 @@
+test_isat_object_records_require_real_categories_and_finite_polygon_coordinates (tests.workspaces.test_external.ExternalProjectTests) ... test_yolo_text_lists_and_string_category_keys_are_supported_but_boolean_keys_are_not (tests.workspaces.test_external.ExternalProjectTests) ... ERROR
+
+======================================================================
+ERROR: test_yolo_text_lists_and_string_category_keys_are_supported_but_boolean_keys_are_not (tests.workspaces.test_external.ExternalProjectTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/ISAT/workspaces/external.py", line 102, in _yolo
+    if set(names) != set(range(len(names))): raise ValueError()
+ValueError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_external.py", line 105, in test_yolo_text_lists_and_string_category_keys_are_supported_but_boolean_keys_are_not
+    self.assertEqual(self.store.read_existing(self.root)['source_kind'], 'yolo')
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/ISAT/workspaces/store.py", line 242, in read_existing
+    return self._external_info(root, recognize(root))
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/ISAT/workspaces/external.py", line 125, in recognize
+    if config.exists() or config.is_symlink(): return _yolo(root, config)
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/ISAT/workspaces/external.py", line 115, in _yolo
+    raise ValueError('YOLO 数据配置或标签有误：' + str(exc)) from exc
+ValueError: YOLO 数据配置或标签有误：
+
+======================================================================
+FAIL: test_isat_object_records_require_real_categories_and_finite_polygon_coordinates (tests.workspaces.test_external.ExternalProjectTests) (objects=[5])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_external.py", line 98, in test_isat_object_records_require_real_categories_and_finite_polygon_coordinates
+    with self.assertRaises(ValueError): self.store.read_existing(self.root)
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_isat_object_records_require_real_categories_and_finite_polygon_coordinates (tests.workspaces.test_external.ExternalProjectTests) (objects=[{'category': 'part', 'segmentation': [[0, 0], [10, 10]]}])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_external.py", line 98, in test_isat_object_records_require_real_categories_and_finite_polygon_coordinates
+    with self.assertRaises(ValueError): self.store.read_existing(self.root)
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_isat_object_records_require_real_categories_and_finite_polygon_coordinates (tests.workspaces.test_external.ExternalProjectTests) (objects=[{'category': 'part', 'segmentation': [[0, 0], [10, nan], [20, 0]]}])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_external.py", line 98, in test_isat_object_records_require_real_categories_and_finite_polygon_coordinates
+    with self.assertRaises(ValueError): self.store.read_existing(self.root)
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.053s
+
+FAILED (failures=3, errors=1)

@@ -1,0 +1,21 @@
+test_old_remembered_workspace_remains_in_recent_list_after_first_new_workspace (tests.workspaces.test_store.StoreTests) ... FAIL
+
+======================================================================
+FAIL: test_old_remembered_workspace_remains_in_recent_list_after_first_new_workspace (tests.workspaces.test_store.StoreTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_store.py", line 50, in test_old_remembered_workspace_remains_in_recent_list_after_first_new_workspace
+    self.assertEqual([row['root'] for row in self.store.recent()], [str(new), str(old)])
+AssertionError: Lists differ: ['/tmp/tmpytjw7hmt/new'] != ['/tmp/tmpytjw7hmt/new', '/tmp/tmpytjw7hmt/previous']
+
+Second list contains 1 additional elements.
+First extra element 1:
+'/tmp/tmpytjw7hmt/previous'
+
+- ['/tmp/tmpytjw7hmt/new']
++ ['/tmp/tmpytjw7hmt/new', '/tmp/tmpytjw7hmt/previous']
+
+----------------------------------------------------------------------
+Ran 1 test in 0.018s
+
+FAILED (failures=1)

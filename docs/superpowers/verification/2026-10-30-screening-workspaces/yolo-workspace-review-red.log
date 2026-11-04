@@ -1,0 +1,56 @@
+test_record_ids_cannot_be_paths_in_a_forged_manifest (tests.data_screening.test_workspace.WorkspaceTests) ... FAIL
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+test_cancel_after_save_commit_suppresses_queued_purge_prompt_and_import (tests.data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+FAIL
+test_saving_screening_updates_current_annotation_file_list_and_clears_empty_canvas (tests.model_development.test_integration.IntegrationTests) ... FAIL
+
+======================================================================
+FAIL: test_record_ids_cannot_be_paths_in_a_forged_manifest (tests.data_screening.test_workspace.WorkspaceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_workspace.py", line 103, in test_record_ids_cannot_be_paths_in_a_forged_manifest
+    with self.assertRaises(ValueError): self.workspace.open_project(session.project_root)
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_cancel_after_save_commit_suppresses_queued_purge_prompt_and_import (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 281, in test_cancel_after_save_commit_suppresses_queued_purge_prompt_and_import
+    self.page._confirm_purge.assert_not_called()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 890, in assert_not_called
+    raise AssertionError(msg)
+AssertionError: Expected '_confirm_purge' to not have been called. Called 1 times.
+Calls: [call()].
+
+======================================================================
+FAIL: test_saving_screening_updates_current_annotation_file_list_and_clears_empty_canvas (tests.model_development.test_integration.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/model_development/test_integration.py", line 165, in test_saving_screening_updates_current_annotation_file_list_and_clears_empty_canvas
+    self.assertEqual(w.files_list, ['b.png'])
+AssertionError: Lists differ: ['a.png', 'b.png'] != ['b.png']
+
+First differing element 0:
+'a.png'
+'b.png'
+
+First list contains 1 additional elements.
+First extra element 1:
+'b.png'
+
+- ['a.png', 'b.png']
++ ['b.png']
+
+----------------------------------------------------------------------
+Ran 3 tests in 3.964s
+
+FAILED (failures=3)
+loading plugins
+loaded plugin:  AutoAnnotatePlugin

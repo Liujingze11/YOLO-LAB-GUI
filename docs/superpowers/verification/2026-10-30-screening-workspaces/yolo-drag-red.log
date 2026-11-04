@@ -1,0 +1,37 @@
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+test_drop_center_replaces_main_edge_adds_compare_and_each_side_replaces_independently (tests.data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+FAIL
+test_drag_preview_back_to_grid_promotes_other_image_without_duplicating_thumbnail (tests.data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ERROR
+
+======================================================================
+ERROR: test_drag_preview_back_to_grid_promotes_other_image_without_duplicating_thumbnail (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 266, in test_drag_preview_back_to_grid_promotes_other_image_without_duplicating_thumbnail
+    self.drop_image(self.page.grid, self.root / 'a.png', mime=self.page.preview.mime_data())
+AttributeError: 'ImagePreview' object has no attribute 'mime_data'
+
+======================================================================
+FAIL: test_drop_center_replaces_main_edge_adds_compare_and_each_side_replaces_independently (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 251, in test_drop_center_replaces_main_edge_adds_compare_and_each_side_replaces_independently
+    self.assertEqual(self.page.preview.displayed_path, b)
+AssertionError: '/tmp/tmpzlhre9wy/workspace/projects/图片 文件夹_筛选/images/a.png' != '/tmp/tmpzlhre9wy/workspace/projects/图片 文件夹_筛选/images/b.png'
+- /tmp/tmpzlhre9wy/workspace/projects/图片 文件夹_筛选/images/a.png
+?                                                      ^
++ /tmp/tmpzlhre9wy/workspace/projects/图片 文件夹_筛选/images/b.png
+?                                                      ^
+
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.135s
+
+FAILED (failures=1, errors=1)

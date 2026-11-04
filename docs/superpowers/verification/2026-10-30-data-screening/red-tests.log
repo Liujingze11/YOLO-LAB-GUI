@@ -1,0 +1,229 @@
+task1-red.log
+test_cancel_or_changed_source_leaves_no_project_or_temporary_directory (tests.data_screening.test_session.SessionTests) ... ERROR
+test_existing_destination_or_empty_selection_is_not_overwritten (tests.data_screening.test_session.SessionTests) ... ERROR
+test_export_creates_images_json_and_does_not_invent_empty_annotations (tests.data_screening.test_session.SessionTests) ... ERROR
+test_invalid_existing_annotation_aborts_instead_of_silently_dropping_labels (tests.data_screening.test_session.SessionTests) ... ERROR
+test_preserves_isat_annotation_and_updates_renamed_image (tests.data_screening.test_session.SessionTests) ... ERROR
+test_remove_and_rename_only_change_screening_records (tests.data_screening.test_session.SessionTests) ... ERROR
+test_rename_rejects_collisions_and_path_escape_without_changing_item (tests.data_screening.test_session.SessionTests) ... ERROR
+test_scan_filters_bad_files_and_resolves_duplicate_stems_recursively (tests.data_screening.test_session.SessionTests) ... ERROR
+
+======================================================================
+ERROR: test_cancel_or_changed_source_leaves_no_project_or_temporary_directory (tests.data_screening.test_session.SessionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_session.py", line 84, in test_cancel_or_changed_source_leaves_no_project_or_temporary_directory
+    session = self.scan(); destination = self.root.parent / 'project'
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_session.py", line 24, in scan
+    from ISAT.data_screening.session import ScreeningSession
+ModuleNotFoundError: No module named 'ISAT.data_screening'
+
+======================================================================
+ERROR: test_existing_destination_or_empty_selection_is_not_overwritten (tests.data_screening.test_session.SessionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_session.py", line 96, in test_existing_destination_or_empty_selection_is_not_overwritten
+    self.image('a.png'); session = self.scan()
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_session.py", line 24, in scan
+    from ISAT.data_screening.session import ScreeningSession
+ModuleNotFoundError: No module named 'ISAT.data_screening'
+
+======================================================================
+ERROR: test_export_creates_images_json_and_does_not_invent_empty_annotations (tests.data_screening.test_session.SessionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_session.py", line 58, in test_export_creates_images_json_and_does_not_invent_empty_annotations
+    session = self.scan(); session.remove([session.items[1]])
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_session.py", line 24, in scan
+    from ISAT.data_screening.session import ScreeningSession
+ModuleNotFoundError: No module named 'ISAT.data_screening'
+
+======================================================================
+ERROR: test_invalid_existing_annotation_aborts_instead_of_silently_dropping_labels (tests.data_screening.test_session.SessionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_session.py", line 106, in test_invalid_existing_annotation_aborts_instead_of_silently_dropping_labels
+    session = self.scan(); destination = self.root.parent / 'project'
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_session.py", line 24, in scan
+    from ISAT.data_screening.session import ScreeningSession
+ModuleNotFoundError: No module named 'ISAT.data_screening'
+
+======================================================================
+ERROR: test_preserves_isat_annotation_and_updates_renamed_image (tests.data_screening.test_session.SessionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_session.py", line 74, in test_preserves_isat_annotation_and_updates_renamed_image
+    session = self.scan(); session.rename(session.items[0], '新名字')
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_session.py", line 24, in scan
+    from ISAT.data_screening.session import ScreeningSession
+ModuleNotFoundError: No module named 'ISAT.data_screening'
+
+======================================================================
+ERROR: test_remove_and_rename_only_change_screening_records (tests.data_screening.test_session.SessionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_session.py", line 40, in test_remove_and_rename_only_change_screening_records
+    session = self.scan()
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_session.py", line 24, in scan
+    from ISAT.data_screening.session import ScreeningSession
+ModuleNotFoundError: No module named 'ISAT.data_screening'
+
+======================================================================
+ERROR: test_rename_rejects_collisions_and_path_escape_without_changing_item (tests.data_screening.test_session.SessionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_session.py", line 50, in test_rename_rejects_collisions_and_path_escape_without_changing_item
+    session = self.scan(); item = session.items[0]
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_session.py", line 24, in scan
+    from ISAT.data_screening.session import ScreeningSession
+ModuleNotFoundError: No module named 'ISAT.data_screening'
+
+======================================================================
+ERROR: test_scan_filters_bad_files_and_resolves_duplicate_stems_recursively (tests.data_screening.test_session.SessionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_session.py", line 31, in test_scan_filters_bad_files_and_resolves_duplicate_stems_recursively
+    session = self.scan()
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_session.py", line 24, in scan
+    from ISAT.data_screening.session import ScreeningSession
+ModuleNotFoundError: No module named 'ISAT.data_screening'
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.013s
+
+FAILED (errors=8)
+
+
+task2-red.log
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+test_drop_folder_populates_grid_and_large_preview (tests.data_screening.test_widget.ScreeningWidgetTests) ... ERROR
+test_export_button_creates_project_and_emits_ready_paths (tests.data_screening.test_widget.ScreeningWidgetTests) ... ERROR
+test_import_cancel_guard_creates_nothing (tests.data_screening.test_widget.ScreeningWidgetTests) ... ERROR
+test_quick_selection_changes_do_not_leave_old_preview (tests.data_screening.test_widget.ScreeningWidgetTests) ... ERROR
+test_rename_and_multiselect_delete_preserve_original_files (tests.data_screening.test_widget.ScreeningWidgetTests) ... ERROR
+
+======================================================================
+ERROR: test_drop_folder_populates_grid_and_large_preview (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 19, in setUp
+    from ISAT.data_screening.widget import DataScreeningWidget
+ModuleNotFoundError: No module named 'ISAT.data_screening.widget'
+
+======================================================================
+ERROR: test_export_button_creates_project_and_emits_ready_paths (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 19, in setUp
+    from ISAT.data_screening.widget import DataScreeningWidget
+ModuleNotFoundError: No module named 'ISAT.data_screening.widget'
+
+======================================================================
+ERROR: test_import_cancel_guard_creates_nothing (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 19, in setUp
+    from ISAT.data_screening.widget import DataScreeningWidget
+ModuleNotFoundError: No module named 'ISAT.data_screening.widget'
+
+======================================================================
+ERROR: test_quick_selection_changes_do_not_leave_old_preview (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 19, in setUp
+    from ISAT.data_screening.widget import DataScreeningWidget
+ModuleNotFoundError: No module named 'ISAT.data_screening.widget'
+
+======================================================================
+ERROR: test_rename_and_multiselect_delete_preserve_original_files (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 19, in setUp
+    from ISAT.data_screening.widget import DataScreeningWidget
+ModuleNotFoundError: No module named 'ISAT.data_screening.widget'
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.007s
+
+FAILED (errors=5)
+
+
+task3-red.log
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+test_screening_navigation_preserves_annotation_and_model_form (tests.model_development.test_integration.IntegrationTests) ... ERROR
+test_screening_import_opens_real_canvas_and_saves_json_separately (tests.model_development.test_integration.IntegrationTests) ... ERROR
+test_screening_import_cancel_preserves_unsaved_canvas (tests.model_development.test_integration.IntegrationTests) ... ERROR
+
+======================================================================
+ERROR: test_screening_navigation_preserves_annotation_and_model_form (tests.model_development.test_integration.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/model_development/test_integration.py", line 107, in test_screening_navigation_preserves_annotation_and_model_form
+    c.show_screening(); self.app.processEvents()
+AttributeError: 'ModelDevelopmentController' object has no attribute 'show_screening'
+
+======================================================================
+ERROR: test_screening_import_opens_real_canvas_and_saves_json_separately (tests.model_development.test_integration.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/model_development/test_integration.py", line 131, in test_screening_import_opens_real_canvas_and_saves_json_separately
+    c.show_screening(); page = c.screening_widget
+AttributeError: 'ModelDevelopmentController' object has no attribute 'show_screening'
+
+======================================================================
+ERROR: test_screening_import_cancel_preserves_unsaved_canvas (tests.model_development.test_integration.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/model_development/test_integration.py", line 155, in test_screening_import_cancel_preserves_unsaved_canvas
+    c.show_screening(); w.saved = False
+AttributeError: 'ModelDevelopmentController' object has no attribute 'show_screening'
+
+----------------------------------------------------------------------
+Ran 3 tests in 4.884s
+
+FAILED (errors=3)
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+
+
+source-race-red.log
+test_source_changed_after_its_copy_aborts_the_entire_export (tests.data_screening.test_session.SessionTests) ... FAIL
+
+======================================================================
+FAIL: test_source_changed_after_its_copy_aborts_the_entire_export (tests.data_screening.test_session.SessionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_session.py", line 115, in test_source_changed_after_its_copy_aborts_the_entire_export
+    with self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.015s
+
+FAILED (failures=1)
+
+
+late-result-red.log
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+test_cancel_ignores_queued_scan_result_and_does_not_start_a_new_preview (tests.data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+FAIL
+
+======================================================================
+FAIL: test_cancel_ignores_queued_scan_result_and_does_not_start_a_new_preview (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 103, in test_cancel_ignores_queued_scan_result_and_does_not_start_a_new_preview
+    self.assertIsNone(self.page.session)
+AssertionError: <ISAT.data_screening.session.ScreeningSession object at 0x73db43afc730> is not None
+
+----------------------------------------------------------------------
+Ran 1 test in 0.061s
+
+FAILED (failures=1)

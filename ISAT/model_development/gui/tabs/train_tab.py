@@ -12,13 +12,14 @@ import sys
 import tempfile
 from pathlib import Path
 
-from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtCore import Qt, pyqtSignal, pyqtSlot
 from PyQt5.QtGui import QTextCursor
 from PyQt5.QtWidgets import (
     QApplication,
     QCheckBox,
     QComboBox,
     QDoubleSpinBox,
+    QFrame,
     QFileDialog,
     QHBoxLayout,
     QLabel,
@@ -88,6 +89,7 @@ def save_presets(presets: dict) -> None:
 
 class TrainTab(QWidget):
     """Training configuration, execution and monitoring tab."""
+    training_started = pyqtSignal(object)
 
     def __init__(self, parent=None, path_history: dict[str, list[str]] | None = None):
         super().__init__(parent)
@@ -113,7 +115,7 @@ class TrainTab(QWidget):
         inner = QWidget()
         inner.setMinimumSize(640, 920)
         il = QVBoxLayout(inner)
-        il.setContentsMargins(24, 16, 24, 24)
+        il.setContentsMargins(4, 4, 12, 12)
         il.setSpacing(0)
 
         splitter = QSplitter(Qt.Vertical)
@@ -125,7 +127,7 @@ class TrainTab(QWidget):
             }
         """)
         self._splitter = splitter
-        self._splitter_defaults = [200, 180, 170, 130, 220]
+        self._splitter_defaults = [260, 200, 52, 190, 220]
 
         # ── Panel 1: 路径 ──
         card1, header1, lay1 = resizable_card("路径", i18n_key="train.card.paths")
@@ -162,7 +164,7 @@ class TrainTab(QWidget):
             row.addWidget(lbl)
             row.addWidget(cb, 1)
             b = btn("浏览", primary=False, i18n_key="train.btn.browse")
-            b.setFixedWidth(60)
+            b.setMinimumWidth(76)
             b.clicked.connect(lambda checked, c=cb, d=is_dir, f=flt, k=hist_key: self._browse(c, d, f, k))
             row.addWidget(b)
             lay1.addLayout(row)
@@ -184,7 +186,7 @@ class TrainTab(QWidget):
         model_row.addWidget(self.tr_model, 1)
         lay1.addLayout(model_row)
 
-        card1.setMinimumHeight(180)
+        card1.setMinimumHeight(240)
         splitter.addWidget(self._wrap_card(card1))
 
         # ── Panel 2: 超参数 ──
@@ -311,7 +313,7 @@ class TrainTab(QWidget):
 
         adv_lay.addLayout(adv_grid)
 
-        card2.setMinimumHeight(140)
+        card2.setMinimumHeight(200)
         splitter.addWidget(self._wrap_card(card2))
 
         # ── Panel 3: 数据增强 ──
@@ -341,6 +343,7 @@ class TrainTab(QWidget):
             return row
 
         card_aug, header_aug, lay_aug = resizable_card("数据增强", i18n_key="train.card.augment")
+        self.augmentation_card = card_aug
 
         self.tr_augment = QCheckBox(tr("train.augment"))
         self.tr_augment.setProperty("i18nKey", "train.augment")
@@ -455,6 +458,10 @@ class TrainTab(QWidget):
         bottom_layout.setContentsMargins(0, 8, 0, 0)
         bottom_layout.setSpacing(6)
 
+        self.run_bar = QFrame()
+        self.run_bar.setProperty('glassRole', 'commandBar')
+        run_layout = QVBoxLayout(self.run_bar)
+        run_layout.setContentsMargins(12, 8, 12, 8); run_layout.setSpacing(6)
         btn_row = QHBoxLayout()
         btn_row.setSpacing(10)
 
@@ -490,10 +497,10 @@ class TrainTab(QWidget):
         btn_row.addWidget(del_btn)
 
         btn_row.addStretch()
-        bottom_layout.addLayout(btn_row)
+        run_layout.addLayout(btn_row)
 
         self.tr_progress = progress_bar(i18n_key="train.progress.format")
-        bottom_layout.addWidget(self.tr_progress)
+        run_layout.addWidget(self.tr_progress)
 
         # ── 曲线 / 日志 水平分栏 ──
         self._chart_splitter = QSplitter(Qt.Horizontal)
@@ -513,10 +520,12 @@ class TrainTab(QWidget):
 
         bottom.setMinimumHeight(180)
         splitter.addWidget(self._wrap_card(bottom))
-        splitter.setSizes([200, 180, 170, 130, 220])
+        splitter.setSizes(self._splitter_defaults)
+        card_aug.set_expanded(False)
         il.addWidget(splitter)
 
         outer.addWidget(scroll_area(inner))
+        outer.addWidget(self.run_bar)
 
     def reset_splitter(self):
         """Restore default panel sizes (wired to the settings tab)."""
@@ -1248,6 +1257,7 @@ class TrainTab(QWidget):
         self._train_worker.stopped.connect(self._on_train_stopped)
         self._train_worker.finished.connect(self._on_train_thread_finished)
         self._train_worker.start()
+        self.training_started.emit(cfg)
 
     @pyqtSlot(str)
     def _append_train_log(self, line):

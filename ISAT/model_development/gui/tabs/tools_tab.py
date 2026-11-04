@@ -64,7 +64,7 @@ class ToolsTab(QWidget):
         inner = QWidget()
         inner.setMinimumSize(560, 580)
         il = QVBoxLayout(inner)
-        il.setContentsMargins(24, 16, 24, 24)
+        il.setContentsMargins(4, 4, 12, 12)
         il.setSpacing(10)
 
         # ── 数据集目录卡片 ──
@@ -79,7 +79,7 @@ class ToolsTab(QWidget):
         row.setSpacing(10)
         row.addWidget(self.tool_dataset, 1)
         b = btn("浏览", primary=False, i18n_key="train.btn.browse")
-        b.setFixedWidth(60)
+        b.setMinimumWidth(76)
         b.clicked.connect(lambda: self._browse(self.tool_dataset, True, None, "tool_dataset"))
         row.addWidget(b)
         lay1.addLayout(row)

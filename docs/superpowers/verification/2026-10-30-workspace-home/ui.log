@@ -1,0 +1,7 @@
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+This plugin does not support propagateSizeHints()
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+home geometry 800 650 viewport 714
+home geometry 1500 950 viewport 1428
+PASS: native startup, responsive gallery, card opening, live form resume, real folder picker and direct workbench entry.

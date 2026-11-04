@@ -1,0 +1,12 @@
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+PASS: select location, name project, matching folder, automatic workbench entry.
+This plugin does not support raise()
+This plugin does not support grabbing the keyboard
+PASS: actual right-click menu and copy-path command.
+This plugin does not support propagateSizeHints()
+PASS: actual QFile.moveToTrash, active project cleared, exit does not recreate folder.
+PASS: externally deleted project no longer appears.

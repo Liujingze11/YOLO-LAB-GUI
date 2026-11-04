@@ -1,0 +1,30 @@
+test_recreated_directory_cannot_inherit_deletion_permission_from_a_copied_marker (tests.workspaces.test_store.StoreTests) ... FAIL
+test_invalid_symlink_history_does_not_hide_the_real_project (tests.workspaces.test_store.StoreTests) ... FAIL
+
+======================================================================
+FAIL: test_recreated_directory_cannot_inherit_deletion_permission_from_a_copied_marker (tests.workspaces.test_store.StoreTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_store.py", line 162, in test_recreated_directory_cannot_inherit_deletion_permission_from_a_copied_marker
+    with self.assertRaises(ValueError): self.store.validate_deletion(created)
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_invalid_symlink_history_does_not_hide_the_real_project (tests.workspaces.test_store.StoreTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_store.py", line 170, in test_invalid_symlink_history_does_not_hide_the_real_project
+    self.assertEqual([row['root'] for row in self.store.recent()], [str(created)])
+AssertionError: Lists differ: [] != ['/tmp/tmpeqannzrb/原项目']
+
+Second list contains 1 additional elements.
+First extra element 0:
+'/tmp/tmpeqannzrb/原项目'
+
+- []
++ ['/tmp/tmpeqannzrb/原项目']
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.027s
+
+FAILED (failures=2)

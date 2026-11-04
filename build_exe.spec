@@ -105,7 +105,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='icons/M_Favicon.ico' if os.path.exists('icons/M_Favicon.ico') else None,
+    icon='ISAT/yolo-backprop-transparent.ico',
 )
 
 coll = COLLECT(

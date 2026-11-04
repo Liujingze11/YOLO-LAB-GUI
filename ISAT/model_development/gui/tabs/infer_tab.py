@@ -58,7 +58,7 @@ class InferTab(QWidget):
         inner = QWidget()
         inner.setMinimumSize(560, 580)
         il = QVBoxLayout(inner)
-        il.setContentsMargins(24, 16, 24, 24)
+        il.setContentsMargins(4, 4, 12, 12)
         il.setSpacing(10)
 
         card1, lay1 = card()
@@ -87,7 +87,7 @@ class InferTab(QWidget):
             row.addWidget(lbl)
             row.addWidget(cb, 1)
             b = btn("浏览", primary=False, i18n_key="train.btn.browse")
-            b.setFixedWidth(60)
+            b.setMinimumWidth(76)
             b.clicked.connect(lambda checked, c=cb, d=is_dir, f=flt, k=hist_key: self._browse(c, d, f, k))
             row.addWidget(b)
             lay1.addLayout(row)

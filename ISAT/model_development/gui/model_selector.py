@@ -240,7 +240,7 @@ class ModelSelector(QWidget):
         view.setResizeMode(QListView.Adjust)
 
         self._browse_btn = btn("浏览", primary=False, i18n_key="train.btn.browse")
-        self._browse_btn.setFixedWidth(60)
+        self._browse_btn.setMinimumWidth(76)
         self._browse_btn.clicked.connect(self._on_browse)
 
         combo_row = QHBoxLayout()

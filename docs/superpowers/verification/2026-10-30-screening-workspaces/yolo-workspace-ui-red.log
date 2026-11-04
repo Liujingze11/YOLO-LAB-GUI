@@ -1,0 +1,261 @@
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+test_cancel_ignores_queued_scan_result_and_does_not_start_a_new_preview (tests.data_screening.test_widget.ScreeningWidgetTests) ... ERROR
+test_cancel_workspace_selection_prevents_import (tests.data_screening.test_widget.ScreeningWidgetTests) ... ERROR
+test_changed_shortcut_renames_and_menu_copies_real_file_path (tests.data_screening.test_widget.ScreeningWidgetTests) ... ERROR
+test_closing_comparison_ignores_already_queued_image_result (tests.data_screening.test_widget.ScreeningWidgetTests) ... ERROR
+test_confirmed_purge_removes_copies_after_save_and_keeps_originals (tests.data_screening.test_widget.ScreeningWidgetTests) ... ERROR
+test_dragging_other_thumbnail_preserves_main_photo_and_creates_equal_comparison (tests.data_screening.test_widget.ScreeningWidgetTests) ... ERROR
+test_drop_folder_populates_grid_and_large_preview (tests.data_screening.test_widget.ScreeningWidgetTests) ... ERROR
+test_export_button_creates_project_and_emits_ready_paths (tests.data_screening.test_widget.ScreeningWidgetTests) ... ERROR
+test_import_cancel_guard_creates_nothing (tests.data_screening.test_widget.ScreeningWidgetTests) ... ERROR
+test_navigation_shortcuts_work_with_focus_on_the_large_preview (tests.data_screening.test_widget.ScreeningWidgetTests) ... ERROR
+test_quick_selection_changes_do_not_leave_old_preview (tests.data_screening.test_widget.ScreeningWidgetTests) ... ERROR
+test_rename_and_multiselect_delete_preserve_original_files (tests.data_screening.test_widget.ScreeningWidgetTests) ... ERROR
+test_replacing_comparison_discards_previous_queued_result (tests.data_screening.test_widget.ScreeningWidgetTests) ... ERROR
+test_save_failure_never_prompts_for_purge (tests.data_screening.test_widget.ScreeningWidgetTests) ... ERROR
+test_save_retains_trash_when_confirmation_declined_and_dialog_restores_it (tests.data_screening.test_widget.ScreeningWidgetTests) ... ERROR
+test_shortcut_dialog_updates_live_actions_and_persists_changes (tests.data_screening.test_widget.ScreeningWidgetTests) ... ERROR
+test_thumbnail_grid_keeps_three_columns_when_left_pane_is_resized (tests.data_screening.test_widget.ScreeningWidgetTests) ... ERROR
+
+======================================================================
+ERROR: test_cancel_ignores_queued_scan_result_and_does_not_start_a_new_preview (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 31, in setUp
+    self.purge_prompt.start(); self.addCleanup(self.purge_prompt.stop)
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1595, in start
+    result = self.__enter__()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1447, in __enter__
+    original, local = self.get_original()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1420, in get_original
+    raise AttributeError(
+AttributeError: <ISAT.data_screening.widget.DataScreeningWidget object at 0x7a1d93fadd80> does not have the attribute '_confirm_purge'
+
+======================================================================
+ERROR: test_cancel_workspace_selection_prevents_import (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 31, in setUp
+    self.purge_prompt.start(); self.addCleanup(self.purge_prompt.stop)
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1595, in start
+    result = self.__enter__()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1447, in __enter__
+    original, local = self.get_original()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1420, in get_original
+    raise AttributeError(
+AttributeError: <ISAT.data_screening.widget.DataScreeningWidget object at 0x7a1d93b0e5f0> does not have the attribute '_confirm_purge'
+
+======================================================================
+ERROR: test_changed_shortcut_renames_and_menu_copies_real_file_path (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 31, in setUp
+    self.purge_prompt.start(); self.addCleanup(self.purge_prompt.stop)
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1595, in start
+    result = self.__enter__()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1447, in __enter__
+    original, local = self.get_original()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1420, in get_original
+    raise AttributeError(
+AttributeError: <ISAT.data_screening.widget.DataScreeningWidget object at 0x7a1d93b509d0> does not have the attribute '_confirm_purge'
+
+======================================================================
+ERROR: test_closing_comparison_ignores_already_queued_image_result (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 31, in setUp
+    self.purge_prompt.start(); self.addCleanup(self.purge_prompt.stop)
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1595, in start
+    result = self.__enter__()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1447, in __enter__
+    original, local = self.get_original()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1420, in get_original
+    raise AttributeError(
+AttributeError: <ISAT.data_screening.widget.DataScreeningWidget object at 0x7a1d93b52d40> does not have the attribute '_confirm_purge'
+
+======================================================================
+ERROR: test_confirmed_purge_removes_copies_after_save_and_keeps_originals (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 31, in setUp
+    self.purge_prompt.start(); self.addCleanup(self.purge_prompt.stop)
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1595, in start
+    result = self.__enter__()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1447, in __enter__
+    original, local = self.get_original()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1420, in get_original
+    raise AttributeError(
+AttributeError: <ISAT.data_screening.widget.DataScreeningWidget object at 0x7a1d93b54a60> does not have the attribute '_confirm_purge'
+
+======================================================================
+ERROR: test_dragging_other_thumbnail_preserves_main_photo_and_creates_equal_comparison (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 31, in setUp
+    self.purge_prompt.start(); self.addCleanup(self.purge_prompt.stop)
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1595, in start
+    result = self.__enter__()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1447, in __enter__
+    original, local = self.get_original()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1420, in get_original
+    raise AttributeError(
+AttributeError: <ISAT.data_screening.widget.DataScreeningWidget object at 0x7a1d93b56dd0> does not have the attribute '_confirm_purge'
+
+======================================================================
+ERROR: test_drop_folder_populates_grid_and_large_preview (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 31, in setUp
+    self.purge_prompt.start(); self.addCleanup(self.purge_prompt.stop)
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1595, in start
+    result = self.__enter__()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1447, in __enter__
+    original, local = self.get_original()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1420, in get_original
+    raise AttributeError(
+AttributeError: <ISAT.data_screening.widget.DataScreeningWidget object at 0x7a1d93b591b0> does not have the attribute '_confirm_purge'
+
+======================================================================
+ERROR: test_export_button_creates_project_and_emits_ready_paths (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 31, in setUp
+    self.purge_prompt.start(); self.addCleanup(self.purge_prompt.stop)
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1595, in start
+    result = self.__enter__()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1447, in __enter__
+    original, local = self.get_original()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1420, in get_original
+    raise AttributeError(
+AttributeError: <ISAT.data_screening.widget.DataScreeningWidget object at 0x7a1d93b5b520> does not have the attribute '_confirm_purge'
+
+======================================================================
+ERROR: test_import_cancel_guard_creates_nothing (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 31, in setUp
+    self.purge_prompt.start(); self.addCleanup(self.purge_prompt.stop)
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1595, in start
+    result = self.__enter__()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1447, in __enter__
+    original, local = self.get_original()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1420, in get_original
+    raise AttributeError(
+AttributeError: <ISAT.data_screening.widget.DataScreeningWidget object at 0x7a1d93b5d900> does not have the attribute '_confirm_purge'
+
+======================================================================
+ERROR: test_navigation_shortcuts_work_with_focus_on_the_large_preview (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 31, in setUp
+    self.purge_prompt.start(); self.addCleanup(self.purge_prompt.stop)
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1595, in start
+    result = self.__enter__()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1447, in __enter__
+    original, local = self.get_original()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1420, in get_original
+    raise AttributeError(
+AttributeError: <ISAT.data_screening.widget.DataScreeningWidget object at 0x7a1d93b59090> does not have the attribute '_confirm_purge'
+
+======================================================================
+ERROR: test_quick_selection_changes_do_not_leave_old_preview (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 31, in setUp
+    self.purge_prompt.start(); self.addCleanup(self.purge_prompt.stop)
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1595, in start
+    result = self.__enter__()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1447, in __enter__
+    original, local = self.get_original()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1420, in get_original
+    raise AttributeError(
+AttributeError: <ISAT.data_screening.widget.DataScreeningWidget object at 0x7a1d93b61510> does not have the attribute '_confirm_purge'
+
+======================================================================
+ERROR: test_rename_and_multiselect_delete_preserve_original_files (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 31, in setUp
+    self.purge_prompt.start(); self.addCleanup(self.purge_prompt.stop)
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1595, in start
+    result = self.__enter__()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1447, in __enter__
+    original, local = self.get_original()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1420, in get_original
+    raise AttributeError(
+AttributeError: <ISAT.data_screening.widget.DataScreeningWidget object at 0x7a1d93b63880> does not have the attribute '_confirm_purge'
+
+======================================================================
+ERROR: test_replacing_comparison_discards_previous_queued_result (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 31, in setUp
+    self.purge_prompt.start(); self.addCleanup(self.purge_prompt.stop)
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1595, in start
+    result = self.__enter__()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1447, in __enter__
+    original, local = self.get_original()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1420, in get_original
+    raise AttributeError(
+AttributeError: <ISAT.data_screening.widget.DataScreeningWidget object at 0x7a1d93b65c60> does not have the attribute '_confirm_purge'
+
+======================================================================
+ERROR: test_save_failure_never_prompts_for_purge (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 31, in setUp
+    self.purge_prompt.start(); self.addCleanup(self.purge_prompt.stop)
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1595, in start
+    result = self.__enter__()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1447, in __enter__
+    original, local = self.get_original()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1420, in get_original
+    raise AttributeError(
+AttributeError: <ISAT.data_screening.widget.DataScreeningWidget object at 0x7a1d93b70040> does not have the attribute '_confirm_purge'
+
+======================================================================
+ERROR: test_save_retains_trash_when_confirmation_declined_and_dialog_restores_it (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 31, in setUp
+    self.purge_prompt.start(); self.addCleanup(self.purge_prompt.stop)
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1595, in start
+    result = self.__enter__()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1447, in __enter__
+    original, local = self.get_original()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1420, in get_original
+    raise AttributeError(
+AttributeError: <ISAT.data_screening.widget.DataScreeningWidget object at 0x7a1d93b723b0> does not have the attribute '_confirm_purge'
+
+======================================================================
+ERROR: test_shortcut_dialog_updates_live_actions_and_persists_changes (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 31, in setUp
+    self.purge_prompt.start(); self.addCleanup(self.purge_prompt.stop)
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1595, in start
+    result = self.__enter__()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1447, in __enter__
+    original, local = self.get_original()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1420, in get_original
+    raise AttributeError(
+AttributeError: <ISAT.data_screening.widget.DataScreeningWidget object at 0x7a1d93b72320> does not have the attribute '_confirm_purge'
+
+======================================================================
+ERROR: test_thumbnail_grid_keeps_three_columns_when_left_pane_is_resized (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 31, in setUp
+    self.purge_prompt.start(); self.addCleanup(self.purge_prompt.stop)
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1595, in start
+    result = self.__enter__()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1447, in __enter__
+    original, local = self.get_original()
+  File "/home/ljz/miniconda3/envs/isat_env/lib/python3.10/unittest/mock.py", line 1420, in get_original
+    raise AttributeError(
+AttributeError: <ISAT.data_screening.widget.DataScreeningWidget object at 0x7a1d93b75d80> does not have the attribute '_confirm_purge'
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.118s
+
+FAILED (errors=17)

@@ -1,0 +1,28 @@
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+/home/ljz/.config/matplotlib is not a writable directory
+Matplotlib created a temporary cache directory at /tmp/matplotlib-t7bx76vg because there was an issue with the default path (/home/ljz/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+FF
+======================================================================
+FAIL: test_theme_switch_applies_to_each_work_page (tests.model_development.test_integration.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/model_development/test_integration.py", line 105, in test_theme_switch_applies_to_each_work_page
+    self.assertGreater(c.frame.title.palette().color(QtGui.QPalette.WindowText).lightness(), 180)
+AssertionError: 30 not greater than 180
+
+======================================================================
+FAIL: test_training_actions_remain_visible_in_small_window (tests.model_development.test_integration.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/model_development/test_integration.py", line 119, in test_training_actions_remain_visible_in_small_window
+    self.assertTrue(self.window.rect().contains(bounds), control.text() if hasattr(control, 'text') else 'presets')
+AssertionError: False is not true : 开始训练
+
+----------------------------------------------------------------------
+Ran 2 tests in 3.850s
+
+FAILED (failures=2)
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin

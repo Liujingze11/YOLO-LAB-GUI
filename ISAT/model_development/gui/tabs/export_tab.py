@@ -45,7 +45,7 @@ class ExportTab(QWidget):
         inner = QWidget()
         inner.setMinimumSize(560, 580)
         il = QVBoxLayout(inner)
-        il.setContentsMargins(24, 16, 24, 24)
+        il.setContentsMargins(4, 4, 12, 12)
         il.setSpacing(10)
 
         # ── 源模型卡片 ──
@@ -63,7 +63,7 @@ class ExportTab(QWidget):
         src_row.addWidget(lbl)
         src_row.addWidget(self.export_model, 1)
         b = btn("浏览", primary=False, i18n_key="train.btn.browse")
-        b.setFixedWidth(60)
+        b.setMinimumWidth(76)
         b.clicked.connect(lambda: self._browse(self.export_model, False,
                                                 "权重 (*.pt *.pth)", "export_model"))
         src_row.addWidget(b)
@@ -115,7 +115,7 @@ class ExportTab(QWidget):
         out_row.setSpacing(10)
         out_row.addWidget(self.export_output, 1)
         b = btn("浏览", primary=False, i18n_key="train.btn.browse")
-        b.setFixedWidth(60)
+        b.setMinimumWidth(76)
         b.clicked.connect(lambda: self._browse(self.export_output, True, None, "export_output"))
         out_row.addWidget(b)
         lay_out.addLayout(out_row)
@@ -265,23 +265,16 @@ class ExportTab(QWidget):
         r10.addStretch()
         tl_lay.addLayout(r10)
         self.option_stack.addWidget(tl_page)  # index 4
+        for checkbox in self.option_stack.findChildren(QCheckBox):
+            checkbox.setProperty('themeClass', 'checkbox')
 
     def _select_format(self, fmt_key: str):
         """Handle format card selection — update card styles and option page."""
         self._selected_format = fmt_key
 
-        import re
         for key, card_w in self._format_cards.items():
-            if key == fmt_key:
-                card_w.setStyleSheet(
-                    "QFrame { background: rgba(0,113,227,0.08); "
-                    "border: 2px solid #0071e3; border-radius: 10px; }"
-                )
-            else:
-                card_w.setStyleSheet(
-                    "QFrame { background: #ffffff; border: 1px solid #d0d0d0; border-radius: 10px; }"
-                    "QFrame:hover { border: 1px solid #0071e3; }"
-                )
+            card_w.setProperty('selected', key == fmt_key)
+            card_w.style().unpolish(card_w); card_w.style().polish(card_w); card_w.update()
 
         page_map = {"onnx": 0, "engine": 1, "openvino": 2, "coreml": 3, "tflite": 4}
         self.option_stack.setCurrentIndex(page_map.get(fmt_key, 0))

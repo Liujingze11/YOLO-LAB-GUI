@@ -1,0 +1,4 @@
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+PASS: native right-click rename/remove; four photos in one bottom row; saved/reopened thumbnails; double-click and multi-restore; original photos unchanged.

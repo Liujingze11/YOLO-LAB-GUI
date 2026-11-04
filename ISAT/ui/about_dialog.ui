@@ -107,7 +107,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="../icons.qrc">:/icon/icons/ISAT_new_256.svg</pixmap>
+            <pixmap resource="../icons.qrc">:/icon/icons/yolo-backprop-transparent.svg</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>

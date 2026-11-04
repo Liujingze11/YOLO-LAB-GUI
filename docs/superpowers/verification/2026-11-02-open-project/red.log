@@ -1,0 +1,205 @@
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+test_cancel_location_selection_leaves_no_files (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_cancel_open_existing_project_does_not_create_files_or_request_open (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+FAIL
+test_cancel_project_name_leaves_no_folder_or_history (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_card_context_actions_open_copy_and_request_delete (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_cards_keep_new_card_dimensions_through_resize_and_refresh (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_clicking_workspace_card_requests_that_workspace_and_grid_adapts (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_empty_home_offers_new_workspace_without_creating_a_default_folder (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+FAIL
+test_location_then_name_creates_matching_folder_and_opens_project (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_name_must_be_typed_and_invalid_names_cannot_be_submitted (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_open_existing_card_only_requests_existing_project_without_writing_it (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+FAIL
+test_open_rejects_ordinary_and_corrupt_folders_without_initializing_them (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+FAIL
+test_refresh_drops_a_project_deleted_outside_the_app (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+FAIL
+test_refresh_immediately_hides_retired_cards_without_waiting_for_deferred_deletion (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+FAIL
+test_corrupt_workspace_metadata_is_reported_without_replacing_it (tests.workspaces.test_store.StoreTests) ... ok
+test_cover_is_cached_and_does_not_depend_on_original_image_remaining (tests.workspaces.test_store.StoreTests) ... ok
+test_desktop_history_is_removed_without_touching_its_files_or_child_projects (tests.workspaces.test_store.StoreTests) ... ok
+test_existing_workspace_is_adopted_without_changing_project_files (tests.workspaces.test_store.StoreTests) ... ok
+test_forget_clears_history_and_previous_selection_without_deleting_files (tests.workspaces.test_store.StoreTests) ... ok
+test_forgetting_parent_only_removes_that_card_and_preserves_child (tests.workspaces.test_store.StoreTests) ... ok
+test_invalid_names_and_existing_directories_do_not_overwrite_files (tests.workspaces.test_store.StoreTests) ... ok
+test_invalid_symlink_history_does_not_hide_the_real_project (tests.workspaces.test_store.StoreTests) ... ok
+test_missing_workspace_and_corrupt_history_do_not_break_home (tests.workspaces.test_store.StoreTests) ... ok
+test_new_workspace_lives_under_selected_parent_and_reopens_with_its_own_state (tests.workspaces.test_store.StoreTests) ... ok
+test_old_remembered_workspace_remains_in_recent_list_after_first_new_workspace (tests.workspaces.test_store.StoreTests) ... ok
+test_only_newly_created_project_with_matching_ownership_can_be_deleted (tests.workspaces.test_store.StoreTests) ... ok
+test_open_location_does_not_replace_a_conflicting_user_file (tests.workspaces.test_store.StoreTests) ... ok
+test_open_location_never_turns_an_existing_directory_into_a_project (tests.workspaces.test_store.StoreTests) ... ok
+test_open_location_reuses_existing_workspace_without_creating_nested_folder (tests.workspaces.test_store.StoreTests) ... ok
+test_read_existing_requires_a_valid_marker_and_does_not_write_or_register (tests.workspaces.test_store.StoreTests) ... ERROR
+test_recreated_directory_cannot_inherit_deletion_permission_from_a_copied_marker (tests.workspaces.test_store.StoreTests) ... ok
+test_removed_project_marker_hides_project_even_when_folder_and_projects_remain (tests.workspaces.test_store.StoreTests) ... ok
+test_training_cover_resolves_relative_dataset_and_txt_image_list (tests.workspaces.test_store.StoreTests) ... ok
+test_adopted_existing_folder_cannot_be_trashed_even_with_confirmation (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_cancel_delete_keeps_project_and_current_workspace (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_cancel_unsaved_annotation_during_delete_keeps_project_and_edits (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_cancel_unsaved_annotation_switch_keeps_original_workspace_and_canvas (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_cancel_unsaved_screening_switch_keeps_working_session (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_close_and_restart_restores_workspace_training_draft_from_disk (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_create_from_home_enters_workspace_and_same_card_keeps_live_forms (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... This plugin does not support propagateSizeHints()
+ok
+test_delete_current_project_moves_folder_and_does_not_recreate_it_on_exit (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_external_project_deletion_does_not_block_home_or_recreate_folder_on_exit (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_late_previous_workspace_signal_does_not_replace_new_workspace_history (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_real_train_start_updates_home_using_the_actual_training_config (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_recent_project_and_training_photo_survive_workspace_switch (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_remove_current_project_only_forgets_card_and_keeps_all_files (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_replacing_project_during_confirmation_cannot_delete_the_new_directory (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_running_task_blocks_deleting_the_project (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_running_worker_blocks_switch_but_can_return_to_same_workspace (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_save_finished_in_thread_waits_for_ui_completion_before_workspace_switch (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_select_copied_project_can_open_but_does_not_gain_delete_permission (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... FAIL
+test_select_existing_project_during_task_does_not_register_or_switch (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_select_existing_project_restores_training_and_registers_once (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... FAIL
+test_software_starts_on_home_with_annotation_shortcuts_suspended (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_switching_workspaces_keeps_training_drafts_and_output_paths_separate (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_trash_failure_preserves_current_project_and_history (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+
+======================================================================
+ERROR: test_read_existing_requires_a_valid_marker_and_does_not_write_or_register (tests.workspaces.test_store.StoreTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_store.py", line 48, in test_read_existing_requires_a_valid_marker_and_does_not_write_or_register
+    info = self.store.read_existing(root)
+AttributeError: 'WorkspaceStore' object has no attribute 'read_existing'
+
+======================================================================
+FAIL: test_cancel_open_existing_project_does_not_create_files_or_request_open (tests.workspaces.test_home.HomeTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_home.py", line 47, in test_cancel_open_existing_project_does_not_create_files_or_request_open
+    self.assertGreaterEqual(len(self.home.cards), 2)
+AssertionError: 1 not greater than or equal to 2
+
+======================================================================
+FAIL: test_empty_home_offers_new_workspace_without_creating_a_default_folder (tests.workspaces.test_home.HomeTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_home.py", line 27, in test_empty_home_offers_new_workspace_without_creating_a_default_folder
+    self.assertEqual([card.accessibleName() for card in self.home.cards], ['新建项目', '打开项目'])
+AssertionError: Lists differ: ['新建项目'] != ['新建项目', '打开项目']
+
+Second list contains 1 additional elements.
+First extra element 1:
+'打开项目'
+
+- ['新建项目']
++ ['新建项目', '打开项目']
+
+======================================================================
+FAIL: test_open_existing_card_only_requests_existing_project_without_writing_it (tests.workspaces.test_home.HomeTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_home.py", line 38, in test_open_existing_card_only_requests_existing_project_without_writing_it
+    self.assertGreaterEqual(len(self.home.cards), 2)
+AssertionError: 1 not greater than or equal to 2
+
+======================================================================
+FAIL: test_open_rejects_ordinary_and_corrupt_folders_without_initializing_them (tests.workspaces.test_home.HomeTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_home.py", line 60, in test_open_rejects_ordinary_and_corrupt_folders_without_initializing_them
+    self.assertGreaterEqual(len(self.home.cards), 2)
+AssertionError: 1 not greater than or equal to 2
+
+======================================================================
+FAIL: test_refresh_drops_a_project_deleted_outside_the_app (tests.workspaces.test_home.HomeTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_home.py", line 115, in test_refresh_drops_a_project_deleted_outside_the_app
+    self.assertEqual(len(self.home.cards), 3)
+AssertionError: 2 != 3
+
+======================================================================
+FAIL: test_refresh_immediately_hides_retired_cards_without_waiting_for_deferred_deletion (tests.workspaces.test_home.HomeTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_home.py", line 126, in test_refresh_immediately_hides_retired_cards_without_waiting_for_deferred_deletion
+    self.assertEqual(len(self.home.cards), 2)
+AssertionError: 1 != 2
+
+======================================================================
+FAIL: test_select_copied_project_can_open_but_does_not_gain_delete_permission (tests.workspaces.test_integration.WorkspaceIntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_integration.py", line 108, in test_select_copied_project_can_open_but_does_not_gain_delete_permission
+    self.assertEqual(self.home.current_root, copy)
+AssertionError: PosixPath('/tmp/tmpvvwdl9gs/workspace') != PosixPath('/tmp/tmpvvwdl9gs/复制的项目')
+
+======================================================================
+FAIL: test_select_existing_project_restores_training_and_registers_once (tests.workspaces.test_integration.WorkspaceIntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_integration.py", line 88, in test_select_existing_project_restores_training_and_registers_once
+    self.assertEqual(self.home.current_root, root)
+AssertionError: PosixPath('/tmp/tmpemv6fr13/workspace') != PosixPath('/tmp/tmpemv6fr13/已有训练项目')
+
+----------------------------------------------------------------------
+Ran 55 tests in 14.884s
+
+FAILED (failures=8, errors=1)
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin

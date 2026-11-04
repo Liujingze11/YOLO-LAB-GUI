@@ -1,0 +1,22 @@
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+test_return_in_styled_home_dialog_accepts_once_instead_of_cancelling (tests.workspaces.test_home.HomeTests) ...
+======================================================================
+FAIL: test_return_in_styled_home_dialog_accepts_once_instead_of_cancelling (tests.workspaces.test_home.HomeTests) (key=16777220)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_home.py", line 211, in test_return_in_styled_home_dialog_accepts_once_instead_of_cancelling
+    self.assertTrue(dialog.create_button.isDefault())
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_return_in_styled_home_dialog_accepts_once_instead_of_cancelling (tests.workspaces.test_home.HomeTests) (key=16777221)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_home.py", line 211, in test_return_in_styled_home_dialog_accepts_once_instead_of_cancelling
+    self.assertTrue(dialog.create_button.isDefault())
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 1 test in 0.170s
+
+FAILED (failures=2)

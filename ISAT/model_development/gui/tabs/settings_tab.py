@@ -44,7 +44,7 @@ class SettingsTab(QWidget):
         inner = QWidget()
         inner.setMinimumSize(400, 300)
         il = QVBoxLayout(inner)
-        il.setContentsMargins(24, 16, 24, 24)
+        il.setContentsMargins(4, 4, 12, 12)
         il.setSpacing(10)
 
         card1, lay1 = card()
@@ -52,7 +52,9 @@ class SettingsTab(QWidget):
         lay1.addSpacing(14)
 
         desc = QLabel(tr("settings.desc.reset_sizes"))
-        desc.setStyleSheet("font-size: 13px; color: #6e6e73;")
+        from ISAT.model_development.gui.styles import MUTED_LABEL_STYLE
+        desc.setProperty('themeClass', 'muted_label')
+        desc.setStyleSheet(MUTED_LABEL_STYLE)
         desc.setWordWrap(True)
         lay1.addWidget(desc)
         lay1.addSpacing(12)

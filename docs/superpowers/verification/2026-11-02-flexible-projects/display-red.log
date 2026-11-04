@@ -1,0 +1,17 @@
+test_image_folder_opens_using_private_copies_without_changing_source (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+FAIL
+
+======================================================================
+FAIL: test_image_folder_opens_using_private_copies_without_changing_source (tests.workspaces.test_integration.WorkspaceIntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_integration.py", line 146, in test_image_folder_opens_using_private_copies_without_changing_source
+    self.assertNotIn(str(page.workspace.root), page.workspace_label.text())
+AssertionError: '/tmp/tmphak6xi0s/screening-config/external-projects/6c8c3ce9dc76910e82798fa9902be8c3c3be326532cf4ca2f46b3af055c2ffab' unexpectedly found in '工作空间：/tmp/tmphak6xi0s/screening-config/external-projects/6c8c3ce9dc76910e82798fa9902be8c3c3be326532cf4ca2f46b3af055c2ffab'
+
+----------------------------------------------------------------------
+Ran 1 test in 3.964s
+
+FAILED (failures=1)
+loading plugins
+loaded plugin:  AutoAnnotatePlugin

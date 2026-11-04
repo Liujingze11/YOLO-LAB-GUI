@@ -34,9 +34,12 @@ from ISAT.model_development.gui.i18n import tr
 class LogsTab(QWidget):
     """Training logs and experiment results viewer tab."""
 
-    def __init__(self, parent=None, path_history: dict[str, list[str]] | None = None):
+    def __init__(self, parent=None, path_history: dict[str, list[str]] | None = None, workspace_root=None):
         super().__init__(parent)
         self._path_history = path_history if path_history is not None else {}
+        self.results_dir = str(Path(workspace_root) / 'results') if workspace_root else RESULTS_DIR
+        self.predict_dir = str(Path(workspace_root) / 'predict') if workspace_root else str(Path(PREDICT_DIR) / 'predict_result')
+        self.dataset_dir = str(Path(workspace_root) / 'datasets') if workspace_root else str(REPO_ROOT / 'data' / 'dataset')
         self._build_ui()
 
     # ── UI construction ─────────────────────────────────────
@@ -50,7 +53,7 @@ class LogsTab(QWidget):
         inner = QWidget()
         inner.setMinimumSize(560, 520)
         il = QVBoxLayout(inner)
-        il.setContentsMargins(24, 16, 24, 24)
+        il.setContentsMargins(4, 4, 12, 12)
         il.setSpacing(10)
 
         # ── 日志目录 ──
@@ -63,7 +66,7 @@ class LogsTab(QWidget):
         row1.setSpacing(10)
         row1.addWidget(self.lv_log_dir, 1)
         b1 = btn("浏览", primary=False, i18n_key="train.btn.browse")
-        b1.setFixedWidth(60)
+        b1.setMinimumWidth(76)
         b1.clicked.connect(lambda: self._browse(self.lv_log_dir, True, None, "lv_logs"))
         row1.addWidget(b1)
         lay1.addLayout(row1)
@@ -129,9 +132,9 @@ class LogsTab(QWidget):
         quick_row = QHBoxLayout()
         quick_row.setSpacing(10)
         btn_specs = [
-            ("训练结果", RESULTS_DIR, "logs.btn.results"),
-            ("推理结果", str(Path(PREDICT_DIR) / "predict_result"), "logs.btn.predictions"),
-            ("数据集", str(REPO_ROOT / "data" / "dataset"), "logs.btn.dataset"),
+            ("训练结果", self.results_dir, "logs.btn.results"),
+            ("推理结果", self.predict_dir, "logs.btn.predictions"),
+            ("数据集", self.dataset_dir, "logs.btn.dataset"),
         ]
         for label, path, i18n_key in btn_specs:
             b = btn(label, primary=False, i18n_key=i18n_key)
@@ -277,8 +280,8 @@ class LogsTab(QWidget):
         combo.blockSignals(True)
         combo.clear()
         combo.addItem(tr("logs.combo.exp_placeholder"))
-        if Path(RESULTS_DIR).is_dir():
-            for d in sorted(Path(RESULTS_DIR).iterdir(), reverse=True):
+        if Path(self.results_dir).is_dir():
+            for d in sorted(Path(self.results_dir).iterdir(), reverse=True):
                 if d.is_dir():
                     combo.addItem(d.name)
         combo.blockSignals(False)
@@ -292,7 +295,7 @@ class LogsTab(QWidget):
         if not name or name == placeholder:
             QMessageBox.warning(self, tr("msg.title.hint"), tr("msg.select_experiment"))
             return None
-        return Path(RESULTS_DIR) / name
+        return Path(self.results_dir) / name
 
     def _open_lv_exp_dir(self):
         p = self._lv_exp_path()

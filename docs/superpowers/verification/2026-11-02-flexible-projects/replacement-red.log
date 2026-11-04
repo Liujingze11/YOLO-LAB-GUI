@@ -1,0 +1,16 @@
+test_replacement_directory_at_same_path_does_not_inherit_old_private_work (tests.workspaces.test_external.ExternalProjectTests) ... FAIL
+
+======================================================================
+FAIL: test_replacement_directory_at_same_path_does_not_inherit_old_private_work (tests.workspaces.test_external.ExternalProjectTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_external.py", line 77, in test_replacement_directory_at_same_path_does_not_inherit_old_private_work
+    self.assertEqual(info['state'], {})
+AssertionError: {'training': {'epochs': 39}} != {}
+- {'training': {'epochs': 39}}
++ {}
+
+----------------------------------------------------------------------
+Ran 1 test in 0.033s
+
+FAILED (failures=1)

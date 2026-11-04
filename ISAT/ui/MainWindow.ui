@@ -27,7 +27,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="../icons.qrc">
-    <normaloff>:/icon/icons/ISAT_new_128.svg</normaloff>:/icon/icons/ISAT_new_128.svg</iconset>
+    <normaloff>:/icon/icons/yolo-backprop-transparent.svg</normaloff>:/icon/icons/yolo-backprop-transparent.svg</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -130,10 +130,7 @@
     </property>
     <addaction name="actionLanguage"/>
     <addaction name="actionShortcut"/>
-    <addaction name="actionDocs"/>
     <addaction name="actionCreate_a_desktop_shortcut"/>
-    <addaction name="separator"/>
-    <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="enabled">
@@ -354,8 +351,6 @@
    <addaction name="actionShortcut"/>
    <addaction name="actionSetting"/>
    <addaction name="actionLanguage"/>
-   <addaction name="actionDocs"/>
-   <addaction name="actionAbout"/>
   </widget>
   <widget class="QDockWidget" name="text_prompt_dock">
    <property name="windowTitle">
@@ -535,15 +530,6 @@
    </property>
    <property name="text">
     <string>Shortcut</string>
-   </property>
-  </action>
-  <action name="actionAbout">
-   <property name="icon">
-    <iconset resource="../icons.qrc">
-     <normaloff>:/icon/icons/ISAT_new_32.svg</normaloff>:/icon/icons/ISAT_new_32.svg</iconset>
-   </property>
-   <property name="text">
-    <string>About</string>
    </property>
   </action>
   <action name="actionSegment_anything_point">
@@ -1039,15 +1025,6 @@
    </property>
    <property name="text">
     <string>Plugins</string>
-   </property>
-  </action>
-  <action name="actionDocs">
-   <property name="icon">
-    <iconset resource="../icons.qrc">
-     <normaloff>:/icon/icons/书籍1_book-one.svg</normaloff>:/icon/icons/书籍1_book-one.svg</iconset>
-   </property>
-   <property name="text">
-    <string>Docs</string>
    </property>
   </action>
   <action name="actionCreate_a_desktop_shortcut">

@@ -1,0 +1,7 @@
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+Captured native workspace, comparison, drop hint, trash and delete confirmation.

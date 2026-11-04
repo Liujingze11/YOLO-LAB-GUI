@@ -1,0 +1,144 @@
+test_broken_file_falls_back_without_overwriting_user_data (tests.data_screening.test_shortcuts.ShortcutSettingsTests) ... ERROR
+test_conflicting_or_multistep_bindings_never_replace_previous_file (tests.data_screening.test_shortcuts.ShortcutSettingsTests) ... ERROR
+test_saved_bindings_reload_and_empty_binding_disables_shortcut (tests.data_screening.test_shortcuts.ShortcutSettingsTests) ... ERROR
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+test_cancel_ignores_queued_scan_result_and_does_not_start_a_new_preview (tests.data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_changed_shortcut_renames_and_menu_copies_real_file_path (tests.data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ERROR
+test_closing_comparison_ignores_already_queued_image_result (tests.data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ERROR
+test_dragging_other_thumbnail_preserves_main_photo_and_creates_equal_comparison (tests.data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ERROR
+test_drop_folder_populates_grid_and_large_preview (tests.data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_export_button_creates_project_and_emits_ready_paths (tests.data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_import_cancel_guard_creates_nothing (tests.data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_quick_selection_changes_do_not_leave_old_preview (tests.data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_rename_and_multiselect_delete_preserve_original_files (tests.data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_shortcut_dialog_updates_live_actions_and_persists_changes (tests.data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+ERROR
+test_thumbnail_grid_keeps_three_columns_when_left_pane_is_resized (tests.data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+FAIL
+
+======================================================================
+ERROR: test_broken_file_falls_back_without_overwriting_user_data (tests.data_screening.test_shortcuts.ShortcutSettingsTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_shortcuts.py", line 33, in test_broken_file_falls_back_without_overwriting_user_data
+    settings = self.settings()
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_shortcuts.py", line 12, in settings
+    from ISAT.data_screening.shortcuts import ShortcutSettings
+ModuleNotFoundError: No module named 'ISAT.data_screening.shortcuts'
+
+======================================================================
+ERROR: test_conflicting_or_multistep_bindings_never_replace_previous_file (tests.data_screening.test_shortcuts.ShortcutSettingsTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_shortcuts.py", line 24, in test_conflicting_or_multistep_bindings_never_replace_previous_file
+    settings = self.settings(); settings.save({'rename': 'Ctrl+R'})
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_shortcuts.py", line 12, in settings
+    from ISAT.data_screening.shortcuts import ShortcutSettings
+ModuleNotFoundError: No module named 'ISAT.data_screening.shortcuts'
+
+======================================================================
+ERROR: test_saved_bindings_reload_and_empty_binding_disables_shortcut (tests.data_screening.test_shortcuts.ShortcutSettingsTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_shortcuts.py", line 16, in test_saved_bindings_reload_and_empty_binding_disables_shortcut
+    settings = self.settings()
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_shortcuts.py", line 12, in settings
+    from ISAT.data_screening.shortcuts import ShortcutSettings
+ModuleNotFoundError: No module named 'ISAT.data_screening.shortcuts'
+
+======================================================================
+ERROR: test_changed_shortcut_renames_and_menu_copies_real_file_path (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 148, in test_changed_shortcut_renames_and_menu_copies_real_file_path
+    self.load(); self.page.update_shortcuts({'rename': 'R'})
+AttributeError: 'DataScreeningWidget' object has no attribute 'update_shortcuts'
+
+======================================================================
+ERROR: test_closing_comparison_ignores_already_queued_image_result (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 140, in test_closing_comparison_ignores_already_queued_image_result
+    self.load(); self.page.compare_with(str(self.root / 'b.png'))
+AttributeError: 'DataScreeningWidget' object has no attribute 'compare_with'
+
+======================================================================
+ERROR: test_dragging_other_thumbnail_preserves_main_photo_and_creates_equal_comparison (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 121, in test_dragging_other_thumbnail_preserves_main_photo_and_creates_equal_comparison
+    self.page.grid.drag_anchor_requested.emit()
+AttributeError: 'FolderGrid' object has no attribute 'drag_anchor_requested'
+
+======================================================================
+ERROR: test_shortcut_dialog_updates_live_actions_and_persists_changes (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 162, in test_shortcut_dialog_updates_live_actions_and_persists_changes
+    dialog = self.page.create_shortcut_dialog()
+AttributeError: 'DataScreeningWidget' object has no attribute 'create_shortcut_dialog'
+
+======================================================================
+FAIL: test_thumbnail_grid_keeps_three_columns_when_left_pane_is_resized (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 116, in test_thumbnail_grid_keeps_three_columns_when_left_pane_is_resized
+    self.assertEqual(rectangles[0].y(), rectangles[2].y())
+AssertionError: 0 != 138
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.513s
+
+FAILED (failures=1, errors=7)

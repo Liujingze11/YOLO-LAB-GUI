@@ -2,6 +2,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from .gui.i18n import tr, set_language, apply_language, AVAILABLE_LANGS
 from .gui.styles import apply_theme_to_widgets, TAB_WIDGET_STYLE
+from ISAT.ui_theme import page_style
 from .gui.tabs.train_tab import TrainTab
 from .gui.tabs.infer_tab import InferTab
 from .gui.tabs.export_tab import ExportTab
@@ -13,12 +14,14 @@ from .gui.tabs.settings_tab import SettingsTab
 class ModelDevelopmentWidget(QtWidgets.QWidget):
     prepare_dataset_requested = QtCore.pyqtSignal()
     release_sam_requested = QtCore.pyqtSignal()
+    theme_changed = QtCore.pyqtSignal(bool)
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, workspace_root=None):
         super().__init__(parent)
         self.setObjectName('ModelDevelopment')
         self.setFont(QtGui.QFont('Noto Sans CJK SC', 10))
-        self.setStyleSheet('QWidget#ModelDevelopment { background: #ebecf0; }')
+        self.setAttribute(QtCore.Qt.WA_StyledBackground, True)
+        self.setStyleSheet(page_style('ModelDevelopment'))
         self._dark = False
         self.job_guard = lambda kind, device: True
         history = {}
@@ -29,7 +32,7 @@ class ModelDevelopmentWidget(QtWidgets.QWidget):
         self.train_tab = TrainTab(path_history=history)
         self.infer_tab = InferTab(path_history=history)
         self.export_tab = ExportTab(path_history=history)
-        self.logs_tab = LogsTab(path_history=history)
+        self.logs_tab = LogsTab(path_history=history, workspace_root=workspace_root)
         self.tools_tab = ToolsTab(path_history=history)
         self.settings_tab = SettingsTab()
         for page in [self.train_tab, self.infer_tab, self.export_tab]:
@@ -46,7 +49,10 @@ class ModelDevelopmentWidget(QtWidgets.QWidget):
         theme = QtWidgets.QPushButton('☀ / ☾')
         theme.setMaximumWidth(60)
         theme.clicked.connect(self._change_theme)
-        toolbar = QtWidgets.QHBoxLayout()
+        self.command_bar = QtWidgets.QFrame()
+        self.command_bar.setProperty('glassRole', 'commandBar')
+        toolbar = QtWidgets.QHBoxLayout(self.command_bar)
+        toolbar.setContentsMargins(12, 8, 12, 8); toolbar.setSpacing(8)
         toolbar.addWidget(self.prepare_button)
         release = QtWidgets.QPushButton('释放 SAM 显存')
         release.clicked.connect(self.release_sam_requested)
@@ -56,7 +62,8 @@ class ModelDevelopmentWidget(QtWidgets.QWidget):
         toolbar.addWidget(theme)
         layout = QtWidgets.QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.addLayout(toolbar)
+        layout.setSpacing(10)
+        layout.addWidget(self.command_bar)
         layout.addWidget(self.tabs)
         self._start_shortcut = QtWidgets.QShortcut(QtGui.QKeySequence('Ctrl+Return'), self)
         self._start_shortcut.setContext(QtCore.Qt.WidgetWithChildrenShortcut)
@@ -70,10 +77,14 @@ class ModelDevelopmentWidget(QtWidgets.QWidget):
         self.prepare_button.setText('从当前标注准备训练集…' if self._language.itemData(index) == 'zh' else 'Prepare dataset from annotations…')
 
     def _change_theme(self):
-        self._dark = not self._dark
+        self.set_dark_mode(not self._dark)
+
+    def set_dark_mode(self, dark):
+        self._dark = dark
         apply_theme_to_widgets(self, self._dark)
         self.train_tab.set_dark_mode(self._dark)
-        self.setStyleSheet('QWidget#ModelDevelopment { background: '+('#20242d' if self._dark else '#ebecf0')+'; }')
+        self.setStyleSheet(page_style('ModelDevelopment', self._dark))
+        self.theme_changed.emit(dark)
 
     def _start_current(self):
         if self.tabs.currentIndex() == 0: self.train_tab._on_start_train()

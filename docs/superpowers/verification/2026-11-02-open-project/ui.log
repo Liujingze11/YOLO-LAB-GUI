@@ -1,0 +1,11 @@
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+This plugin does not support propagateSizeHints()
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+PASS: actual open card and directory picker enter existing workbench and restore 37 epochs.
+PASS: new/open/recent cards stay equal at 800, 1280, 1600 pixels; recent entry registered once.
+This plugin does not support propagateSizeHints()
+PASS: cancelling the real directory picker leaves files, history and current project unchanged.
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+PASS: actual invalid-folder dialog refuses ordinary directories without creating or registering a project.

@@ -1,0 +1,116 @@
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+test_cancel_location_selection_leaves_no_files (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_cancel_open_existing_project_does_not_create_files_or_request_open (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_cancel_project_name_leaves_no_folder_or_history (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_card_context_actions_open_copy_and_request_delete (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_cards_keep_new_card_dimensions_through_resize_and_refresh (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_clicking_workspace_card_requests_that_workspace_and_grid_adapts (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_default_name_is_offered_but_invalid_and_existing_custom_names_cannot_be_submitted (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+FAIL
+test_default_name_skips_existing_directory_file_and_dangling_link (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+FAIL
+test_empty_home_offers_new_workspace_without_creating_a_default_folder (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_location_then_name_creates_matching_folder_and_opens_project (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_open_card_accepts_a_readable_image_folder_without_creating_a_project_in_it (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_open_existing_card_only_requests_existing_project_without_writing_it (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_open_rejects_ordinary_and_corrupt_folders_without_initializing_them (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_refresh_drops_a_project_deleted_outside_the_app (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_refresh_immediately_hides_retired_cards_without_waiting_for_deferred_deletion (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_return_accepts_default_custom_and_blank_fallback_names_without_creating_files (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+test_return_creates_and_enters_default_project_and_blank_next_name_is_unique (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+FAIL
+
+======================================================================
+FAIL: test_default_name_is_offered_but_invalid_and_existing_custom_names_cannot_be_submitted (tests.workspaces.test_home.HomeTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_home.py", line 150, in test_default_name_is_offered_but_invalid_and_existing_custom_names_cannot_be_submitted
+    self.assertEqual(dialog.name_edit.text(), '新项目')
+AssertionError: '' != '新项目'
++ 新项目
+
+======================================================================
+FAIL: test_default_name_skips_existing_directory_file_and_dangling_link (tests.workspaces.test_home.HomeTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_home.py", line 191, in test_default_name_skips_existing_directory_file_and_dangling_link
+    self.assertEqual(dialog.name_edit.text(), '新项目 4')
+AssertionError: '' != '新项目 4'
++ 新项目 4
+
+======================================================================
+FAIL: test_return_accepts_default_custom_and_blank_fallback_names_without_creating_files (tests.workspaces.test_home.HomeTests) (key=16777220, entered=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_home.py", line 179, in test_return_accepts_default_custom_and_blank_fallback_names_without_creating_files
+    self.assertEqual(dialog.result(), dialog.Accepted)
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_return_accepts_default_custom_and_blank_fallback_names_without_creating_files (tests.workspaces.test_home.HomeTests) (key=16777220, entered='')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_home.py", line 179, in test_return_accepts_default_custom_and_blank_fallback_names_without_creating_files
+    self.assertEqual(dialog.result(), dialog.Accepted)
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_return_accepts_default_custom_and_blank_fallback_names_without_creating_files (tests.workspaces.test_home.HomeTests) (key=16777221, entered='   ')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_home.py", line 179, in test_return_accepts_default_custom_and_blank_fallback_names_without_creating_files
+    self.assertEqual(dialog.result(), dialog.Accepted)
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_return_creates_and_enters_default_project_and_blank_next_name_is_unique (tests.workspaces.test_integration.WorkspaceIntegrationTests) (clear=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_integration.py", line 79, in test_return_creates_and_enters_default_project_and_blank_next_name_is_unique
+    self.assertEqual(self.home.current_root, root)
+AssertionError: None != PosixPath('/tmp/tmp99ymfssl/新项目')
+
+======================================================================
+FAIL: test_return_creates_and_enters_default_project_and_blank_next_name_is_unique (tests.workspaces.test_integration.WorkspaceIntegrationTests) (clear=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_integration.py", line 79, in test_return_creates_and_enters_default_project_and_blank_next_name_is_unique
+    self.assertEqual(self.home.current_root, root)
+AssertionError: None != PosixPath('/tmp/tmp99ymfssl/新项目 2')
+
+======================================================================
+FAIL: test_return_creates_and_enters_default_project_and_blank_next_name_is_unique (tests.workspaces.test_integration.WorkspaceIntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_integration.py", line 85, in test_return_creates_and_enters_default_project_and_blank_next_name_is_unique
+    self.assertTrue((self.root / '新项目' / MARKER).is_file())
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 17 tests in 4.018s
+
+FAILED (failures=8)
+loading plugins
+loaded plugin:  AutoAnnotatePlugin

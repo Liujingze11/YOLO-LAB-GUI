@@ -1,0 +1,59 @@
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+test_cancel_location_selection_leaves_no_files (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_cancel_open_existing_project_does_not_create_files_or_request_open (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_cancel_project_name_leaves_no_folder_or_history (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_card_context_actions_open_copy_and_request_delete (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_cards_keep_new_card_dimensions_through_resize_and_refresh (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_clicking_workspace_card_requests_that_workspace_and_grid_adapts (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_default_name_is_offered_but_invalid_and_existing_custom_names_cannot_be_submitted (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_default_name_skips_existing_directory_file_and_dangling_link (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_empty_home_offers_new_workspace_without_creating_a_default_folder (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_location_then_name_creates_matching_folder_and_opens_project (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_open_card_accepts_a_readable_image_folder_without_creating_a_project_in_it (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_open_existing_card_only_requests_existing_project_without_writing_it (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_open_rejects_ordinary_and_corrupt_folders_without_initializing_them (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_refresh_drops_a_project_deleted_outside_the_app (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_refresh_immediately_hides_retired_cards_without_waiting_for_deferred_deletion (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_return_accepts_default_custom_and_blank_fallback_names_without_creating_files (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_return_in_styled_home_dialog_accepts_once_instead_of_cancelling (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_all_training_fields_roundtrip_into_config (tests.model_development.test_widget.WidgetTests) ... ok
+test_export_options_and_translations_are_usable (tests.model_development.test_widget.WidgetTests) ... ok
+test_local_registry_named_weights_remain_local (tests.model_development.test_widget.WidgetTests) ... ok
+test_six_real_pages_work_with_pyqt5_and_keep_drafts (tests.model_development.test_widget.WidgetTests) ... ok
+test_return_creates_and_enters_default_project_and_blank_next_name_is_unique (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 6.039s
+
+OK
+loading plugins
+loaded plugin:  AutoAnnotatePlugin

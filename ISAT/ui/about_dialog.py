@@ -39,7 +39,7 @@ class Ui_Dialog(object):
         self.label.setMinimumSize(QtCore.QSize(128, 128))
         self.label.setMaximumSize(QtCore.QSize(137, 137))
         self.label.setText("")
-        self.label.setPixmap(QtGui.QPixmap(":/icon/icons/ISAT_new_256.svg"))
+        self.label.setPixmap(QtGui.QPixmap(":/icon/icons/yolo-backprop-transparent.svg"))
         self.label.setScaledContents(True)
         self.label.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.label.setWordWrap(False)

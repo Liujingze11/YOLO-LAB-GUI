@@ -1,0 +1,7 @@
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+test_return_in_styled_home_dialog_accepts_once_instead_of_cancelling (tests.workspaces.test_home.HomeTests) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.163s
+
+OK

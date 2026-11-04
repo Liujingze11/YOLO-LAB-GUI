@@ -1,0 +1,16 @@
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+test_refresh_immediately_hides_retired_cards_without_waiting_for_deferred_deletion (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+FAIL
+
+======================================================================
+FAIL: test_refresh_immediately_hides_retired_cards_without_waiting_for_deferred_deletion (tests.workspaces.test_home.HomeTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_home.py", line 83, in test_refresh_immediately_hides_retired_cards_without_waiting_for_deferred_deletion
+    self.assertFalse(card.isVisible())
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 1 test in 0.069s
+
+FAILED (failures=1)

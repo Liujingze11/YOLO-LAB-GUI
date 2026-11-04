@@ -1,0 +1,12 @@
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+This plugin does not support propagateSizeHints()
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+PASS: a folder containing only one image opens in screening; no annotation or structure is required.
+This plugin does not support propagateSizeHints()
+PASS: real ISAT images/json source opens; import button restores both polygons on native canvas.
+This plugin does not support propagateSizeHints()
+PASS: YOLO dataset automatically fills its original data.yaml and opens development without starting training.
+This plugin does not support raise()
+This plugin does not support grabbing the keyboard
+PASS: external recent paths point to original sources; deletion disabled; all source files/directories unchanged through exit.

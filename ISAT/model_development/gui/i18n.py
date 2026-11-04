@@ -15,6 +15,7 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QRadioButton,
     QTabWidget,
+    QToolButton,
     QWidget,
 )
 
@@ -62,7 +63,10 @@ class I18nManager(QObject):
                     stack.append(child)
 
     def _update_widget(self, w: QWidget, base_key: str) -> None:
-        if isinstance(w, (QLabel, QPushButton, QCheckBox, QRadioButton)):
+        if isinstance(w, QToolButton):
+            prefix = w.text()[:2] if w.text().startswith(('▸ ', '▾ ')) else ''
+            w.setText(prefix + self.tr(base_key))
+        elif isinstance(w, (QLabel, QPushButton, QCheckBox, QRadioButton)):
             w.setText(self.tr(base_key))
         elif isinstance(w, QTabWidget):
             for i in range(w.count()):

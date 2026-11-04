@@ -1,0 +1,14 @@
+test_new_trash_destination_cannot_follow_an_external_directory_symlink (tests.data_screening.test_workspace.WorkspaceTests) ... FAIL
+
+======================================================================
+FAIL: test_new_trash_destination_cannot_follow_an_external_directory_symlink (tests.data_screening.test_workspace.WorkspaceTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_workspace.py", line 109, in test_new_trash_destination_cannot_follow_an_external_directory_symlink
+    with self.assertRaises(ValueError): session.save_project(categories=[])
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.019s
+
+FAILED (failures=1)

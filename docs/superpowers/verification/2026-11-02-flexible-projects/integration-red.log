@@ -1,0 +1,101 @@
+test_image_folder_opens_using_private_copies_without_changing_source (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+FAIL
+test_external_isat_json_is_copied_and_can_open_original_annotation_canvas (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... FAIL
+test_external_yolo_dataset_opens_development_with_original_yaml_and_private_outputs (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... FAIL
+test_reopening_external_source_restores_private_project_and_training_draft (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... FAIL
+test_deleted_external_source_does_not_reappear_on_home_or_exit (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... FAIL
+
+======================================================================
+FAIL: test_image_folder_opens_using_private_copies_without_changing_source (tests.workspaces.test_integration.WorkspaceIntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_integration.py", line 142, in test_image_folder_opens_using_private_copies_without_changing_source
+    self.assertEqual(list(source.iterdir()), [original])
+AssertionError: Lists differ: [Posi[25 chars]有图片/projects'), PosixPath('/tmp/tmpwjajea2k/只有[61 chars]op')] != [Posi[25 chars]有图片/photo.png')]
+
+First differing element 0:
+PosixPath('/tmp/tmpwjajea2k/只有图片/projects')
+PosixPath('/tmp/tmpwjajea2k/只有图片/photo.png')
+
+First list contains 2 additional elements.
+First extra element 1:
+PosixPath('/tmp/tmpwjajea2k/只有图片/photo.png')
+
+- [PosixPath('/tmp/tmpwjajea2k/只有图片/projects'),
+-  PosixPath('/tmp/tmpwjajea2k/只有图片/photo.png'),
+? ^                                            ^
+
++ [PosixPath('/tmp/tmpwjajea2k/只有图片/photo.png')]
+? ^                                            ^
+
+-  PosixPath('/tmp/tmpwjajea2k/只有图片/.yolo-backprop')]
+
+======================================================================
+FAIL: test_external_isat_json_is_copied_and_can_open_original_annotation_canvas (tests.workspaces.test_integration.WorkspaceIntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_integration.py", line 167, in test_external_isat_json_is_copied_and_can_open_original_annotation_canvas
+    self.assertEqual({str(p.relative_to(source)): p.read_bytes() for p in source.rglob('*') if p.is_file()}, before)
+AssertionError: {'.yolo-backprop/isat.yaml': b"label:\n- co[8790 chars]\n}'} != {'images/sample.png': b'\x89PNG\r\n\x1a\n\x[8634 chars]\n}'}
+Diff is 13824 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_external_yolo_dataset_opens_development_with_original_yaml_and_private_outputs (tests.workspaces.test_integration.WorkspaceIntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_integration.py", line 182, in test_external_yolo_dataset_opens_development_with_original_yaml_and_private_outputs
+    self.assertIs(self.controller.stack.currentWidget(), self.controller.widget)
+AssertionError: <ISAT.data_screening.widget.DataScreeningWidget object at 0x709b0f54e9e0> is not None
+
+======================================================================
+FAIL: test_reopening_external_source_restores_private_project_and_training_draft (tests.workspaces.test_integration.WorkspaceIntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_integration.py", line 193, in test_reopening_external_source_restores_private_project_and_training_draft
+    self.assertEqual(sorted(p.name for p in source.iterdir()), ['photo.png'])
+AssertionError: Lists differ: ['.yolo-backprop', 'photo.png', 'projects'] != ['photo.png']
+
+First differing element 0:
+'.yolo-backprop'
+'photo.png'
+
+First list contains 2 additional elements.
+First extra element 1:
+'photo.png'
+
+- ['.yolo-backprop', 'photo.png', 'projects']
++ ['photo.png']
+
+======================================================================
+FAIL: test_deleted_external_source_does_not_reappear_on_home_or_exit (tests.workspaces.test_integration.WorkspaceIntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_integration.py", line 211, in test_deleted_external_source_does_not_reappear_on_home_or_exit
+    self.assertEqual(sorted(p.name for p in source.iterdir()), ['photo.png'])
+AssertionError: Lists differ: ['.yolo-backprop', 'photo.png', 'projects'] != ['photo.png']
+
+First differing element 0:
+'.yolo-backprop'
+'photo.png'
+
+First list contains 2 additional elements.
+First extra element 1:
+'photo.png'
+
+- ['.yolo-backprop', 'photo.png', 'projects']
++ ['photo.png']
+
+----------------------------------------------------------------------
+Ran 5 tests in 5.002s
+
+FAILED (failures=5)
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin

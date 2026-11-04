@@ -1,0 +1,258 @@
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+test_cancel_location_selection_leaves_no_files (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_cancel_project_name_leaves_no_folder_or_history (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_card_context_actions_open_copy_and_request_delete (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_cards_keep_new_card_dimensions_through_resize_and_refresh (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+FAIL
+test_clicking_workspace_card_requests_that_workspace_and_grid_adapts (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_empty_home_offers_new_workspace_without_creating_a_default_folder (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_location_then_name_creates_matching_folder_and_opens_project (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_name_must_be_typed_and_invalid_names_cannot_be_submitted (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+FAIL
+test_refresh_drops_a_project_deleted_outside_the_app (tests.workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_corrupt_workspace_metadata_is_reported_without_replacing_it (tests.workspaces.test_store.StoreTests) ... ok
+test_cover_is_cached_and_does_not_depend_on_original_image_remaining (tests.workspaces.test_store.StoreTests) ... ok
+test_desktop_history_is_removed_without_touching_its_files_or_child_projects (tests.workspaces.test_store.StoreTests) ... FAIL
+test_existing_workspace_is_adopted_without_changing_project_files (tests.workspaces.test_store.StoreTests) ... ok
+test_forget_clears_history_and_previous_selection_without_deleting_files (tests.workspaces.test_store.StoreTests) ... ok
+test_forgetting_parent_only_removes_that_card_and_preserves_child (tests.workspaces.test_store.StoreTests) ... FAIL
+test_invalid_names_and_existing_directories_do_not_overwrite_files (tests.workspaces.test_store.StoreTests) ... FAIL
+test_missing_workspace_and_corrupt_history_do_not_break_home (tests.workspaces.test_store.StoreTests) ... ok
+test_new_workspace_lives_under_selected_parent_and_reopens_with_its_own_state (tests.workspaces.test_store.StoreTests) ... ok
+test_old_remembered_workspace_remains_in_recent_list_after_first_new_workspace (tests.workspaces.test_store.StoreTests) ... ok
+test_only_newly_created_project_with_matching_ownership_can_be_deleted (tests.workspaces.test_store.StoreTests) ... ERROR
+test_open_location_does_not_replace_a_conflicting_user_file (tests.workspaces.test_store.StoreTests) ... ok
+test_open_location_never_turns_an_existing_directory_into_a_project (tests.workspaces.test_store.StoreTests) ... FAIL
+test_open_location_reuses_existing_workspace_without_creating_nested_folder (tests.workspaces.test_store.StoreTests) ... ok
+test_removed_project_marker_hides_project_even_when_folder_and_projects_remain (tests.workspaces.test_store.StoreTests) ... ok
+test_training_cover_resolves_relative_dataset_and_txt_image_list (tests.workspaces.test_store.StoreTests) ... ok
+test_adopted_existing_folder_cannot_be_trashed_even_with_confirmation (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... FAIL
+test_cancel_delete_keeps_project_and_current_workspace (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_cancel_unsaved_annotation_during_delete_keeps_project_and_edits (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_cancel_unsaved_annotation_switch_keeps_original_workspace_and_canvas (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_cancel_unsaved_screening_switch_keeps_working_session (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_close_and_restart_restores_workspace_training_draft_from_disk (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_create_from_home_enters_workspace_and_same_card_keeps_live_forms (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... This plugin does not support propagateSizeHints()
+ok
+test_delete_current_project_moves_folder_and_does_not_recreate_it_on_exit (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_external_project_deletion_does_not_block_home_or_recreate_folder_on_exit (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_late_previous_workspace_signal_does_not_replace_new_workspace_history (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_real_train_start_updates_home_using_the_actual_training_config (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_recent_project_and_training_photo_survive_workspace_switch (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_remove_current_project_only_forgets_card_and_keeps_all_files (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ERROR
+test_replacing_project_during_confirmation_cannot_delete_the_new_directory (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... FAIL
+test_running_task_blocks_deleting_the_project (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_running_worker_blocks_switch_but_can_return_to_same_workspace (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_save_finished_in_thread_waits_for_ui_completion_before_workspace_switch (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_software_starts_on_home_with_annotation_shortcuts_suspended (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_switching_workspaces_keeps_training_drafts_and_output_paths_separate (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_trash_failure_preserves_current_project_and_history (tests.workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+
+======================================================================
+ERROR: test_only_newly_created_project_with_matching_ownership_can_be_deleted (tests.workspaces.test_store.StoreTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_store.py", line 138, in test_only_newly_created_project_with_matching_ownership_can_be_deleted
+    self.assertEqual(reopened.validate_deletion(created)['root'], str(created))
+AttributeError: 'WorkspaceStore' object has no attribute 'validate_deletion'
+
+======================================================================
+ERROR: test_remove_current_project_only_forgets_card_and_keeps_all_files (tests.workspaces.test_integration.WorkspaceIntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_integration.py", line 108, in test_remove_current_project_only_forgets_card_and_keeps_all_files
+    self.assertTrue(self.home.remove_workspace(str(root)))
+AttributeError: 'WorkspaceHomeController' object has no attribute 'remove_workspace'
+
+======================================================================
+FAIL: test_cards_keep_new_card_dimensions_through_resize_and_refresh (tests.workspaces.test_home.HomeTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_home.py", line 111, in test_cards_keep_new_card_dimensions_through_resize_and_refresh
+    self.assertEqual(card.size(), expected)
+AssertionError: PyQt5.QtCore.QSize(287, 284) != PyQt5.QtCore.QSize(300, 284)
+
+======================================================================
+FAIL: test_name_must_be_typed_and_invalid_names_cannot_be_submitted (tests.workspaces.test_home.HomeTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_home.py", line 87, in test_name_must_be_typed_and_invalid_names_cannot_be_submitted
+    self.assertEqual(dialog.name_edit.text(), '')
+AssertionError: '新项目' != ''
+- 新项目
++
+
+
+======================================================================
+FAIL: test_desktop_history_is_removed_without_touching_its_files_or_child_projects (tests.workspaces.test_store.StoreTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_store.py", line 116, in test_desktop_history_is_removed_without_touching_its_files_or_child_projects
+    self.assertEqual([row['root'] for row in self.store.recent()], [str(child)])
+AssertionError: Lists differ: ['/tmp/tmpdo2dzp5e/home/桌面', '/tmp/tmpdo2dzp5e/home/桌面/正常命名项目'] != ['/tmp/tmpdo2dzp5e/home/桌面/正常命名项目']
+
+First differing element 0:
+'/tmp/tmpdo2dzp5e/home/桌面'
+'/tmp/tmpdo2dzp5e/home/桌面/正常命名项目'
+
+First list contains 1 additional elements.
+First extra element 1:
+'/tmp/tmpdo2dzp5e/home/桌面/正常命名项目'
+
+- ['/tmp/tmpdo2dzp5e/home/桌面', '/tmp/tmpdo2dzp5e/home/桌面/正常命名项目']
++ ['/tmp/tmpdo2dzp5e/home/桌面/正常命名项目']
+
+======================================================================
+FAIL: test_forgetting_parent_only_removes_that_card_and_preserves_child (tests.workspaces.test_store.StoreTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_store.py", line 131, in test_forgetting_parent_only_removes_that_card_and_preserves_child
+    self.assertEqual([row['root'] for row in self.store.recent()], [str(child)])
+AssertionError: Lists differ: [] != ['/tmp/tmpbxkf_iy5/父项目/子项目']
+
+Second list contains 1 additional elements.
+First extra element 0:
+'/tmp/tmpbxkf_iy5/父项目/子项目'
+
+- []
++ ['/tmp/tmpbxkf_iy5/父项目/子项目']
+
+======================================================================
+FAIL: test_invalid_names_and_existing_directories_do_not_overwrite_files (tests.workspaces.test_store.StoreTests) (name='CON')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_store.py", line 55, in test_invalid_names_and_existing_directories_do_not_overwrite_files
+    with self.subTest(name=name), self.assertRaises((ValueError, FileExistsError)):
+AssertionError: (<class 'ValueError'>, <class 'FileExistsError'>) not raised
+
+======================================================================
+FAIL: test_invalid_names_and_existing_directories_do_not_overwrite_files (tests.workspaces.test_store.StoreTests) (name='NUL.txt')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_store.py", line 55, in test_invalid_names_and_existing_directories_do_not_overwrite_files
+    with self.subTest(name=name), self.assertRaises((ValueError, FileExistsError)):
+AssertionError: (<class 'ValueError'>, <class 'FileExistsError'>) not raised
+
+======================================================================
+FAIL: test_invalid_names_and_existing_directories_do_not_overwrite_files (tests.workspaces.test_store.StoreTests) (name='com1')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_store.py", line 55, in test_invalid_names_and_existing_directories_do_not_overwrite_files
+    with self.subTest(name=name), self.assertRaises((ValueError, FileExistsError)):
+AssertionError: (<class 'ValueError'>, <class 'FileExistsError'>) not raised
+
+======================================================================
+FAIL: test_invalid_names_and_existing_directories_do_not_overwrite_files (tests.workspaces.test_store.StoreTests) (name='末尾.')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_store.py", line 55, in test_invalid_names_and_existing_directories_do_not_overwrite_files
+    with self.subTest(name=name), self.assertRaises((ValueError, FileExistsError)):
+AssertionError: (<class 'ValueError'>, <class 'FileExistsError'>) not raised
+
+======================================================================
+FAIL: test_invalid_names_and_existing_directories_do_not_overwrite_files (tests.workspaces.test_store.StoreTests) (name='前\x01缀')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_store.py", line 55, in test_invalid_names_and_existing_directories_do_not_overwrite_files
+    with self.subTest(name=name), self.assertRaises((ValueError, FileExistsError)):
+AssertionError: (<class 'ValueError'>, <class 'FileExistsError'>) not raised
+
+======================================================================
+FAIL: test_invalid_names_and_existing_directories_do_not_overwrite_files (tests.workspaces.test_store.StoreTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_store.py", line 58, in test_invalid_names_and_existing_directories_do_not_overwrite_files
+    self.assertEqual(sorted(p.name for p in self.root.iterdir()), ['existing'])
+AssertionError: Lists differ: ['CON', 'NUL.txt', 'com1', 'existing', 'settings', '前\x01缀', '末尾.'] != ['existing']
+
+First differing element 0:
+'CON'
+'existing'
+
+First list contains 6 additional elements.
+First extra element 1:
+'NUL.txt'
+
+- ['CON', 'NUL.txt', 'com1', 'existing', 'settings', '前\x01缀', '末尾.']
++ ['existing']
+
+======================================================================
+FAIL: test_open_location_never_turns_an_existing_directory_into_a_project (tests.workspaces.test_store.StoreTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_store.py", line 32, in test_open_location_never_turns_an_existing_directory_into_a_project
+    with self.assertRaises(ValueError): self.store.open_location(location)
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_adopted_existing_folder_cannot_be_trashed_even_with_confirmation (tests.workspaces.test_integration.WorkspaceIntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_integration.py", line 96, in test_adopted_existing_folder_cannot_be_trashed_even_with_confirmation
+    self.assertFalse(self.home.delete_workspace(str(root)))
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_replacing_project_during_confirmation_cannot_delete_the_new_directory (tests.workspaces.test_integration.WorkspaceIntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/workspaces/test_integration.py", line 130, in test_replacing_project_during_confirmation_cannot_delete_the_new_directory
+    self.assertFalse(self.home.delete_workspace(str(root)))
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 45 tests in 12.826s
+
+FAILED (failures=13, errors=2)
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin

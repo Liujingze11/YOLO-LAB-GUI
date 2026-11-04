@@ -1,0 +1,52 @@
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+test_right_click_action_moves_thumbnail_to_bottom_strip_and_double_click_restores (tests.data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ERROR
+test_saved_trash_reopens_with_real_thumbnail_and_purge_clears_strip (tests.data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ERROR
+test_inline_restore_is_guarded_while_busy_and_can_restore_multiple_photos (tests.data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ERROR
+
+======================================================================
+ERROR: test_right_click_action_moves_thumbnail_to_bottom_strip_and_double_click_restores (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 76, in test_right_click_action_moves_thumbnail_to_bottom_strip_and_double_click_restores
+    strip = self.page.trash_list
+AttributeError: 'DataScreeningWidget' object has no attribute 'trash_list'
+
+======================================================================
+ERROR: test_saved_trash_reopens_with_real_thumbnail_and_purge_clears_strip (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 103, in test_saved_trash_reopens_with_real_thumbnail_and_purge_clears_strip
+    strip = self.page.trash_list
+AttributeError: 'DataScreeningWidget' object has no attribute 'trash_list'
+
+======================================================================
+ERROR: test_inline_restore_is_guarded_while_busy_and_can_restore_multiple_photos (tests.data_screening.test_widget.ScreeningWidgetTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/data_screening/test_widget.py", line 115, in test_inline_restore_is_guarded_while_busy_and_can_restore_multiple_photos
+    strip = self.page.trash_list; strip.selectAll(); self.app.processEvents()
+AttributeError: 'DataScreeningWidget' object has no attribute 'trash_list'
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.207s
+
+FAILED (errors=3)

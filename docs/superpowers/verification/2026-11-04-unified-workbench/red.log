@@ -1,0 +1,28 @@
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+F/home/ljz/.config/matplotlib is not a writable directory
+Matplotlib created a temporary cache directory at /tmp/matplotlib-8jy846p7 because there was an issue with the default path (/home/ljz/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+F
+======================================================================
+FAIL: test_workbench_header_follows_page_project_and_home (tests.model_development.test_integration.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/model_development/test_integration.py", line 69, in test_workbench_header_follows_page_project_and_home
+    self.assertTrue(hasattr(c, 'frame'), 'shared title frame is installed')
+AssertionError: False is not true : shared title frame is installed
+
+======================================================================
+FAIL: test_folded_training_options_keep_values_across_page_switches (tests.model_development.test_integration.IntegrationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/ljz/vibe_coding/YOLO/isat-yolo-lab/tests/model_development/test_integration.py", line 88, in test_folded_training_options_keep_values_across_page_switches
+    self.assertTrue(hasattr(page, 'augmentation_card'), 'augmentation can be folded')
+AssertionError: False is not true : augmentation can be folded
+
+----------------------------------------------------------------------
+Ran 2 tests in 3.568s
+
+FAILED (failures=2)
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin

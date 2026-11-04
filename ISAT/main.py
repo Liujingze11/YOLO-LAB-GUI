@@ -2,9 +2,11 @@
 # @Author  : LG
 # import os
 
+import os
 import sys
+from pathlib import Path
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 from ISAT.widgets.mainwindow import MainWindow
 
@@ -16,8 +18,22 @@ torch.cuda.is_available()
 
 
 def main():
-    app = QtWidgets.QApplication([""])
+    # Non-headless OpenCV wheels replace this with their incompatible Qt plugins.
+    if sys.platform.startswith("linux") and "cv2" in Path(
+        os.environ.get("QT_QPA_PLATFORM_PLUGIN_PATH", "")
+    ).parts:
+        os.environ["QT_QPA_PLATFORM_PLUGIN_PATH"] = QtCore.QLibraryInfo.location(
+            QtCore.QLibraryInfo.PluginsPath
+        )
+    app = QtWidgets.QApplication(["ISAT"])
+    app.setApplicationName("ISAT")
+    app.setApplicationDisplayName("YOLO-BACKPROP")
+    app.setDesktopFileName("ISAT")
+    icon = QtGui.QIcon(str(Path(__file__).with_name("yolo-backprop-transparent.svg")))
+    app.setWindowIcon(icon)
     mainwindow = MainWindow()
+    mainwindow.setWindowIcon(icon)
+    mainwindow.setWindowTitle("YOLO-BACKPROP")
     mainwindow.show()
     sys.exit(app.exec_())
 
