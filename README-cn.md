@@ -1,4 +1,6 @@
-> **YOLO-BACKPROP：基于 ISAT 的标注与神经网络训练工作台（2026-10-30）**
+> **YOLO-BACKPROP：基于 ISAT 的标注与神经网络训练工作台**
+>
+> 代码仓库：[YOLO-LAB-GUI](https://github.com/Liujingze11/YOLO-LAB-GUI)，当前原生工作台分支为 `feature/isat-model-development`。本地开发目录已统一为 `YOLO-LAB-GUI`；原 GUI / Electron 开发目录保留在历史归档中。
 >
 > 以原版 ISAT 为主体，左侧提供“数据筛选 / 数据标注 / 模型开发”导航。原标注界面继续保留；模型开发包含训练、推理、模型导出、日志结果、工具和设置。可从当前已保存标注生成独立 YOLO 数据集并直接用于训练。
 >
@@ -12,7 +14,7 @@
 >
 > 启动：`./run-isat.sh`。如已有环境缺少少量启动依赖，先执行 `./setup-model-runtime.sh`（仅安装到本项目 `.runtime/python`）；可用 `ISAT_PYTHON=/absolute/path/to/python ./run-isat.sh` 选择解释器。模型开发需要 Python 3.10+、PyQt5、Ultralytics 和 Matplotlib；完整首次安装可使用项目的 `[yolo]` 可选依赖。模型缓存路径设置在下次启动生效。
 >
-> 本机 CPU 训练、推理及 ONNX / ONNX Runtime 已验证；GPU 和其他导出后端的实际支持见 [验证记录](docs/superpowers/verification/2026-10-30-isat/README.md)。未创建或推送新远程仓库。
+> 本机 CPU 训练、推理及 ONNX / ONNX Runtime 已验证；GPU 和其他导出后端的实际支持见 [验证记录](docs/superpowers/verification/2026-10-30-isat/README.md)。
 >
 > Linux 应用菜单：在当前 Python 环境运行 `python -m ISAT.desktop`，或使用软件菜单中的“创建桌面快捷方式”。“显示应用”中搜索 **YOLO** 或 **BACKPROP**，点击 **YOLO-BACKPROP** 即可启动本源码版本。安装会更新原 `ISAT.desktop` 入口，旧入口备份到 `~/.local/state/isat-yolo/launcher-backups/`；移动源码目录后需重新安装入口。
 
