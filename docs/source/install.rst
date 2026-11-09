@@ -1,99 +1,17 @@
-Installation
-====================================
+Install and run YOLO-BACKPROP
+============================
 
-Option 1: Install with Pip
-------------------------------------
+Use Python 3.10 or newer. From the YOLO-LAB-GUI checkout::
 
-1.  Create a new environment (recommended, optional)
+    python -m pip install -e '.[yolo]'
+    ./run-yolo-backprop.sh
 
-    Use conda create a new environment
+The installed console command is ``yolo-backprop``. To choose a Python interpreter::
 
-    .. code-block:: bash
+    YOLO_BACKPROP_PYTHON=/absolute/path/to/python ./run-yolo-backprop.sh
 
-       conda create -n isat_env python=3.10
+Linux desktop shortcut::
 
-    activate new environment
+    python -m yolo_backprop.desktop
 
-    .. code-block:: bash
-
-        conda activate isat_env
-
-2.  Install ISAT-SAM using pip
-
-    .. code-block:: bash
-
-        pip install isat-sam
-
-    .. attention::
-
-        To use GPU on Windows OS, install torch and torchvision from `Pytorch <https://pytorch.org/>`_
-
-3.  Run
-
-    Start the application via the command line:
-
-    .. code-block:: bash
-
-        isat-sam
-
-.. hint:: Recommended install isat-sam using pip
-
-Option 2: Install from Source Code
-------------------------------------
-
-1.  Get source code from github
-
-    Use git clone project and then into project
-
-    .. code-block:: bash
-
-        git clone https://github.com/yatengLG/ISAT_with_segment_anything.git
-        cd ISAT_with_segment_anything
-
-    Or download zip from `Github <https://github.com/yatengLG/ISAT_with_segment_anything/archive/refs/heads/master.zip>`_ , unzip and into project
-
-    .. code-block:: bash
-
-        cd ISAT_with_segment_anything-master
-
-2.  Create a new environment (recommended, optional)
-
-    Use conda create a new environment
-
-    .. code-block:: bash
-
-        conda create -n isat_env python=3.10
-
-    activate new environment
-
-    .. code-block:: bash
-
-        conda activate isat_env
-
-3.  Install dependencies
-
-    .. code-block:: bash
-
-        pip install -r requirements.txt
-
-    .. attention::
-
-        To use GPU on Windows OS, install torch and torchvision from `Pytorch <https://pytorch.org/>`_
-
-4.  Run
-
-    Start the application via the command line:
-
-    .. code-block:: bash
-
-        python main.py
-
-    Or
-
-    .. code-block:: bash
-
-        # install isat as a package
-        python setup.py install
-        # run
-        isat-sam
-
+``run-isat.sh`` and ``ISAT_PYTHON`` remain legacy aliases. Existing ISAT annotation files and plugins are supported. This checkout must be installed from source; upstream ``isat-sam`` packages are a different application.

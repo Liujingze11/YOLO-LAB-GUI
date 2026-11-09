@@ -1,0 +1,814 @@
+test_cancel_or_changed_source_leaves_no_project_or_temporary_directory (data_screening.test_session.SessionTests) ... ok
+test_existing_destination_or_empty_selection_is_not_overwritten (data_screening.test_session.SessionTests) ... ok
+test_export_creates_images_json_and_does_not_invent_empty_annotations (data_screening.test_session.SessionTests) ... ok
+test_invalid_existing_annotation_aborts_instead_of_silently_dropping_labels (data_screening.test_session.SessionTests) ... ok
+test_preserves_isat_annotation_and_updates_renamed_image (data_screening.test_session.SessionTests) ... ok
+test_remove_and_rename_only_change_screening_records (data_screening.test_session.SessionTests) ... ok
+test_rename_rejects_collisions_and_path_escape_without_changing_item (data_screening.test_session.SessionTests) ... ok
+test_scan_filters_bad_files_and_resolves_duplicate_stems_recursively (data_screening.test_session.SessionTests) ... ok
+test_source_changed_after_its_copy_aborts_the_entire_export (data_screening.test_session.SessionTests) ... ok
+test_broken_file_falls_back_without_overwriting_user_data (data_screening.test_shortcuts.ShortcutSettingsTests) ... ok
+test_conflicting_or_multistep_bindings_never_replace_previous_file (data_screening.test_shortcuts.ShortcutSettingsTests) ... ok
+test_saved_bindings_reload_and_empty_binding_disables_shortcut (data_screening.test_shortcuts.ShortcutSettingsTests) ... ok
+Warning: Ignoring XDG_SESSION_TYPE=wayland on Gnome. Use QT_QPA_PLATFORM=wayland to run on Wayland anyway.
+test_both_single_preview_edges_open_comparison_in_drop_order_without_reloading_original (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_cancel_after_save_commit_suppresses_queued_purge_prompt_and_import (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_cancel_ignores_queued_scan_result_and_does_not_start_a_new_preview (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_cancel_workspace_selection_prevents_import (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+ok
+test_cancelled_initial_import_returns_to_enabled_import_entry (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_changed_shortcut_renames_and_menu_copies_real_file_path (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_closing_comparison_ignores_already_queued_image_result (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_comparison_navigation_controls_only_clicked_side_and_tracks_position (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_confirmed_purge_removes_copies_after_save_and_keeps_originals (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_ctrl_and_shift_select_multiple_in_both_thumbnail_lists (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_custom_navigation_binding_and_rapid_right_side_changes_keep_latest_image (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_drag_cancel_does_not_remove_selected_images (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_drag_preview_back_to_grid_promotes_other_image_without_duplicating_thumbnail (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_drag_selected_batch_to_collapsed_trash_and_back_preserves_originals (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_dragging_comparison_images_swaps_both_directions_and_preserves_view_state (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_dragging_other_thumbnail_preserves_main_photo_and_creates_equal_comparison (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_drop_center_replaces_main_edge_adds_compare_and_each_side_replaces_independently (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_drop_folder_populates_grid_and_large_preview (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_drop_rejects_busy_external_and_stale_session_payloads (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_dropping_primary_into_empty_comparison_is_a_quiet_noop (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_dropping_single_preview_onto_either_own_edge_keeps_one_cached_image (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_empty_and_external_comparison_can_navigate_without_changing_primary (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_empty_import_card_accepts_a_folder_drop (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_exit_comparison_has_no_button_but_escape_still_works (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_external_or_stale_preview_cannot_be_moved_into_project_trash (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_failed_initial_import_keeps_import_available (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_import_button_reveals_aligned_work_panels_and_image_position (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_import_cancel_guard_creates_nothing (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_import_creates_project_and_emits_ready_paths (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_initial_state_has_one_import_entry_without_empty_work_panels (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+ok
+test_inline_restore_is_guarded_while_busy_and_can_restore_multiple_photos (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_invalid_and_same_area_item_transfers_are_ignored (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_left_edge_comparison_while_primary_load_is_pending_keeps_requested_images (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_mouse_dragging_selected_thumbnails_transfers_entire_selection_both_ways (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_native_preview_drag_swaps_then_keyboard_controls_the_drop_target (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_navigation_shortcuts_work_with_focus_on_the_large_preview (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_navigation_uses_displayed_path_skips_other_side_and_stops_at_edges (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_position_distinguishes_external_preview_and_cleared_preview (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_preview_can_move_to_trash_and_trash_drop_restores_into_target_side (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_preview_drop_on_itself_does_not_exit_or_reload_comparison (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_quick_selection_changes_do_not_leave_old_preview (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_removing_primary_during_comparison_keeps_other_side_then_promotes_last_image (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_rename_and_multiselect_delete_preserve_original_files (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_replacing_comparison_discards_previous_queued_result (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_restoring_unrelated_image_keeps_both_comparison_images (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_right_click_action_moves_thumbnail_to_bottom_strip_and_double_click_restores (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_rubber_band_selects_multiple_in_both_thumbnail_lists (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_save_failure_never_prompts_for_purge (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_save_retains_trash_when_confirmation_declined_and_dialog_restores_it (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_saved_trash_reopens_with_real_thumbnail_and_purge_clears_strip (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_shortcut_dialog_updates_live_actions_and_persists_changes (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+ok
+test_swap_during_pending_comparison_ignores_queued_result (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_thumbnail_grid_keeps_three_columns_when_left_pane_is_resized (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_thumbnail_press_waits_for_click_release_and_cancelled_drag_keeps_preview (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_trash_collapses_when_empty_and_remains_available_after_removing_every_image (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_trash_drop_at_either_single_preview_edge_restores_then_compares (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_trash_focus_does_not_delete_or_rename_a_retained_photo (data_screening.test_widget.ScreeningWidgetTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_cancellation_leaves_no_partial_project_and_originals_unchanged (data_screening.test_workspace.WorkspaceTests) ... ok
+test_failed_save_rolls_back_and_does_not_allow_unsaved_purge (data_screening.test_workspace.WorkspaceTests) ... ok
+test_import_copies_then_save_trash_reopen_restore_and_purge_only_copies (data_screening.test_workspace.WorkspaceTests) ... ok
+test_manifest_and_symlink_cannot_target_original_files_for_deletion (data_screening.test_workspace.WorkspaceTests) ... ok
+test_new_trash_destination_cannot_follow_an_external_directory_symlink (data_screening.test_workspace.WorkspaceTests) ... ok
+test_record_ids_cannot_be_paths_in_a_forged_manifest (data_screening.test_workspace.WorkspaceTests) ... ok
+test_rename_keeps_new_annotations_and_reserves_trash_names (data_screening.test_workspace.WorkspaceTests) ... ok
+test_workspace_selection_is_persistent_and_does_not_need_existing_projects (data_screening.test_workspace.WorkspaceTests) ... ok
+test_cancel_or_validation_failure_never_publishes_half_a_dataset (model_development.test_dataset.DatasetTests) ... ok
+test_duplicate_stems_are_rejected_instead_of_reusing_one_annotation (model_development.test_dataset.DatasetTests) ... ok
+test_missing_labels_are_excluded_and_original_sources_remain_unchanged (model_development.test_dataset.DatasetTests) ... ok
+test_seeded_split_and_class_indices_are_reproducible (model_development.test_dataset.DatasetTests) ... ok
+test_disabled_augmentation_really_disables_each_transform (model_development.test_engine_options.EngineOptionTests) ... ok
+test_unchecked_export_flags_reach_the_subprocess (model_development.test_engine_options.EngineOptionTests) ... ok
+test_annotation_shortcuts_do_not_run_inside_model_inputs (model_development.test_integration.IntegrationTests) ... ok
+test_close_cancel_keeps_unsaved_annotation_window_open (model_development.test_integration.IntegrationTests) ... ok
+test_folded_training_options_keep_values_across_page_switches (model_development.test_integration.IntegrationTests) ... ok
+test_gpu_development_job_blocks_loading_sam_from_annotation_page (model_development.test_integration.IntegrationTests) ... ok
+test_gpu_guard_keeps_cpu_available_and_checks_local_remote_decoder (model_development.test_integration.IntegrationTests) ... ok
+test_navigation_keeps_four_actions_and_existing_page_switches (model_development.test_integration.IntegrationTests) ... ok
+test_optional_panel_dependency_error_keeps_annotation_available (model_development.test_integration.IntegrationTests) ... ok
+test_release_idle_sam_frees_model_references_and_encoder_cache (model_development.test_integration.IntegrationTests) ... ok
+test_saved_annotation_dataset_is_connected_to_training_form (model_development.test_integration.IntegrationTests) ... ok
+test_saving_screening_updates_current_annotation_file_list_and_clears_empty_canvas (model_development.test_integration.IntegrationTests) ... ok
+test_screening_import_cancel_preserves_unsaved_canvas (model_development.test_integration.IntegrationTests) ... ok
+test_screening_import_opens_real_canvas_and_saves_json_separately (model_development.test_integration.IntegrationTests) ... ok
+test_screening_import_waits_for_running_sam_worker (model_development.test_integration.IntegrationTests) ... ok
+test_screening_navigation_preserves_annotation_and_model_form (model_development.test_integration.IntegrationTests) ... ok
+test_screening_own_actions_survive_workspace_shortcut_isolation (model_development.test_integration.IntegrationTests) ... ok
+test_switch_preserves_real_isat_canvas_polygons_and_hidden_docks (model_development.test_integration.IntegrationTests) ... ok
+test_theme_switch_applies_to_each_work_page (model_development.test_integration.IntegrationTests) ... ok
+test_training_actions_remain_visible_in_small_window (model_development.test_integration.IntegrationTests) ... ok
+test_training_group_translation_keeps_folded_state (model_development.test_integration.IntegrationTests) ... ok
+test_workbench_header_follows_page_and_home (model_development.test_integration.IntegrationTests) ... ok
+test_workspace_switch_keeps_navigation_and_content_bounds_fixed (model_development.test_integration.IntegrationTests) ... ok
+test_algorithm_entry_modules_do_not_import_a_qt_binding (model_development.test_relocated_tools.RelocatedToolsTests) ... ok
+test_dataset_tools_preserve_existing_labels_and_move_matching_pairs (model_development.test_relocated_tools.RelocatedToolsTests) ... ok
+test_all_training_fields_roundtrip_into_config (model_development.test_widget.WidgetTests) ... ok
+test_export_options_and_translations_are_usable (model_development.test_widget.WidgetTests) ... ok
+test_local_registry_named_weights_remain_local (model_development.test_widget.WidgetTests) ... ok
+test_six_real_pages_work_with_pyqt5_and_keep_drafts (model_development.test_widget.WidgetTests) ... ok
+test_cancel_silent_process_is_nonblocking_and_cleans_children (model_development.test_workers.WorkerTests) ... ok
+test_leader_exit_does_not_hang_on_a_descendant_log_pipe (model_development.test_workers.WorkerTests) ... ok
+test_stop_before_start_never_launches_a_command (model_development.test_workers.WorkerTests) ... ok
+test_replaces_cached_legacy_identity_and_preserves_its_backup (test_desktop.DesktopLauncherTests) ... ok
+test_retains_an_unrelated_original_isat_launcher (test_desktop.DesktopLauncherTests) ... ok
+test_all_static_prompt_types_keep_their_results (test_message_boxes.MessageBoxTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_custom_destructive_buttons_and_details_keep_working (test_message_boxes.MessageBoxTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_dark_theme_has_readable_body_and_buttons (test_message_boxes.MessageBoxTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_english_buttons_and_custom_actions_keep_their_labels (test_message_boxes.MessageBoxTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_escape_and_default_keep_original_decisions (test_message_boxes.MessageBoxTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_long_message_stays_on_screen_and_can_be_read_by_scrolling (test_message_boxes.MessageBoxTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_parent_page_styles_do_not_change_prompt_buttons (test_message_boxes.MessageBoxTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_reused_prompt_refreshes_rich_text_and_information (test_message_boxes.MessageBoxTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_unbroken_path_wraps_without_losing_text (test_message_boxes.MessageBoxTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_about_dialog_shows_product_and_preserves_upstream_credit (test_project_naming.ProjectNamingTests) ... ok
+test_legacy_plugin_imports_share_canonical_modules_and_classes (test_project_naming.ProjectNamingTests) ... ok
+test_missing_project_release_does_not_offer_an_update (test_project_naming.ProjectNamingTests) ... ok
+test_model_settings_use_new_location_but_reuse_legacy_data (test_project_naming.ProjectNamingTests) ... ok
+test_new_and_legacy_plugin_groups_load_each_plugin_once (test_project_naming.ProjectNamingTests) ... ok
+test_new_launcher_uses_canonical_module_and_honors_interpreter_precedence (test_project_naming.ProjectNamingTests) ... ok
+test_package_metadata_and_entry_point_belong_to_this_project (test_project_naming.ProjectNamingTests) ... ok
+test_sam2_configuration_resolves_canonical_model_classes (test_project_naming.ProjectNamingTests) ... ok
+test_update_check_uses_only_current_project_releases (test_project_naming.ProjectNamingTests) ... ok
+test_dark_theme_keeps_window_controls_readable (test_title_bar.TitleBarTests) ... ok
+test_drag_fallback_moves_window_and_restores_maximized_window (test_title_bar.TitleBarTests) ... ok
+test_edges_resize_from_each_side_and_enforce_minimum_size (test_title_bar.TitleBarTests) ... ok
+test_native_move_and_resize_are_delegated_to_window_manager (test_title_bar.TitleBarTests) ... ok
+test_resize_handles_hide_while_maximized_or_fullscreen_and_do_not_cover_dialogs (test_title_bar.TitleBarTests) ... ok
+test_title_and_buttons_share_one_row_and_long_names_do_not_cover_controls (test_title_bar.TitleBarTests) ... This plugin does not support raise()
+ok
+test_window_buttons_double_click_and_close_guard (test_title_bar.TitleBarTests) ... ok
+test_atomic_save_failure_keeps_previous_file_and_live_bindings (test_workspace_shortcuts.WorkspaceShortcutTests) ... ok
+test_close_can_return_to_unsaved_drafts (test_workspace_shortcuts.WorkspaceShortcutTests) ... ok
+test_conflicts_invalid_keys_and_reserved_keys_leave_file_unchanged (test_workspace_shortcuts.WorkspaceShortcutTests) ... ok
+test_defaults_are_a_draft_and_only_affect_the_selected_page (test_workspace_shortcuts.WorkspaceShortcutTests) ... ok
+test_invalid_page_keeps_dialog_open_and_reports_conflict (test_workspace_shortcuts.WorkspaceShortcutTests) ... ok
+test_legacy_values_are_preserved_then_saved_values_take_precedence (test_workspace_shortcuts.WorkspaceShortcutTests) ... ok
+test_page_drafts_survive_switching_and_only_current_page_is_saved (test_workspace_shortcuts.WorkspaceShortcutTests) ... ok
+test_annotation_conflict_reserved_digits_and_disk_failure_do_not_apply (test_workspace_shortcuts_integration.UnifiedShortcutsIntegrationTests) ... ok
+test_editing_inactive_annotation_preserves_isolation_and_reload (test_workspace_shortcuts_integration.UnifiedShortcutsIntegrationTests) ... ok
+test_existing_menu_entries_open_one_dialog_on_the_matching_page (test_workspace_shortcuts_integration.UnifiedShortcutsIntegrationTests) ... This plugin does not support raise()
+This plugin does not support raise()
+This plugin does not support raise()
+ok
+test_global_entry_is_visible_on_home_and_every_workspace (test_workspace_shortcuts_integration.UnifiedShortcutsIntegrationTests) ... ok
+test_lazy_workspaces_and_recreated_pages_use_saved_bindings (test_workspace_shortcuts_integration.UnifiedShortcutsIntegrationTests) ... ok
+test_legacy_annotation_preferences_are_shown_even_when_actions_suspended (test_workspace_shortcuts_integration.UnifiedShortcutsIntegrationTests) ... ok
+test_saved_development_key_triggers_only_in_development (test_workspace_shortcuts_integration.UnifiedShortcutsIntegrationTests) ... ok
+test_title_bar_close_preserves_unsaved_annotation_cancel (test_workspace_shortcuts_integration.UnifiedShortcutsIntegrationTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_bad_yolo_paths_categories_and_labels_are_rejected_without_fallback (workspaces.test_external.ExternalProjectTests) ... ok
+test_empty_lookalike_corrupt_images_and_symlinks_are_not_projects (workspaces.test_external.ExternalProjectTests) ... ok
+test_external_source_removal_hides_record_and_never_recreates_source (workspaces.test_external.ExternalProjectTests) ... ok
+test_external_state_and_cover_persist_separately_and_source_is_never_deletable (workspaces.test_external.ExternalProjectTests) ... ok
+test_images_without_marker_or_annotation_structure_can_be_selected_read_only (workspaces.test_external.ExternalProjectTests) ... ok
+test_isat_images_and_json_are_valid_without_software_marker (workspaces.test_external.ExternalProjectTests) ... ok
+test_isat_object_records_require_real_categories_and_finite_polygon_coordinates (workspaces.test_external.ExternalProjectTests) ... ok
+test_nested_isat_json_is_matched_and_invalid_annotations_are_rejected (workspaces.test_external.ExternalProjectTests) ... ok
+test_replacement_directory_at_same_path_does_not_inherit_old_private_work (workspaces.test_external.ExternalProjectTests) ... ok
+test_valid_yolo_dataset_is_recognized_without_modifying_source_or_creating_labels (workspaces.test_external.ExternalProjectTests) ... ok
+test_yolo_text_lists_and_string_category_keys_are_supported_but_boolean_keys_are_not (workspaces.test_external.ExternalProjectTests) ... ok
+test_cancel_location_selection_keeps_current_location_without_creating_files (workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_cancel_open_existing_project_does_not_create_files_or_request_open (workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_cancel_project_name_leaves_no_folder_or_history (workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_card_context_actions_open_copy_and_request_delete (workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_clicking_workspace_card_requests_that_workspace_and_grid_adapts (workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_combined_name_and_location_creates_matching_folder_and_opens_project (workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_default_name_is_offered_but_invalid_and_existing_custom_names_cannot_be_submitted (workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_default_name_skips_existing_directory_file_and_dangling_link (workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_empty_home_offers_new_workspace_without_creating_a_default_folder (workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_invalid_recent_timestamp_does_not_prevent_opening_home (workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_location_change_revalidates_destination_and_success_remembers_parent (workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_open_card_accepts_a_readable_image_folder_without_creating_a_project_in_it (workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_open_existing_card_only_requests_existing_project_without_writing_it (workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_open_rejects_ordinary_and_corrupt_folders_without_initializing_them (workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_project_cards_keep_dimensions_through_resize_and_refresh (workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_recent_cards_distinguish_same_named_projects_by_visible_path_and_time (workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_refresh_drops_a_project_deleted_outside_the_app (workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+ok
+test_refresh_immediately_hides_retired_cards_without_waiting_for_deferred_deletion (workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_return_accepts_default_custom_and_blank_fallback_names_without_creating_files (workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_return_in_styled_home_dialog_accepts_once_instead_of_cancelling (workspaces.test_home.HomeTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_adopted_existing_folder_cannot_be_trashed_even_with_confirmation (workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_cancel_delete_keeps_project_and_current_workspace (workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_cancel_unsaved_annotation_during_delete_keeps_project_and_edits (workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_cancel_unsaved_annotation_switch_keeps_original_workspace_and_canvas (workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_cancel_unsaved_screening_switch_keeps_working_session (workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_close_and_restart_restores_workspace_training_draft_from_disk (workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_create_from_home_enters_workspace_and_same_card_keeps_live_forms (workspaces.test_integration.WorkspaceIntegrationTests) ... This plugin does not support propagateSizeHints()
+ok
+test_delete_current_project_moves_folder_and_does_not_recreate_it_on_exit (workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_deleted_external_source_does_not_reappear_on_home_or_exit (workspaces.test_integration.WorkspaceIntegrationTests) ... This plugin does not support propagateSizeHints()
+ok
+test_external_directory_replaced_during_switch_guard_is_not_opened_or_registered (workspaces.test_integration.WorkspaceIntegrationTests) ... This plugin does not support propagateSizeHints()
+ok
+test_external_isat_json_is_copied_and_can_open_original_annotation_canvas (workspaces.test_integration.WorkspaceIntegrationTests) ... This plugin does not support propagateSizeHints()
+ok
+test_external_project_deletion_does_not_block_home_or_recreate_folder_on_exit (workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_external_yolo_dataset_is_organized_and_opens_with_private_yaml_and_outputs (workspaces.test_integration.WorkspaceIntegrationTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_image_folder_opens_using_private_copies_without_changing_source (workspaces.test_integration.WorkspaceIntegrationTests) ... This plugin does not support propagateSizeHints()
+ok
+test_late_previous_workspace_signal_does_not_replace_new_workspace_history (workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_real_train_start_updates_home_using_the_actual_training_config (workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_recent_project_and_training_photo_survive_workspace_switch (workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_remove_current_project_only_forgets_card_and_keeps_all_files (workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_reopening_external_source_restores_private_project_and_training_draft (workspaces.test_integration.WorkspaceIntegrationTests) ... This plugin does not support propagateSizeHints()
+ok
+test_replaced_current_external_directory_starts_a_new_session_at_same_path (workspaces.test_integration.WorkspaceIntegrationTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_replacing_project_during_confirmation_cannot_delete_the_new_directory (workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_return_creates_and_enters_default_project_and_blank_next_name_is_unique (workspaces.test_integration.WorkspaceIntegrationTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_running_task_blocks_deleting_the_project (workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_running_task_blocks_external_open_before_creating_private_storage (workspaces.test_integration.WorkspaceIntegrationTests) ... This plugin does not support propagateSizeHints()
+ok
+test_running_worker_blocks_switch_but_can_return_to_same_workspace (workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_save_finished_in_thread_waits_for_ui_completion_before_workspace_switch (workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_select_copied_project_can_open_but_does_not_gain_delete_permission (workspaces.test_integration.WorkspaceIntegrationTests) ... This plugin does not support propagateSizeHints()
+ok
+test_select_existing_project_during_task_does_not_register_or_switch (workspaces.test_integration.WorkspaceIntegrationTests) ... This plugin does not support propagateSizeHints()
+ok
+test_select_existing_project_restores_training_and_registers_once (workspaces.test_integration.WorkspaceIntegrationTests) ... This plugin does not support propagateSizeHints()
+This plugin does not support propagateSizeHints()
+ok
+test_software_starts_on_home_with_annotation_shortcuts_suspended (workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_switching_workspaces_keeps_training_drafts_and_output_paths_separate (workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_trash_failure_preserves_current_project_and_history (workspaces.test_integration.WorkspaceIntegrationTests) ... ok
+test_cancel_waits_for_worker_cleanup_and_returns_no_result (workspaces.test_operations.OperationTests) ... This plugin does not support propagateSizeHints()
+ok
+test_operation_runs_off_gui_thread_while_gui_events_continue (workspaces.test_operations.OperationTests) ... This plugin does not support propagateSizeHints()
+ok
+test_worker_error_reaches_caller_without_a_partial_result (workspaces.test_operations.OperationTests) ... This plugin does not support propagateSizeHints()
+ok
+test_cancellation_leaves_no_partial_dataset_and_originals_are_unchanged (workspaces.test_organize.OrganizeTests) ... ok
+test_custom_yaml_name_is_detected_but_unconfigured_yolo_is_not_treated_as_plain_images (workspaces.test_organize.OrganizeTests) ... ok
+test_dangling_yolo_label_is_not_mistaken_for_an_unlabelled_image (workspaces.test_organize.OrganizeTests) ... ok
+test_duplicate_names_from_lists_are_renamed_with_matching_labels (workspaces.test_organize.OrganizeTests) ... ok
+test_linked_label_directories_are_rejected_instead_of_silently_importing_external_labels (workspaces.test_organize.OrganizeTests) ... ok
+test_private_dataset_keeps_splits_category_indices_and_unlabelled_images (workspaces.test_organize.OrganizeTests) ... ok
+test_recognition_reports_unique_images_labels_and_rejects_ambiguous_configs (workspaces.test_organize.OrganizeTests) ... ok
+test_reopen_reuses_completed_copy_without_overwriting_local_edits (workspaces.test_organize.OrganizeTests) ... ok
+test_source_change_during_copy_is_detected_and_stage_removed (workspaces.test_organize.OrganizeTests) ... ok
+test_unowned_existing_destination_is_not_adopted_or_overwritten (workspaces.test_organize.OrganizeTests) ... ok
+test_corrupt_workspace_metadata_is_reported_without_replacing_it (workspaces.test_store.StoreTests) ... ok
+test_cover_is_cached_and_does_not_depend_on_original_image_remaining (workspaces.test_store.StoreTests) ... ok
+test_desktop_history_is_removed_without_touching_its_files_or_child_projects (workspaces.test_store.StoreTests) ... ok
+test_existing_workspace_is_adopted_without_changing_project_files (workspaces.test_store.StoreTests) ... ok
+test_forget_clears_history_and_previous_selection_without_deleting_files (workspaces.test_store.StoreTests) ... ok
+test_forgetting_parent_only_removes_that_card_and_preserves_child (workspaces.test_store.StoreTests) ... ok
+test_invalid_names_and_existing_directories_do_not_overwrite_files (workspaces.test_store.StoreTests) ... ok
+test_invalid_symlink_history_does_not_hide_the_real_project (workspaces.test_store.StoreTests) ... ok
+test_missing_workspace_and_corrupt_history_do_not_break_home (workspaces.test_store.StoreTests) ... ok
+test_new_workspace_lives_under_selected_parent_and_reopens_with_its_own_state (workspaces.test_store.StoreTests) ... ok
+test_old_remembered_workspace_remains_in_recent_list_after_first_new_workspace (workspaces.test_store.StoreTests) ... ok
+test_only_newly_created_project_with_matching_ownership_can_be_deleted (workspaces.test_store.StoreTests) ... ok
+test_open_location_does_not_replace_a_conflicting_user_file (workspaces.test_store.StoreTests) ... ok
+test_open_location_never_turns_an_existing_directory_into_a_project (workspaces.test_store.StoreTests) ... ok
+test_open_location_reuses_existing_workspace_without_creating_nested_folder (workspaces.test_store.StoreTests) ... ok
+test_read_existing_requires_a_valid_marker_and_does_not_write_or_register (workspaces.test_store.StoreTests) ... ok
+test_recreated_directory_cannot_inherit_deletion_permission_from_a_copied_marker (workspaces.test_store.StoreTests) ... ok
+test_removed_project_marker_hides_project_even_when_folder_and_projects_remain (workspaces.test_store.StoreTests) ... ok
+test_training_cover_resolves_relative_dataset_and_txt_image_list (workspaces.test_store.StoreTests) ... ok
+
+----------------------------------------------------------------------
+Ran 250 tests in 59.898s
+
+OK
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  <Mock name='mock.load()().get_plugin_name()' id='128087511561600'>
+loaded plugin:  <Mock name='mock.load()().get_plugin_name()' id='128087511553584'>
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin
+loading plugins
+loaded plugin:  AutoAnnotatePlugin

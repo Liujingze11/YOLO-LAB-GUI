@@ -16,37 +16,40 @@ class HomeTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(); self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
-        from ISAT.workspaces.store import WorkspaceStore
-        from ISAT.workspaces.home import WorkspaceHome
+        from yolo_backprop.workspaces.store import WorkspaceStore
+        from yolo_backprop.workspaces.home import WorkspaceHome
         self.store = WorkspaceStore(self.root / 'config' / 'workspaces.json')
         self.home = WorkspaceHome(self.store)
         self.addCleanup(self.home.close)
         self.home.resize(1180, 760); self.home.show(); self.app.processEvents()
 
     def test_empty_home_offers_new_workspace_without_creating_a_default_folder(self):
-        self.assertEqual([card.accessibleName() for card in self.home.cards], ['新建项目', '打开项目'])
+        self.assertEqual(self.home.cards, [])
+        self.assertTrue(self.home.create_button.isVisible())
+        self.assertTrue(self.home.open_button.isVisible())
+        self.assertTrue(self.home.empty_label.isVisible())
         self.assertEqual(list(self.root.iterdir()), [])
         self.assertTrue(all(card.isVisible() for card in self.home.cards))
 
     def test_open_existing_card_only_requests_existing_project_without_writing_it(self):
-        from ISAT.workspaces.store import MARKER, WorkspaceStore
+        from yolo_backprop.workspaces.store import MARKER, WorkspaceStore
         other = WorkspaceStore(self.root / 'other-config' / 'workspaces.json')
         root = other.create(self.root, '保存的项目')
         other.update(root, state={'training': {'epochs': 37}})
         marker = (root / MARKER).read_bytes()
         received = []; self.home.workspace_requested.connect(received.append)
-        self.assertGreaterEqual(len(self.home.cards), 2)
+        self.home.location_ready.connect(lambda info: received.append(info['root']))
         with patch.object(QtWidgets.QFileDialog, 'getExistingDirectory', return_value=str(root)):
-            QtTest.QTest.mouseClick(self.home.cards[1], QtCore.Qt.LeftButton)
+            QtTest.QTest.mouseClick(self.home.open_button, QtCore.Qt.LeftButton)
         self.assertEqual(received, [str(root)])
         self.assertEqual((root / MARKER).read_bytes(), marker)
         self.assertFalse(self.store.path.exists(), 'registration must wait for workbench switching guards')
 
     def test_cancel_open_existing_project_does_not_create_files_or_request_open(self):
         received = []; self.home.workspace_requested.connect(received.append)
-        self.assertGreaterEqual(len(self.home.cards), 2)
+        self.home.location_ready.connect(lambda info: received.append(info['root']))
         with patch.object(QtWidgets.QFileDialog, 'getExistingDirectory', return_value=''):
-            QtTest.QTest.mouseClick(self.home.cards[1], QtCore.Qt.LeftButton)
+            QtTest.QTest.mouseClick(self.home.open_button, QtCore.Qt.LeftButton)
         self.assertEqual(received, [])
         self.assertEqual(list(self.root.iterdir()), [])
 
@@ -56,25 +59,26 @@ class HomeTests(unittest.TestCase):
         image = source / 'photo.png'; Image.new('RGB', (80, 60), 'red').save(image)
         before = image.read_bytes(); received = []
         self.home.workspace_requested.connect(received.append)
+        self.home.location_ready.connect(lambda info: received.append(info['root']))
         with patch.object(QtWidgets.QFileDialog, 'getExistingDirectory', return_value=str(source)):
-            QtTest.QTest.mouseClick(self.home.cards[1], QtCore.Qt.LeftButton)
+            QtTest.QTest.mouseClick(self.home.open_button, QtCore.Qt.LeftButton)
         self.assertEqual(received, [str(source)])
         self.assertEqual(list(source.iterdir()), [image]); self.assertEqual(image.read_bytes(), before)
         self.assertFalse(self.store.path.exists())
 
     def test_open_rejects_ordinary_and_corrupt_folders_without_initializing_them(self):
-        from ISAT.workspaces.store import MARKER
+        from yolo_backprop.workspaces.store import MARKER
         plain = self.root / '普通文件夹'; plain.mkdir()
         original = plain / '用户文件.txt'; original.write_text('keep')
         lookalike = self.root / '含projects的普通目录'; (lookalike / 'projects').mkdir(parents=True)
         broken = self.root / '损坏项目'; broken.mkdir(); (broken / MARKER).write_text('{broken')
         received = []; self.home.workspace_requested.connect(received.append)
-        self.assertGreaterEqual(len(self.home.cards), 2)
+        self.home.location_ready.connect(lambda info: received.append(info['root']))
         for root in (plain, lookalike, broken):
             with self.subTest(root=root.name), \
                  patch.object(QtWidgets.QFileDialog, 'getExistingDirectory', return_value=str(root)), \
                  patch.object(QtWidgets.QMessageBox, 'warning'):
-                QtTest.QTest.mouseClick(self.home.cards[1], QtCore.Qt.LeftButton)
+                QtTest.QTest.mouseClick(self.home.open_button, QtCore.Qt.LeftButton)
         self.assertEqual(received, [])
         self.assertFalse(self.store.path.exists())
         self.assertEqual([p.name for p in plain.iterdir()], ['用户文件.txt'])
@@ -82,18 +86,20 @@ class HomeTests(unittest.TestCase):
         self.assertEqual([p.name for p in lookalike.iterdir()], ['projects'])
         self.assertEqual((broken / MARKER).read_text(), '{broken')
 
-    def test_location_then_name_creates_matching_folder_and_opens_project(self):
+    def test_combined_name_and_location_creates_matching_folder_and_opens_project(self):
         received = []
         self.home.workspace_requested.connect(received.append)
+        self.home.location_ready.connect(lambda info: received.append(info['root']))
         def name_project():
             dialog = self.app.activeModalWidget()
             if dialog:
+                dialog.location_edit.setText(str(self.root))
                 dialog.name_edit.setText('测试空间'); dialog.create_button.click()
         timer = QtCore.QTimer(); timer.setSingleShot(True)
         timer.timeout.connect(name_project); timer.start(0)
         try:
             with patch.object(QtWidgets.QFileDialog, 'getExistingDirectory', return_value=str(self.root)):
-                QtTest.QTest.mouseClick(self.home.cards[0], QtCore.Qt.LeftButton)
+                QtTest.QTest.mouseClick(self.home.create_button, QtCore.Qt.LeftButton)
         finally: timer.stop()
         location = self.root / '测试空间'
         self.assertEqual(received, [str(location)])
@@ -124,9 +130,9 @@ class HomeTests(unittest.TestCase):
     def test_refresh_drops_a_project_deleted_outside_the_app(self):
         import shutil
         root = self.store.create(self.root, '外部删除'); self.home.refresh()
-        self.assertEqual(len(self.home.cards), 3)
+        self.assertEqual(len(self.home.cards), 1)
         shutil.rmtree(root); self.home.refresh()
-        self.assertEqual(len(self.home.cards), 2)
+        self.assertEqual(len(self.home.cards), 0)
 
     def test_refresh_immediately_hides_retired_cards_without_waiting_for_deferred_deletion(self):
         root = self.store.create(self.root, '旧卡片')
@@ -135,15 +141,46 @@ class HomeTests(unittest.TestCase):
         self.assertTrue(card.isVisible())
         self.store.forget(root); self.home.refresh()
         self.assertFalse(card.isVisible())
-        self.assertEqual(len(self.home.cards), 2)
+        self.assertEqual(len(self.home.cards), 0)
 
-    def test_cancel_location_selection_leaves_no_files(self):
+    def test_cancel_location_selection_keeps_current_location_without_creating_files(self):
+        from yolo_backprop.workspaces.home import CreateProjectDialog
+        dialog = CreateProjectDialog(self.root); self.addCleanup(dialog.close)
         with patch.object(QtWidgets.QFileDialog, 'getExistingDirectory', return_value=''):
-            self.home.create_workspace()
+            dialog.browse_button.click()
+        self.assertEqual(dialog.location_edit.text(), str(self.root))
         self.assertEqual(list(self.root.iterdir()), [])
 
+    def test_location_change_revalidates_destination_and_success_remembers_parent(self):
+        from yolo_backprop.workspaces.home import CreateProjectDialog
+        other = self.root / '另一个位置'; other.mkdir()
+        (other / '已有项目').mkdir()
+        dialog = CreateProjectDialog(self.root); self.addCleanup(dialog.close)
+        dialog.name_edit.setText('已有项目')
+        self.assertTrue(dialog.create_button.isEnabled())
+        dialog.location_edit.setText(str(other))
+        self.assertFalse(dialog.create_button.isEnabled())
+        dialog.location_edit.setText(str(other / '不存在'))
+        self.assertFalse(dialog.create_button.isEnabled())
+        dialog.location_edit.setText(str(other)); dialog.name_edit.setText('新的项目')
+        self.assertTrue(dialog.create_button.isEnabled())
+        self.assertIn(str(other / '新的项目'), dialog.destination.text())
+        self.store.remember_creation_location(other)
+        self.assertEqual(type(self.store)(self.store.path).creation_location(), other)
+
+    def test_recent_cards_distinguish_same_named_projects_by_visible_path_and_time(self):
+        other = self.root / 'other'; other.mkdir()
+        first = self.store.create(self.root, '同名项目')
+        second = self.store.create(other, '同名项目')
+        self.home.refresh()
+        self.assertEqual(len(self.home.cards), 2)
+        self.assertNotEqual(self.home.cards[0].path_text, self.home.cards[1].path_text)
+        for card in self.home.cards:
+            self.assertIn('最近打开', card.time_text)
+            self.assertIn(card.info['root'], card.accessibleDescription())
+
     def test_default_name_is_offered_but_invalid_and_existing_custom_names_cannot_be_submitted(self):
-        from ISAT.workspaces.home import CreateProjectDialog
+        from yolo_backprop.workspaces.home import CreateProjectDialog
         (self.root / '已有项目').mkdir()
         dialog = CreateProjectDialog(self.root); self.addCleanup(dialog.close)
         dialog.show(); self.app.processEvents()
@@ -164,7 +201,7 @@ class HomeTests(unittest.TestCase):
         self.assertEqual([p.name for p in self.root.iterdir()], ['已有项目'])
 
     def test_return_accepts_default_custom_and_blank_fallback_names_without_creating_files(self):
-        from ISAT.workspaces.home import CreateProjectDialog
+        from yolo_backprop.workspaces.home import CreateProjectDialog
         cases = ((QtCore.Qt.Key_Return, None, '新项目'),
                  (QtCore.Qt.Key_Enter, '零件检测', '零件检测'),
                  (QtCore.Qt.Key_Return, '', '新项目'),
@@ -182,7 +219,7 @@ class HomeTests(unittest.TestCase):
                 self.assertEqual(list(self.root.iterdir()), [])
 
     def test_default_name_skips_existing_directory_file_and_dangling_link(self):
-        from ISAT.workspaces.home import CreateProjectDialog
+        from yolo_backprop.workspaces.home import CreateProjectDialog
         (self.root / '新项目').mkdir()
         original = self.root / '新项目 2'; original.write_text('keep')
         (self.root / '新项目 3').symlink_to(self.root / '不存在的目标')
@@ -199,7 +236,7 @@ class HomeTests(unittest.TestCase):
         self.assertFalse((self.root / '新项目 4').exists())
 
     def test_return_in_styled_home_dialog_accepts_once_instead_of_cancelling(self):
-        from ISAT.workspaces.home import CreateProjectDialog
+        from yolo_backprop.workspaces.home import CreateProjectDialog
         for key in (QtCore.Qt.Key_Return, QtCore.Qt.Key_Enter):
             with self.subTest(key=key):
                 dialog = CreateProjectDialog(self.root, self.home); self.addCleanup(dialog.close)
@@ -214,7 +251,7 @@ class HomeTests(unittest.TestCase):
                 self.assertEqual(len(accepted), 1)
                 self.assertEqual(len(rejected), 0)
 
-    def test_cards_keep_new_card_dimensions_through_resize_and_refresh(self):
+    def test_project_cards_keep_dimensions_through_resize_and_refresh(self):
         for name in ('项目一', '项目二', '项目三', '项目四', '项目五', '项目六'):
             self.store.create(self.root, name)
         self.home.refresh()
@@ -232,6 +269,7 @@ class HomeTests(unittest.TestCase):
     def test_clicking_workspace_card_requests_that_workspace_and_grid_adapts(self):
         root = self.store.create(self.root, '现有空间'); self.home.refresh(); self.app.processEvents()
         received = []; self.home.workspace_requested.connect(received.append)
+        self.home.location_ready.connect(lambda info: received.append(info['root']))
         card = next(c for c in self.home.cards if c.info)
         QtTest.QTest.mouseClick(card, QtCore.Qt.LeftButton)
         self.assertEqual(received, [str(root)])
@@ -239,3 +277,12 @@ class HomeTests(unittest.TestCase):
         for item in self.home.cards:
             self.assertGreaterEqual(item.width(), 240)
             self.assertLessEqual(item.geometry().right(), self.home.scroll.viewport().width())
+
+    def test_invalid_recent_timestamp_does_not_prevent_opening_home(self):
+        root = self.store.create(self.root, '旧项目')
+        for value in ('invalid', 1e100, None):
+            with self.subTest(value=value):
+                self.store.update(root, last_opened=value)
+                self.home.refresh()
+                self.assertEqual(len(self.home.cards), 1)
+                self.assertIn('未知', self.home.cards[0].time_text)

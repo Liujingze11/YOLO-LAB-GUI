@@ -1,3 +1,4 @@
 #!/bin/bash
-cd /ISAT_with_segment_anything
-python main.py
+set -euo pipefail
+cd /app
+exec python -m yolo_backprop.main "$@"

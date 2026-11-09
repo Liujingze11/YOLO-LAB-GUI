@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 class RelocatedToolsTests(unittest.TestCase):
     def test_dataset_tools_preserve_existing_labels_and_move_matching_pairs(self):
-        scripts = ROOT/'ISAT/model_development/tools/dataset_tools'
+        scripts = ROOT/'yolo_backprop/model_development/tools/dataset_tools'
         with tempfile.TemporaryDirectory() as temp:
             base = Path(temp); images = base/'images/train'; labels = base/'labels/train'
             images.mkdir(parents=True); labels.mkdir(parents=True)
@@ -28,6 +28,6 @@ class RelocatedToolsTests(unittest.TestCase):
 
     def test_algorithm_entry_modules_do_not_import_a_qt_binding(self):
         with tempfile.TemporaryDirectory() as temp:
-            code = "import sys; from ISAT.model_development.gui import train_engine,infer_engine,export_engine; assert not any(k.startswith(('PyQt5','PySide6')) for k in sys.modules), 'algorithm process imported Qt'"
+            code = "import sys; from yolo_backprop.model_development.gui import train_engine,infer_engine,export_engine; assert not any(k.startswith(('PyQt5','PySide6')) for k in sys.modules), 'algorithm process imported Qt'"
             result = subprocess.run([sys.executable, '-c', code], cwd=ROOT, env={**os.environ, 'MPLBACKEND': 'Agg', 'YOLO_CONFIG_DIR': temp, 'YOLO_AUTOINSTALL': 'false'}, capture_output=True, text=True, timeout=30)
             self.assertEqual(result.returncode, 0, result.stderr)

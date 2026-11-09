@@ -1,5 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
-# PyInstaller spec file for ISAT_with_segment_anything
+# PyInstaller spec file for YOLO-BACKPROP
 # 使用方法: pyinstaller build_exe.spec
 
 import os
@@ -13,20 +13,18 @@ binaries = []
 hiddenimports = []
 
 # 收集ISAT包的所有数据
-datas += collect_data_files('ISAT', include_py_files=True)
+datas += collect_data_files('yolo_backprop', include_py_files=True, excludes=['software.yaml', '**/__pycache__/*'])
 
 # 添加图标文件
 datas += [('icons', 'icons')]
 
 # 添加配置文件
-if os.path.exists('ISAT/isat.yaml'):
-    datas += [('ISAT/isat.yaml', 'ISAT')]
-if os.path.exists('ISAT/software.yaml'):
-    datas += [('ISAT/software.yaml', 'ISAT')]
+if os.path.exists('yolo_backprop/categories.yaml'):
+    datas += [('yolo_backprop/categories.yaml', 'yolo_backprop')]
 
 # 添加帮助文档
-if os.path.exists('ISAT/docs'):
-    datas += [('ISAT/docs', 'ISAT/docs')]
+if os.path.exists('yolo_backprop/docs'):
+    datas += [('yolo_backprop/docs', 'yolo_backprop/docs')]
 
 # 收集PyQt5相关
 tmp_ret = collect_all('PyQt5')
@@ -61,10 +59,10 @@ for package in ['timm', 'imgviz', 'skimage', 'cv2', 'PIL', 'yaml',
 
 # 添加隐藏导入
 hiddenimports += [
-    'ISAT',
-    'ISAT.main',
-    'ISAT.annotation',
-    'ISAT.configs',
+    'yolo_backprop',
+    'yolo_backprop.main',
+    'yolo_backprop.annotation',
+    'yolo_backprop.configs',
     'PIL._tkinter_finder',
     'pkg_resources.py2_warn',
     'sklearn.utils._weight_vector',
@@ -94,7 +92,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='ISAT_SAM',
+    name='YOLO-BACKPROP',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -105,7 +103,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='ISAT/yolo-backprop-transparent.ico',
+    icon='yolo_backprop/yolo-backprop-transparent.ico',
 )
 
 coll = COLLECT(
@@ -116,5 +114,5 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name='ISAT_SAM',
+    name='YOLO-BACKPROP',
 )

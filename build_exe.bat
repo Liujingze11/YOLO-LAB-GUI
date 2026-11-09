@@ -1,14 +1,14 @@
 @echo off
 chcp 65001
 echo ===============================================
-echo ISAT_with_segment_anything 打包为EXE工具
+echo YOLO-BACKPROP 打包为EXE工具
 echo ===============================================
 echo.
 
 REM 检查Python是否安装
 python --version >nul 2>&1
 if %errorlevel% neq 0 (
-    echo [错误] 未检测到Python，请先安装Python 3.8或更高版本
+    echo [错误] 未检测到Python，请先安装Python 3.10或更高版本
     pause
     exit /b 1
 )
@@ -58,25 +58,25 @@ if %errorlevel% neq 0 (
 
 echo.
 echo [步骤 5/5] 验证打包结果...
-if exist "dist\ISAT_SAM\ISAT_SAM.exe" (
+if exist "dist\YOLO-BACKPROP\YOLO-BACKPROP.exe" (
     echo.
     echo ===============================================
     echo [成功] 打包完成！
     echo ===============================================
     echo.
-    echo 可执行文件位置: dist\ISAT_SAM\ISAT_SAM.exe
+    echo 可执行文件位置: dist\YOLO-BACKPROP\YOLO-BACKPROP.exe
     echo.
     echo 提示:
-    echo 1. 整个 dist\ISAT_SAM 文件夹都是必需的，不要只复制exe文件
+    echo 1. 整个 dist\YOLO-BACKPROP 文件夹都是必需的，不要只复制exe文件
     echo 2. 首次运行可能较慢（需要解压临时文件）
     echo 3. 如果遇到问题，可以在命令行运行exe查看错误信息
-    echo 4. dist\ISAT_SAM 文件夹可以打包成zip分发给其他用户
+    echo 4. dist\YOLO-BACKPROP 文件夹可以打包成zip分发给其他用户
     echo.
     echo 是否立即运行测试? (Y/N)
     set /p choice=请选择:
     if /i "%choice%"=="Y" (
         echo 启动程序...
-        start "" "dist\ISAT_SAM\ISAT_SAM.exe"
+        start "" "dist\YOLO-BACKPROP\YOLO-BACKPROP.exe"
     )
 ) else (
     echo [错误] 未找到生成的exe文件

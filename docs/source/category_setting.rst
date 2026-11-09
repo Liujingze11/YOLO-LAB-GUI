@@ -11,7 +11,7 @@ Click the ``Category settings`` button to open the category settings interface.
 .. image:: ../../display/category_setting.png
     :alt: category_setting.png
 
-.. tip:: The background category is not modifiable in ISAT.
+.. tip:: The background category is not modifiable in yolo_backprop.
 
 2. Select Category
 ---------------------------------

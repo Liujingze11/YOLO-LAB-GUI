@@ -1,30 +1,30 @@
 # -*- coding: utf-8 -*-
 # @Author  : LG
 
-import codecs
+from pathlib import Path
 
 from setuptools import find_packages, setup
 
 
 def get_version():
     try:
-        from ISAT.__init__ import __version__
+        from yolo_backprop import __version__
 
         return __version__
 
     except FileExistsError:
-        FileExistsError("ISAT/__init__.py not exists.")
+        FileExistsError("yolo_backprop/__init__.py not exists.")
 
 
 setup(
-    name="isat-sam",  # 包名
+    name="yolo-backprop",  # 包名
     version=get_version(),  # 版本号
     author="yatengLG",
     author_email="yatenglg@foxmail.com",
-    description="Interactive semi-automatic annotation tool for image segmentation based on SAM(segment anything model).",
-    long_description=(codecs.open("README.md", encoding="utf-8").read()),
+    description="Native desktop workbench for image screening, annotation and YOLO model development.",
+    long_description=Path(__file__).with_name("README.md").read_text(encoding="utf-8"),
     long_description_content_type="text/markdown",
-    url="https://github.com/yatengLG/ISAT_with_segment_anything",  # 项目相关文件地址
+    url="https://github.com/Liujingze11/YOLO-LAB-GUI",  # 项目相关文件地址
     keywords=[
         "annotation tool",
         "segment anything",
@@ -35,7 +35,7 @@ setup(
     license="Apache2.0",
     packages=find_packages(),
     include_package_data=True,
-    python_requires=">=3.8",  # python 版本要求
+    python_requires=">=3.10",  # native model development runtime
     install_requires=[  # 必须直接指明，不然pip包不会自动安装
         "imgviz",
         "scikit-image",
@@ -78,8 +78,8 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "isat-sam=ISAT.main:main",
+            "yolo-backprop=yolo_backprop.main:main",
         ],
-        "isat.plugins": [],  # 插件注册
+        "yolo_backprop.plugins": [],  # 插件注册
     },
 )

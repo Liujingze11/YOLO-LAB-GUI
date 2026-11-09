@@ -1,16 +1,19 @@
-include ISAT/checkpoints/mobile_sam.pt
-include ISAT/ISAT_new_64.svg
-include ISAT/yolo-backprop.svg
-include ISAT/yolo-backprop-transparent.svg
-include ISAT/yolo-backprop-transparent.ico
-include ISAT/segment_any/sam3/bpe_simple_vocab_16e6.txt.gz
-recursive-include ISAT/segment_any *.py
-recursive-include ISAT/widgets *
-recursive-include ISAT/ui *
-recursive-include ISAT/scripts *
-recursive-include ISAT/ icons.qrc
-recursive-include ISAT *.yaml
-recursive-include ISAT/segment_anything_fast *.
-recursive-include ISAT/model_development/locales *.json
-recursive-include ISAT/model_development/tools *.py *.json
-include ISAT/model_development/PROVENANCE.json
+include yolo_backprop/ISAT_new_64.svg
+include yolo_backprop/yolo-backprop.svg
+include yolo_backprop/yolo-backprop-transparent.svg
+include yolo_backprop/yolo-backprop-transparent.ico
+include yolo_backprop/segment_any/sam3/bpe_simple_vocab_16e6.txt.gz
+recursive-include yolo_backprop/segment_any *.py
+recursive-include yolo_backprop/widgets *
+recursive-include yolo_backprop/ui *
+recursive-include yolo_backprop/ icons.qrc
+recursive-include yolo_backprop *.yaml
+recursive-include yolo_backprop/model_development/locales *.json
+recursive-include yolo_backprop/model_development/tools *.py *.json
+include yolo_backprop/model_development/PROVENANCE.json
+
+include NOTICE
+include run-yolo-backprop.sh run-isat.sh setup-model-runtime.sh requirements-model-runtime.txt
+include main.py build_exe.spec build_exe.bat
+exclude yolo_backprop/software.yaml
+global-exclude *.pyc *.pyo

@@ -18,7 +18,7 @@ class WorkspaceTests(unittest.TestCase):
                                'name': 'a.png', 'folder': str(self.source)}, 'objects': []}
         (self.source / 'a.json').write_text(json.dumps(self.label))
         self.originals = {p.name: p.read_bytes() for p in self.source.iterdir()}
-        from ISAT.data_screening.workspace import Workspace
+        from yolo_backprop.data_screening.workspace import Workspace
         self.workspace = Workspace(self.root / 'workspace')
 
     def assert_originals(self):
@@ -63,7 +63,7 @@ class WorkspaceTests(unittest.TestCase):
         session = self.workspace.import_folder(self.source)
         a = session.items[0]; session.remove([a])
         with self.assertRaises(ValueError): session.purge_trash()
-        from ISAT.data_screening import workspace
+        from yolo_backprop.data_screening import workspace
         with patch.object(workspace, '_write_manifest', side_effect=OSError('disk full')):
             with self.assertRaises(OSError): session.save_project()
         reopened = self.workspace.open_project(session.project_root)
@@ -88,7 +88,7 @@ class WorkspaceTests(unittest.TestCase):
         with self.assertRaises(ValueError): self.workspace.open_project(session.project_root)
 
     def test_workspace_selection_is_persistent_and_does_not_need_existing_projects(self):
-        from ISAT.data_screening.workspace import WorkspaceSettings
+        from yolo_backprop.data_screening.workspace import WorkspaceSettings
         path = self.root / 'settings.json'
         store = WorkspaceSettings(path)
         store.select(self.workspace.root)

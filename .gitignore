@@ -1,11 +1,11 @@
 
 *.pyc
-ISAT/checkpoints/sam_hq_vit_h.pth
-ISAT/checkpoints/mobile_sam.pt
-ISAT/isat.yaml
+yolo_backprop/checkpoints/sam_hq_vit_h.pth
+yolo_backprop/checkpoints/mobile_sam.pt
 *.yaml
-ISAT/software.yaml
-ISAT/isat.yaml
+yolo_backprop/software.yaml
+!yolo_backprop/categories.yaml
+!yolo_backprop/segment_any/sam2/configs/*.yaml
 
 # PyInstaller打包相关
 build/

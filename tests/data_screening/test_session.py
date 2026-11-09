@@ -21,7 +21,7 @@ class SessionTests(unittest.TestCase):
         return path
 
     def scan(self):
-        from ISAT.data_screening.session import ScreeningSession
+        from yolo_backprop.data_screening.session import ScreeningSession
         return ScreeningSession.scan(self.root)
 
     def test_scan_filters_bad_files_and_resolves_duplicate_stems_recursively(self):

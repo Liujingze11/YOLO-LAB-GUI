@@ -9,7 +9,7 @@ class ShortcutSettingsTests(unittest.TestCase):
         self.path = Path(self.temp.name) / 'config/shortcuts.json'
 
     def settings(self):
-        from ISAT.data_screening.shortcuts import ShortcutSettings
+        from yolo_backprop.data_screening.shortcuts import ShortcutSettings
         return ShortcutSettings(self.path)
 
     def test_saved_bindings_reload_and_empty_binding_disables_shortcut(self):

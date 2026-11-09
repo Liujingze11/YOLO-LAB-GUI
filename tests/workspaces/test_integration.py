@@ -32,12 +32,13 @@ class WorkspaceIntegrationTests(unittest.TestCase):
         def name_project():
             dialog = self.app.activeModalWidget()
             if dialog:
+                dialog.location_edit.setText(str(self.root))
                 dialog.name_edit.setText('测试空间'); dialog.create_button.click()
         timer = QtCore.QTimer(); timer.setSingleShot(True)
         timer.timeout.connect(name_project); timer.start(0)
         try:
             with patch.object(QtWidgets.QFileDialog, 'getExistingDirectory', return_value=str(self.root)):
-                QtTest.QTest.mouseClick(self.home.home.cards[0], QtCore.Qt.LeftButton)
+                QtTest.QTest.mouseClick(self.home.home.create_button, QtCore.Qt.LeftButton)
         finally: timer.stop()
         self.app.processEvents()
         c = self.controller
@@ -58,7 +59,7 @@ class WorkspaceIntegrationTests(unittest.TestCase):
         self.assertEqual(c.widget.train_tab.tr_results.currentText(), str(root / 'results'))
 
     def test_return_creates_and_enters_default_project_and_blank_next_name_is_unique(self):
-        from ISAT.workspaces.store import MARKER
+        from yolo_backprop.workspaces.store import MARKER
         from PyQt5.QtCore import QTimer
         for clear, key, expected in ((False, QtCore.Qt.Key_Return, '新项目'),
                                      (True, QtCore.Qt.Key_Enter, '新项目 2')):
@@ -67,13 +68,14 @@ class WorkspaceIntegrationTests(unittest.TestCase):
                 def submit():
                     dialog = self.app.activeModalWidget()
                     if dialog:
+                        dialog.location_edit.setText(str(self.root))
                         if clear: dialog.name_edit.clear()
                         QtTest.QTest.keyClick(dialog.name_edit, key)
                         if dialog.isVisible(): dialog.reject()  # Old disabled-default behavior must fail without hanging.
                 timer = QTimer(); timer.setSingleShot(True); timer.timeout.connect(submit); timer.start(0)
                 try:
                     with patch.object(QtWidgets.QFileDialog, 'getExistingDirectory', return_value=str(self.root)):
-                        QtTest.QTest.mouseClick(self.home.home.cards[0], QtCore.Qt.LeftButton)
+                        QtTest.QTest.mouseClick(self.home.home.create_button, QtCore.Qt.LeftButton)
                 finally: timer.stop()
                 root = self.root / expected
                 self.assertEqual(self.home.current_root, root)
@@ -103,15 +105,15 @@ class WorkspaceIntegrationTests(unittest.TestCase):
         self.assertTrue(self.window.close()); self.assertFalse(root.exists())
 
     def test_select_existing_project_restores_training_and_registers_once(self):
-        from ISAT.workspaces.store import WorkspaceStore
+        from yolo_backprop.workspaces.store import WorkspaceStore
         other = WorkspaceStore(self.root / 'other-config' / 'workspaces.json')
         root = other.create(self.root, '已有训练项目')
         other.update(root, state={'page': 'development', 'training': {'epochs': 37}})
         ownership = other.read(root)['ownership']
         original = root / '原数据.txt'; original.write_text('keep')
-        self.assertGreaterEqual(len(self.home.home.cards), 2)
+        self.assertTrue(self.home.home.open_button.isVisible())
         with patch.object(QtWidgets.QFileDialog, 'getExistingDirectory', return_value=str(root)):
-            QtTest.QTest.mouseClick(self.home.home.cards[1], QtCore.Qt.LeftButton)
+            QtTest.QTest.mouseClick(self.home.home.open_button, QtCore.Qt.LeftButton)
         c = self.controller
         self.assertEqual(self.home.current_root, root)
         self.assertIs(c.stack.currentWidget(), c.widget)
@@ -119,27 +121,27 @@ class WorkspaceIntegrationTests(unittest.TestCase):
         c.widget.train_tab.tr_epochs.setValue(55)
         self.home.show_home()
         with patch.object(QtWidgets.QFileDialog, 'getExistingDirectory', return_value=str(root)):
-            QtTest.QTest.mouseClick(self.home.home.cards[1], QtCore.Qt.LeftButton)
+            QtTest.QTest.mouseClick(self.home.home.open_button, QtCore.Qt.LeftButton)
         self.assertEqual(c.widget.train_tab.tr_epochs.value(), 55)
         self.assertEqual([row['root'] for row in self.home.store.recent()].count(str(root)), 1)
         self.assertEqual(self.home.store.read(root)['ownership'], ownership)
         self.assertEqual(original.read_text(), 'keep')
 
     def test_select_copied_project_can_open_but_does_not_gain_delete_permission(self):
-        from ISAT.workspaces.store import WorkspaceStore
+        from yolo_backprop.workspaces.store import WorkspaceStore
         other = WorkspaceStore(self.root / 'other-config' / 'workspaces.json')
         original = other.create(self.root, '原始项目')
         copy = self.root / '复制的项目'; shutil.copytree(original, copy)
-        self.assertGreaterEqual(len(self.home.home.cards), 2)
+        self.assertTrue(self.home.home.open_button.isVisible())
         with patch.object(QtWidgets.QFileDialog, 'getExistingDirectory', return_value=str(copy)):
-            QtTest.QTest.mouseClick(self.home.home.cards[1], QtCore.Qt.LeftButton)
+            QtTest.QTest.mouseClick(self.home.home.open_button, QtCore.Qt.LeftButton)
         self.assertEqual(self.home.current_root, copy)
         self.assertIs(self.controller.stack.currentWidget(), self.controller.screening_widget)
         with self.assertRaises(ValueError): self.home.store.validate_deletion(copy)
         self.assertTrue(original.is_dir()); self.assertTrue(copy.is_dir())
 
     def test_select_existing_project_during_task_does_not_register_or_switch(self):
-        from ISAT.workspaces.store import MARKER, WorkspaceStore
+        from yolo_backprop.workspaces.store import MARKER, WorkspaceStore
         class Worker(QtCore.QThread):
             def run(self):
                 while not self.isInterruptionRequested(): self.msleep(5)
@@ -151,10 +153,10 @@ class WorkspaceIntegrationTests(unittest.TestCase):
         page = self.controller.screening_widget
         worker = Worker(); worker.start(); page._scan_worker = worker
         try:
-            self.assertGreaterEqual(len(self.home.home.cards), 2)
+            self.assertTrue(self.home.home.open_button.isVisible())
             with patch.object(QtWidgets.QFileDialog, 'getExistingDirectory', return_value=str(requested)), \
                  patch.object(QtWidgets.QMessageBox, 'warning'):
-                QtTest.QTest.mouseClick(self.home.home.cards[1], QtCore.Qt.LeftButton)
+                QtTest.QTest.mouseClick(self.home.home.open_button, QtCore.Qt.LeftButton)
             self.assertEqual(self.home.current_root, current)
             self.assertNotIn(str(requested), [row['root'] for row in self.home.store.recent()])
             self.assertEqual((requested / MARKER).read_bytes(), marker)
@@ -171,7 +173,8 @@ class WorkspaceIntegrationTests(unittest.TestCase):
         page = self.controller.screening_widget; self.fixture.wait_for_screening(page)
         self.assertEqual(self.home.current_root, source)
         self.assertNotEqual(page.workspace.root, source)
-        self.assertNotIn(str(page.workspace.root), page.source_label.text())
+        self.assertIn(str(source), page.open_button.toolTip())
+        self.assertNotIn(str(page.workspace.root), page.open_button.toolTip())
         self.assertEqual(page.session.items[0].source.read_bytes(), before)
         self.assertTrue(page.session.project_root.is_relative_to(page.workspace.root))
         self.assertFalse((page.session.project_root / 'json' / 'photo.json').exists())
@@ -202,7 +205,7 @@ class WorkspaceIntegrationTests(unittest.TestCase):
         self.assertEqual(len(self.window.polygons), 2)
         self.assertEqual({str(p.relative_to(source)): p.read_bytes() for p in source.rglob('*') if p.is_file()}, before)
 
-    def test_external_yolo_dataset_opens_development_with_original_yaml_and_private_outputs(self):
+    def test_external_yolo_dataset_is_organized_and_opens_with_private_yaml_and_outputs(self):
         source = self.root / '外部YOLO'; images = source / 'images' / 'train'; images.mkdir(parents=True)
         Image.new('RGB', (80, 60), 'red').save(images / 'photo.png')
         config = source / 'data.yaml'; config.write_text('train: images/train\nnames: [part]\n')
@@ -210,7 +213,10 @@ class WorkspaceIntegrationTests(unittest.TestCase):
         self.assertTrue(self.home.open_workspace(source))
         self.assertIs(self.controller.stack.currentWidget(), self.controller.widget)
         train = self.controller.widget.train_tab
-        self.assertEqual(train.tr_data_yaml.currentText(), str(config))
+        organized = Path(train.tr_data_yaml.currentText())
+        self.assertNotEqual(organized, config)
+        self.assertTrue(organized.is_relative_to(self.home.storage_root))
+        self.assertTrue((organized.parent / 'images/train/photo.png').is_file())
         self.assertFalse(Path(train.tr_results.currentText()).is_relative_to(source))
         self.assertIsNone(train._train_worker)
         self.assertEqual({str(p.relative_to(source)): p.read_bytes() for p in source.rglob('*') if p.is_file()}, before)
@@ -327,7 +333,7 @@ class WorkspaceIntegrationTests(unittest.TestCase):
         self.assertEqual(original.read_text(), 'keep')
         self.assertIsNone(self.home.current_root)
         self.assertNotIn(str(root), [row['root'] for row in self.home.store.recent()])
-        from ISAT.workspaces.store import WorkspaceStore
+        from yolo_backprop.workspaces.store import WorkspaceStore
         self.assertNotIn(str(root), [row['root'] for row in WorkspaceStore(self.home.store.path).recent()])
         self.assertTrue(self.window.close())
         self.assertEqual(original.read_text(), 'keep')
@@ -465,7 +471,7 @@ class WorkspaceIntegrationTests(unittest.TestCase):
         self.home.open_workspace(root); self.controller.show_development()
         self.controller.widget.train_tab.tr_epochs.setValue(31)
         self.assertTrue(self.window.close()); self.app.processEvents()
-        from ISAT.widgets.mainwindow import MainWindow
+        from yolo_backprop.widgets.mainwindow import MainWindow
         reopened = MainWindow(); reopened.show(); self.app.processEvents()
         def cleanup():
             reopened.saved = True
@@ -479,7 +485,7 @@ class WorkspaceIntegrationTests(unittest.TestCase):
         self.assertEqual(second.widget.train_tab.tr_results.currentText(), str(root / 'results'))
 
     def test_real_train_start_updates_home_using_the_actual_training_config(self):
-        from ISAT.model_development.gui.workers import TrainWorker
+        from yolo_backprop.model_development.gui.workers import TrainWorker
         root = self.home.store.create(self.root, '训练空间')
         images = root / 'training-images'; images.mkdir()
         Image.new('RGB', (80, 60), 'red').save(images / 'sample.png')

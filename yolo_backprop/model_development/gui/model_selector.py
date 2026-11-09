@@ -1,0 +1,540 @@
+"""
+Model selector dropdown with auto-download capability.
+"""
+from __future__ import annotations
+
+import os
+import time
+import urllib.request
+from pathlib import Path
+
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, pyqtSlot
+from PyQt5.QtGui import QStandardItem, QColor
+from PyQt5.QtWidgets import (
+    QComboBox,
+    QDialog,
+    QFileDialog,
+    QHBoxLayout,
+    QLabel,
+    QListView,
+    QProgressBar,
+    QSizePolicy,
+    QVBoxLayout,
+    QWidget,
+)
+
+from yolo_backprop.model_development.core.paths import MODEL_REGISTRY, get_model_download_url
+from yolo_backprop.model_development.gui.paths import PRETRAINED_DIR
+from yolo_backprop.model_development.gui.styles import (
+    COLOR_DISABLED,
+    COLOR_TEXT,
+    COLOR_TEXT_MUTED,
+    COMBO_STYLE,
+    PROGRESS_STYLE,
+)
+from yolo_backprop.model_development.gui.i18n import tr
+from yolo_backprop.model_development.gui.widgets import btn, danger_btn
+
+
+class _ModelDownloader(QThread):
+    progress = pyqtSignal(int, int)
+    speed = pyqtSignal(float)  # bytes per second
+    phase = pyqtSignal(str)    # human-readable phase description
+    finished = pyqtSignal(bool, str)
+    error_msg = pyqtSignal(str)
+
+    def __init__(self, filename: str, url: str, dest_dir: Path):
+        super().__init__()
+        self._filename = filename
+        self._url = url
+        self._dest = dest_dir / filename
+        self._tmp = dest_dir / f"{filename}.tmp"
+        self._aborted = False
+
+    def run(self) -> None:
+        try:
+            self._dest.parent.mkdir(parents=True, exist_ok=True)
+            self.phase.emit(tr("model.dialog.connecting"))
+            with urllib.request.urlopen(self._url) as resp:
+                self.phase.emit(tr("model.dialog.downloading_phase"))
+                total = int(resp.headers.get("Content-Length", 0))
+                downloaded = 0
+                start_time = time.time()
+                # Speed calculation: sliding window of recent chunk sizes & times
+                window_bytes = 0
+                window_start = time.time()
+                with open(self._tmp, "wb") as f:
+                    while True:
+                        if self._aborted:
+                            self._cleanup()
+                            return
+                        chunk = resp.read(8192)
+                        if not chunk:
+                            break
+                        f.write(chunk)
+                        downloaded += len(chunk)
+                        window_bytes += len(chunk)
+                        now = time.time()
+                        elapsed = now - window_start
+                        if elapsed >= 0.5:  # update speed every 0.5s
+                            speed_val = window_bytes / elapsed if elapsed > 0 else 0
+                            self.speed.emit(speed_val)
+                            window_bytes = 0
+                            window_start = now
+                        self.progress.emit(downloaded, total)
+            if self._aborted:
+                self._cleanup()
+                return
+            os.replace(str(self._tmp), str(self._dest))
+            self.finished.emit(True, self._filename)
+        except Exception as exc:
+            self._cleanup()
+            self.error_msg.emit(str(exc))
+            self.finished.emit(False, self._filename)
+
+    def stop(self) -> None:
+        self._aborted = True
+
+    def _cleanup(self) -> None:
+        if self._tmp.is_file():
+            self._tmp.unlink(missing_ok=True)
+
+
+class DownloadDialog(QDialog):
+    """Modal dialog showing download progress with cancel button."""
+
+    def __init__(self, filename: str, parent: QWidget | None = None):
+        super().__init__(parent)
+        self._filename = filename
+        self._cancelled = False
+        self._start_time = 0.0
+        self._last_speed = 0.0
+        self.setWindowTitle(tr("model.dialog.title"))
+        self.setFixedSize(440, 195)
+        self.setModal(True)
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(24, 20, 24, 20)
+        layout.setSpacing(8)
+
+        self._label = QLabel(tr("model.dialog.downloading", filename=filename))
+        self._label.setProperty("themeClass", "field_label")
+        self._label.setStyleSheet(f"font-size: 13px; color: {COLOR_TEXT};")
+        layout.addWidget(self._label)
+
+        # Phase indicator (e.g. "Connecting..." / "Downloading...")
+        self._phase_label = QLabel("")
+        self._phase_label.setStyleSheet(f"font-size: 11px; color: {COLOR_TEXT_MUTED};")
+        layout.addWidget(self._phase_label)
+
+        self._progress = QProgressBar()
+        self._progress.setFixedHeight(14)
+        self._progress.setProperty("themeClass", "progress")
+        self._progress.setStyleSheet(PROGRESS_STYLE)
+        self._progress.setTextVisible(False)
+        layout.addWidget(self._progress)
+
+        # Speed / time status line
+        self._speed_label = QLabel("")
+        self._speed_label.setStyleSheet(f"font-size: 11px; color: {COLOR_TEXT_MUTED};")
+        layout.addWidget(self._speed_label)
+
+        btn_row = QHBoxLayout()
+        btn_row.setSpacing(10)
+        self._status = QLabel("")
+        self._status.setStyleSheet(f"font-size: 11px; color: {COLOR_TEXT_MUTED};")
+        btn_row.addWidget(self._status, 1)
+        self._cancel_btn = danger_btn(tr("model.dialog.cancel_btn"))
+        self._cancel_btn.clicked.connect(self._on_cancel)
+        btn_row.addWidget(self._cancel_btn)
+        layout.addLayout(btn_row)
+
+    def set_phase(self, text: str) -> None:
+        """Update the phase indicator (e.g. 'Connecting...' → 'Downloading...')."""
+        self._phase_label.setText(text)
+        self._start_time = time.time()
+
+    def set_speed(self, speed: float) -> None:
+        """Update the speed display."""
+        self._last_speed = speed
+
+    def set_progress(self, current: int, total: int) -> None:
+        elapsed = time.time() - self._start_time if self._start_time > 0 else 0
+        speed_str = self._format_speed(self._last_speed)
+        if total > 0:
+            self._progress.setMaximum(total)
+            self._progress.setValue(min(current, total))
+            pct = current * 100 // total if total else 0
+            down_str = self._format_bytes(current)
+            total_str = self._format_bytes(total)
+            self._status.setText(
+                tr("model.dialog.speed_format",
+                   down=down_str, total=total_str, pct=pct,
+                   speed=speed_str, elapsed=int(elapsed)))
+            self._speed_label.setText("")
+        else:
+            # Unknown total size — still show meaningful progress
+            down_str = self._format_bytes(current)
+            self._speed_label.setText(
+                tr("model.dialog.speed_unknown",
+                   down=down_str, speed=speed_str, elapsed=int(elapsed)))
+
+    def set_status_text(self, text: str) -> None:
+        self._status.setText(text[:100])
+
+    @staticmethod
+    def _format_bytes(b: int) -> str:
+        if b >= 1048576:
+            return f"{b / 1048576:.1f}MB"
+        elif b >= 1024:
+            return f"{b / 1024:.1f}KB"
+        return f"{b}B"
+
+    @staticmethod
+    def _format_speed(bps: float) -> str:
+        if bps >= 1048576:
+            return f"{bps / 1048576:.1f}MB"
+        elif bps >= 1024:
+            return f"{bps / 1024:.1f}KB"
+        return f"{bps:.0f}B"
+
+    def set_error(self, msg: str) -> None:
+        self._label.setText(tr("model.dialog.failed", filename=self._filename))
+        self._status.setText(msg[:80])
+        self._phase_label.setText("")
+
+    def set_cancelled(self) -> None:
+        self._label.setText(tr("model.dialog.cancelled"))
+        self._status.setText(self._filename)
+        self._phase_label.setText("")
+
+    def _on_cancel(self) -> None:
+        self._cancelled = True
+        self.reject()
+
+    @property
+    def cancelled(self) -> bool:
+        return self._cancelled
+
+
+class ModelSelector(QWidget):
+    model_changed = pyqtSignal(str)
+
+    def __init__(self, parent: QWidget | None = None):
+        super().__init__(parent)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+
+        self._model_states: dict[str, str] = {}
+        self._downloader: _ModelDownloader | None = None
+        self._custom_paths: list[str] = []
+        self._download_dialog: DownloadDialog | None = None
+
+        self._combo = QComboBox()
+        self._combo.setMinimumWidth(320)
+        self._combo.setProperty("themeClass", "combo")
+        self._combo.setStyleSheet(COMBO_STYLE)
+        self._combo.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self._combo.currentIndexChanged.connect(self._on_selection_changed)
+        view = self._combo.view()
+        view.setMinimumWidth(320)
+        view.setResizeMode(QListView.Adjust)
+
+        self._browse_btn = btn("浏览", primary=False, i18n_key="train.btn.browse")
+        self._browse_btn.setMinimumWidth(76)
+        self._browse_btn.clicked.connect(self._on_browse)
+
+        combo_row = QHBoxLayout()
+        combo_row.setContentsMargins(0, 0, 0, 0)
+        combo_row.setSpacing(6)
+        combo_row.addWidget(self._combo, 1)
+        combo_row.addWidget(self._browse_btn)
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+        layout.addLayout(combo_row)
+
+        self._init_states()
+        self._populate()
+
+    # ── public API ──
+
+    def current_model_path(self) -> str:
+        idx = self._combo.currentIndex()
+        if idx < 0:
+            return ""
+        data = self._combo.itemData(idx, Qt.UserRole)
+        if not data or data == "__browse__":
+            return ""
+        if data in self._custom_paths or os.sep in data:
+            return data
+        p = PRETRAINED_DIR / data
+        return str(p) if p.is_file() else data
+
+    def set_model(self, name_or_path: str) -> None:
+        if not name_or_path:
+            return
+        if Path(name_or_path).is_file():
+            self.add_custom_path(str(Path(name_or_path).resolve()))
+            return
+        for fn, _display, _tag in MODEL_REGISTRY:
+            if name_or_path == fn or name_or_path.endswith(f"/{fn}") or name_or_path.endswith(f"\\{fn}"):
+                self._select_item_by_data(fn)
+                return
+        for fn, display, _tag in MODEL_REGISTRY:
+            if name_or_path == display:
+                self._select_item_by_data(fn)
+                return
+        p = Path(name_or_path)
+        if p.is_file():
+            if name_or_path not in self._custom_paths:
+                self._custom_paths.append(name_or_path)
+                if len(self._custom_paths) > 20:
+                    self._custom_paths = self._custom_paths[-20:]
+            self._populate()
+            self._select_item_by_data(name_or_path)
+            return
+        for i in range(self._combo.count()):
+            if self._combo.itemText(i) == name_or_path:
+                self._combo.setCurrentIndex(i)
+                return
+
+    def add_custom_path(self, path: str) -> None:
+        if path not in self._custom_paths:
+            self._custom_paths.append(path)
+            if len(self._custom_paths) > 20:
+                self._custom_paths = self._custom_paths[-20:]
+        self._populate()
+        self._select_item_by_data(path)
+
+    # ── internal ──
+
+    def _init_states(self) -> None:
+        for fn, _display, _tag in MODEL_REGISTRY:
+            self._model_states[fn] = "ok" if (PRETRAINED_DIR / fn).is_file() else "missing"
+
+    def _populate(self) -> None:
+        self._combo.blockSignals(True)
+        target_data = None
+        if self._combo.currentIndex() >= 0:
+            target_data = self._combo.itemData(self._combo.currentIndex(), Qt.UserRole)
+
+        model = self._combo.model()
+        model.clear()
+
+        def _add(text: str, data: str | None, enabled: bool = True, color: str | None = None):
+            item = QStandardItem(text)
+            if data is not None:
+                item.setData(data, Qt.UserRole)
+            if not enabled:
+                item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
+            if color:
+                item.setForeground(QColor(color))
+            model.appendRow(item)
+
+        groups: dict[str, list[tuple[str, str, str]]] = {}
+        for fn, display, tag in MODEL_REGISTRY:
+            groups.setdefault(tag, []).append((fn, display, tag))
+
+        seg_keys = {
+            "v8": "model.group.v8_seg",
+            "v11": "model.group.v11_seg",
+            "v12": "model.group.v12_seg",
+        }
+
+        seg_tags = ["v8", "v11", "v12"]
+
+        for tag in seg_tags:
+            if tag not in groups:
+                continue
+            display_models = [(fn, d, t) for fn, d, t in groups[tag] if fn.endswith("-seg.pt")]
+            if not display_models:
+                continue
+            _add(f"── {tr(seg_keys.get(tag, tag))} ──", None, enabled=False, color=COLOR_DISABLED)
+            for fn, display, _ in display_models:
+                self._add_model_item(fn, display, _add)
+
+        _add(f"── {tr('model.group.v8_det')} ──", None, enabled=False, color=COLOR_DISABLED)
+        for fn, display, tag in groups.get("v8", []):
+            if not fn.endswith("-seg.pt"):
+                self._add_model_item(fn, display, _add)
+
+        _add(f"── {tr('model.group.v11_det')} ──", None, enabled=False, color=COLOR_DISABLED)
+        for fn, display, tag in groups.get("v11", []):
+            if not fn.endswith("-seg.pt"):
+                self._add_model_item(fn, display, _add)
+
+        model.appendRow(QStandardItem(""))
+        if self._custom_paths:
+            _add(f"── {tr('model.group.local')} ──", None, enabled=False, color=COLOR_DISABLED)
+            for p in self._custom_paths:
+                _add(Path(p).name, p, enabled=True)
+
+        model.appendRow(QStandardItem(""))
+        _add(tr("model.action.browse"), "__browse__", enabled=True)
+
+        if target_data and self._find_item_index(target_data) >= 0:
+            self._combo.setCurrentIndex(self._find_item_index(target_data))
+        else:
+            for i in range(self._combo.count()):
+                d = self._combo.itemData(i, Qt.UserRole)
+                if d and self._model_states.get(d) == "ok":
+                    self._combo.setCurrentIndex(i)
+                    break
+
+        self._combo.blockSignals(False)
+
+    def _add_model_item(self, fn: str, display: str, _add_fn) -> None:
+        state = self._model_states.get(fn, "missing")
+        if state == "ok":
+            _add_fn(f"{display}  ✓", fn, enabled=True)
+        elif state == "downloading":
+            _add_fn(f"{display}  {tr('model.tag.downloading')}", fn, enabled=True, color=COLOR_DISABLED)
+        else:
+            _add_fn(f"{display}  {tr('model.tag.download')}", fn, enabled=True, color=COLOR_DISABLED)
+
+    def _find_item_index(self, data: str) -> int:
+        for i in range(self._combo.count()):
+            if self._combo.itemData(i, Qt.UserRole) == data:
+                return i
+        return -1
+
+    def _select_item_by_data(self, data: str) -> None:
+        idx = self._find_item_index(data)
+        if idx >= 0:
+            self._combo.setCurrentIndex(idx)
+
+    def _select_first_ok(self) -> None:
+        """Move combo selection to the first available 'ok' model."""
+        for i in range(self._combo.count()):
+            d = self._combo.itemData(i, Qt.UserRole)
+            if d and self._model_states.get(d) == "ok":
+                self._combo.setCurrentIndex(i)
+                return
+
+    # ── slots ──
+
+    def _on_selection_changed(self, idx: int) -> None:
+        if idx < 0:
+            return
+        data = self._combo.itemData(idx, Qt.UserRole)
+        if not data:
+            return
+        if data == "__browse__":
+            self._on_browse()
+            return
+        if data in self._custom_paths:
+            self.model_changed.emit(data)
+            return
+        if data in self._model_states:
+            state = self._model_states[data]
+            if state == "ok":
+                self.model_changed.emit(str(PRETRAINED_DIR / data))
+            elif state == "missing":
+                self._start_download(data)
+
+    def _on_browse(self) -> None:
+        f, _ = QFileDialog.getOpenFileName(
+            self, "选择模型权重", "", "权重 (*.pt *.pth *.onnx);;所有文件 (*)"
+        )
+        if f:
+            self.add_custom_path(f)
+            self.model_changed.emit(f)
+
+    def _start_download(self, filename: str) -> None:
+        tag = None
+        for fn, _display, t in MODEL_REGISTRY:
+            if fn == filename:
+                tag = t
+                break
+        if not tag:
+            return
+
+        self._model_states[filename] = "downloading"
+        self._populate()
+
+        url = get_model_download_url(filename, tag)
+        self._downloader = _ModelDownloader(filename, url, PRETRAINED_DIR)
+        self._downloader.phase.connect(self._on_download_phase)
+        self._downloader.speed.connect(self._on_download_speed)
+        self._downloader.progress.connect(self._on_download_progress)
+        self._downloader.finished.connect(self._on_download_finished)
+        self._downloader.error_msg.connect(self._on_download_error)
+
+        self._download_dialog = DownloadDialog(filename, self.window())
+        self._download_dialog.rejected.connect(self._on_dialog_closed)
+        self._download_dialog.show()
+
+        self._combo.setEnabled(False)
+        self._browse_btn.setEnabled(False)
+        self._downloader.start()
+
+    @pyqtSlot(str)
+    def _on_download_phase(self, text: str) -> None:
+        if self._download_dialog:
+            self._download_dialog.set_phase(text)
+
+    @pyqtSlot(float)
+    def _on_download_speed(self, speed: float) -> None:
+        if self._download_dialog:
+            self._download_dialog.set_speed(speed)
+
+    @pyqtSlot(int, int)
+    def _on_download_progress(self, current: int, total: int) -> None:
+        if self._download_dialog:
+            self._download_dialog.set_progress(current, total)
+
+    @pyqtSlot()
+    def _on_dialog_closed(self) -> None:
+        if self._download_dialog is None:
+            return
+        cancelled = self._download_dialog.cancelled
+        if cancelled and self._downloader and self._downloader.isRunning():
+            self._downloader.stop()
+        self._combo.setEnabled(True)
+        self._browse_btn.setEnabled(True)
+        for fn, state in list(self._model_states.items()):
+            if state == "downloading":
+                self._model_states[fn] = "missing"
+                break
+        self._populate()
+        self._select_first_ok()
+        self._download_dialog = None
+
+    @pyqtSlot(bool, str)
+    def _on_download_finished(self, success: bool, filename: str) -> None:
+        self._combo.setEnabled(True)
+        self._browse_btn.setEnabled(True)
+
+        if success:
+            if self._download_dialog:
+                self._download_dialog.accept()
+                self._download_dialog = None
+            self._model_states[filename] = "ok"
+            self._populate()
+            self._select_item_by_data(filename)
+            self.model_changed.emit(str(PRETRAINED_DIR / filename))
+        else:
+            # Dialog stays open to show the error; user closes it manually.
+            self._model_states[filename] = "missing"
+            self._populate()
+            self._select_first_ok()
+
+    @pyqtSlot(str)
+    def _on_download_error(self, msg: str) -> None:
+        self._combo.setEnabled(True)
+        self._browse_btn.setEnabled(True)
+        if self._download_dialog:
+            self._download_dialog.set_error(msg)
+            self._download_dialog._cancel_btn.setText(tr("model.dialog.close_btn"))
+            try:
+                self._download_dialog._cancel_btn.clicked.disconnect()
+            except Exception:
+                pass
+            self._download_dialog._cancel_btn.clicked.connect(self._download_dialog.reject)
+        for fn, state in list(self._model_states.items()):
+            if state == "downloading":
+                self._model_states[fn] = "missing"
+                break
+        self._populate()
+        self._select_first_ok()

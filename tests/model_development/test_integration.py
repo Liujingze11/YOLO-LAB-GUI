@@ -14,17 +14,19 @@ class IntegrationTests(unittest.TestCase):
         cls.app = QtWidgets.QApplication.instance() or QtWidgets.QApplication([])
 
     def setUp(self):
-        from ISAT.widgets import mainwindow as module
+        from yolo_backprop.widgets import mainwindow as module
         self.temp = tempfile.TemporaryDirectory(); self.addCleanup(self.temp.cleanup)
         directory = Path(self.temp.name)
         original = Path(module.SOFTWARE_CONFIG_FILE).read_bytes()
         self.original_path = Path(module.SOFTWARE_CONFIG_FILE)
         self.original_hash = hashlib.sha256(original).hexdigest()
-        software = directory/'software.yaml'; software.write_bytes(original)
+        # Use a known locale and fresh settings, independent of this machine's
+        # language, shortcut customizations and saved window state.
+        software = directory/'software.yaml'; software.write_text('software:\n  language: zh\n')
         categories = directory/'isat.yaml'; categories.write_text('label:\n- {name: __background__, color: "#000000"}\n- {name: person, color: "#ef2929"}\n- {name: knife, color: "#fcaf3e"}\n')
         for mock in [patch.object(module, 'SOFTWARE_CONFIG_FILE', str(software)), patch.object(module, 'CONFIG_FILE', str(categories)), patch.object(module.CheckLatestVersionThread, 'run', lambda self: None), patch.dict(os.environ, {'ISAT_MODEL_DATA_DIR': str(directory/'model-data'), 'YOLO_BACKPROP_CONFIG_DIR': str(directory/'screening-config')})]:
             mock.start(); self.addCleanup(mock.stop)
-        from ISAT.data_screening.workspace import WorkspaceSettings
+        from yolo_backprop.data_screening.workspace import WorkspaceSettings
         WorkspaceSettings().select(directory / 'workspace')
         self.window = module.MainWindow()
         self.addCleanup(self.cleanup_window)
@@ -50,7 +52,8 @@ class IntegrationTests(unittest.TestCase):
         w = self.window; c = self.controller()
         navigation = QtCore.QRect(c.navigation.geometry())
         content = QtCore.QRect(c.stack.geometry())
-        self.assertEqual(navigation.top(), 0, 'annotation menus belong inside the content area')
+        self.assertEqual(navigation.top(), c.title_bar.geometry().bottom() + 1,
+                         'global commands sit above all workspace navigation')
         self.assertTrue(hasattr(c, 'frame'), 'all work pages share a title frame')
         header = QtCore.QRect(c.frame.header.geometry())
         self.assertGreater(content.top(), header.bottom())
@@ -64,7 +67,7 @@ class IntegrationTests(unittest.TestCase):
             self.assertEqual(c.stack.geometry(), content)
             self.assertEqual(c.frame.header.geometry(), header)
 
-    def test_workbench_header_follows_page_project_and_home(self):
+    def test_workbench_header_follows_page_and_home(self):
         c = self.controller()
         self.assertTrue(hasattr(c, 'frame'), 'shared title frame is installed')
         root = c.workspace_home.store.create(Path(self.temp.name), '统一项目')
@@ -75,12 +78,10 @@ class IntegrationTests(unittest.TestCase):
             switch(); self.app.processEvents()
             self.assertTrue(c.frame.header.isVisible())
             self.assertEqual(c.frame.title.text(), title)
-            self.assertEqual(c.frame.project.text(), '统一项目')
         c.workspace_home.show_home(); self.app.processEvents()
         self.assertFalse(c.frame.header.isVisible())
         c.workspace_home.open_workspace(root); self.app.processEvents()
         self.assertTrue(c.frame.header.isVisible())
-        self.assertEqual(c.frame.project.text(), '统一项目')
 
     def test_folded_training_options_keep_values_across_page_switches(self):
         c = self.controller(); c.show_development(); self.app.processEvents()
@@ -109,7 +110,7 @@ class IntegrationTests(unittest.TestCase):
         c.widget._change_theme(); self.app.processEvents()
         self.assertGreater(c.frame.title.palette().color(QtGui.QPalette.WindowText).lightness(), 180)
         c.show_screening(); self.app.processEvents()
-        self.assertGreater(c.screening_widget.source_label.palette().color(QtGui.QPalette.WindowText).lightness(), 140)
+        self.assertGreater(c.screening_widget.status.palette().color(QtGui.QPalette.WindowText).lightness(), 140)
         c.show_annotation(); self.app.processEvents()
         self.assertGreater(self.window.menubar.palette().color(QtGui.QPalette.WindowText).lightness(), 180)
         c.show_development(); c.widget._change_theme(); self.app.processEvents()
@@ -124,7 +125,7 @@ class IntegrationTests(unittest.TestCase):
             self.assertTrue(self.window.rect().contains(bounds), control.text() if hasattr(control, 'text') else 'presets')
 
     def test_training_group_translation_keeps_folded_state(self):
-        from ISAT.model_development.gui.i18n import tr
+        from yolo_backprop.model_development.gui.i18n import tr
         c = self.controller(); c.show_development()
         card = c.widget.train_tab.augmentation_card
         try:
@@ -241,7 +242,7 @@ class IntegrationTests(unittest.TestCase):
         page.open_folder(str(source)); self.wait_for_screening(page)
         page.grid.setCurrentRow(1); page.command_actions['remove'].trigger()
         with patch.object(QtWidgets.QFileDialog, 'getExistingDirectory', return_value=self.temp.name):
-            page.import_button.click()
+            page._import()
         self.wait_for_screening(page); self.app.processEvents()
         self.assertEqual(w.files_list, ['a.png'])
         self.assertEqual(Path(w.image_root).name, 'images')
@@ -262,7 +263,7 @@ class IntegrationTests(unittest.TestCase):
         c.show_screening(); page = c.screening_widget
         with patch.object(page, '_confirm_purge', return_value=False):
             page.open_folder(str(source)); self.wait_for_screening(page)
-            page.import_button.click(); self.wait_for_screening(page)
+            page._import(); self.wait_for_screening(page)
             w.save()
             c.show_screening()
             page._export_worker = object()  # Save remains in progress until its queued completion is handled.
@@ -273,17 +274,17 @@ class IntegrationTests(unittest.TestCase):
             finally:
                 page._export_worker = None
             c.show_screening(); page.grid.setCurrentRow(0); page.command_actions['remove'].trigger()
-            page.save_button.click(); self.wait_for_screening(page)
+            page.command_actions['save'].trigger(); self.wait_for_screening(page)
             self.assertEqual(w.files_list, ['b.png'])
             self.assertEqual(w.current_label.img_name, 'b.png')
             self.assertIs(c.stack.currentWidget(), page)
             page.grid.selectAll(); page.command_actions['remove'].trigger()
-            page.save_button.click(); self.wait_for_screening(page)
+            page.command_actions['save'].trigger(); self.wait_for_screening(page)
             self.assertEqual(w.files_list, [])
             self.assertIsNone(w.current_label)
 
     def test_screening_import_cancel_preserves_unsaved_canvas(self):
-        from ISAT.data_screening.session import ScreeningSession
+        from yolo_backprop.data_screening.session import ScreeningSession
         from PIL import Image
         w = self.window; c = self.controller()
         source = Path(self.temp.name) / 'source'; source.mkdir()
@@ -302,7 +303,7 @@ class IntegrationTests(unittest.TestCase):
         class BusyWorker(QtCore.QThread):
             def run(self):
                 while not self.isInterruptionRequested(): self.msleep(5)
-        from ISAT.data_screening.session import ScreeningSession
+        from yolo_backprop.data_screening.session import ScreeningSession
         from PIL import Image
         w = self.window; c = self.controller()
         source = Path(self.temp.name) / 'source'; source.mkdir()
@@ -378,7 +379,7 @@ class IntegrationTests(unittest.TestCase):
 
     def test_optional_panel_dependency_error_keeps_annotation_available(self):
         c = self.controller()
-        from ISAT.model_development import widget
+        from yolo_backprop.model_development import widget
         with patch.object(widget, 'ModelDevelopmentWidget', side_effect=ModuleNotFoundError('matplotlib')), patch.object(QtWidgets.QMessageBox, 'critical', return_value=QtWidgets.QMessageBox.Ok):
             self.assertFalse(c.show_development())
         self.assertIsNone(c.widget)
@@ -401,7 +402,7 @@ class IntegrationTests(unittest.TestCase):
 
     def test_gpu_development_job_blocks_loading_sam_from_annotation_page(self):
         import sys
-        from ISAT.model_development.gui.workers import ToolWorker
+        from yolo_backprop.model_development.gui.workers import ToolWorker
         w = self.window; c = self.controller(); c.show_development()
         worker = ToolWorker([sys.executable, '-c', 'import time;time.sleep(90)'])
         c.widget.train_tab._train_worker = worker

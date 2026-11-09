@@ -8,7 +8,7 @@ Only the latest release is supported. When you report a security issue, be sure 
 
 ## 报告漏洞 | Reporting a Vulnerability
 
-如果你发现一个漏洞，请发送邮件到 mailto: yatenglg@foxmail.com 。
+如果你发现 YOLO-BACKPROP 的漏洞，请通过[本项目仓库](https://github.com/Liujingze11/YOLO-LAB-GUI/security)提供的联系渠道联系维护者。上游 ISAT 的联系方式仅用于上游项目。
 
 并提供尽可能多的信息，包括：
 
@@ -17,7 +17,7 @@ Only the latest release is supported. When you report a security issue, be sure 
 - 复现漏洞的步骤
 
 
-If you discover a security vulnerability in ISAT, please send an e-mail to mailto: yatenglg@foxmail.com .
+For vulnerabilities in YOLO-BACKPROP, contact the maintainers through the channels available in [this repository](https://github.com/Liujingze11/YOLO-LAB-GUI/security). Upstream ISAT contact information applies to the upstream project.
 
 Please provide as much information as possible, including:
 

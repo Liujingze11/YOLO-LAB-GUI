@@ -1,0 +1,15 @@
+.git
+.runtime
+.idea
+.codex
+.agents
+.env*
+__pycache__
+*.pyc
+*.egg-info
+build
+dist
+outputs
+*.pt
+*.pth
+yolo_backprop/software.yaml

@@ -9,8 +9,8 @@ from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
-from ISAT.model_development.dataset import prepare_dataset
-from ISAT.model_development.core.config import TrainConfig, save_run_config
+from yolo_backprop.model_development.dataset import prepare_dataset
+from yolo_backprop.model_development.core.config import TrainConfig, save_run_config
 
 
 def main():
@@ -38,7 +38,7 @@ def main():
             result = subprocess.run([sys.executable, *map(str, arguments)], cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT, timeout=240)
         if result.returncode:
             print((output/(name+'.log')).read_text()[-6500:]); raise RuntimeError(name+' exited '+str(result.returncode))
-    engine = ROOT/'ISAT/model_development/gui'
+    engine = ROOT/'yolo_backprop/model_development/gui'
     run('train', [engine/'train_engine.py', '--no-interactive', '--config-file', config_file, '--mode', 1, '--no-augment'])
     best = output/'runs/smoke/weights/best.pt'
     assert best.is_file(), 'training publishes best.pt'

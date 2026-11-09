@@ -9,7 +9,7 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('../../'))
 
-project = 'ISAT-SAM'
+project = 'YOLO-BACKPROP'
 copyright = '2025, Shuwei Ji and Hongyuan Zhang'
 author = 'Shuwei Ji and Hongyuan Zhang'
 
@@ -51,8 +51,7 @@ html_theme_options = {
     'style_external_links': True,
     'style_nav_header_background': '#2980B9',
 }
-html_logo = "_static/ISAT_new_64.svg"
-html_favicon = "_static/ISAT_new_64.svg"
+html_logo = "../../yolo_backprop/yolo-backprop-transparent.svg"
+html_favicon = "../../yolo_backprop/yolo-backprop-transparent.svg"
 html_show_sourcelink = True
 html_static_path = ['_static']
-

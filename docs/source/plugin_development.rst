@@ -1,3 +1,5 @@
+.. note:: New plugins use ``yolo_backprop`` imports and the ``yolo_backprop.plugins`` entry-point group. Legacy ``ISAT`` imports and ``isat.plugins`` plugins remain supported when loaded by this application.
+
 Plugin Development
 ====================================
 
@@ -5,7 +7,7 @@ Plugin Development
 ------------------------------------
 
 .. code-block:: python
-   :caption: ISAT.widgets.plugin_base.py
+   :caption: yolo_backprop.widgets.plugin_base.py
    :emphasize-lines: 6, 14, 23, 32, 40, 48
 
     class PluginBase(ABC):
@@ -192,13 +194,13 @@ Plugin Development
 
     ...
     entry_points={
-        "isat.plugins": []
+        "yolo_backprop.plugins": []
     }
     ...
 
 .. important:: All ISAT plugins are released in the form of Python packages.
 
-               **Plugin must use setup.py to add the plugin classes to the isat.plugins entry_points.**
+               **Plugin must use setup.py to add the plugin classes to the yolo_backprop.plugins entry_points.**
 
 3. Plugin Get ISAT Data
 ------------------------------------
@@ -247,7 +249,7 @@ It is recommended to use the following structure as the plugin project.
 
     .. code-block:: python
 
-        from ISAT.widgets.plugin_base import PluginBase
+        from yolo_backprop.widgets.plugin_base import PluginBase
 
         class CustomPlugin(PluginBase):
             def __init__(self):
@@ -284,21 +286,21 @@ It is recommended to use the following structure as the plugin project.
         version, author = get_version()
 
         setup(
-            name="isat-plugin-{custom}",                 # It is recommended that the package name start with "isat-plugin".
+            name="yolo-backprop-plugin-{custom}",                 # It is recommended that the package name start with "yolo-backprop-plugin".
             version={version},
             author={author},
-            keywords=["isat-sam", "isat plugin", ...],
+            keywords=["yolo-backprop", "annotation plugin", ...],
 
             packages=find_packages(),
             include_package_data=True,
 
             python_requires=">=3.8",
             install_requires=[
-                'isat-sam>=1.4.0',
+                'yolo-backprop>=1.5.2',
             ],
 
             entry_points={
-                "isat.plugins": [
+                "yolo_backprop.plugins": [
                     "{custom_plugin} = {PluginPackage}.main:{CustomPlugin}",
                 ]
             }
@@ -318,7 +320,7 @@ It is recommended to use the following structure as the plugin project.
 
     .. code-block:: shell
 
-        pip install dist/{isat_plugin_custom}-{version}.tar.gz
+        pip install dist/{yolo_backprop_plugin_custom}-{version}.tar.gz
 
 .. tip:: You can refer to the plugins: `AutoAnnotatePlugin <https://github.com/yatengLG/ISAT_plugin_auto_annotate>`_ and `MaskExportPlugin <https://github.com/yatengLG/ISAT_plugin_mask_export>`_ to develop your own plugins.
 

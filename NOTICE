@@ -1,0 +1,17 @@
+YOLO-BACKPROP (YOLO-LAB-GUI)
+Project: https://github.com/Liujingze11/YOLO-LAB-GUI
+
+This desktop workbench is derived from ISAT with Segment Anything.
+Upstream: https://github.com/yatengLG/ISAT_with_segment_anything
+Original copyright: Copyright (C) 2022 yatengLG.
+Upstream contributors include yatengLG, Alias-z and the contributors credited
+in the upstream project. Original file-level author and license notices remain.
+
+The Python package was renamed from ISAT to yolo_backprop in November 2026.
+ISAT annotation format identifiers and legacy plugin interfaces are retained
+for compatibility. Product naming changes do not transfer original authorship.
+
+The project is distributed under the Apache License, Version 2.0; see LICENSE.
+Bundled SAM and other third-party components retain their own license notices.
+Model development source provenance is recorded in
+yolo_backprop/model_development/PROVENANCE.json.

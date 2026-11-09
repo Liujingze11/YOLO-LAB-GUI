@@ -15,7 +15,7 @@ class WorkerTests(unittest.TestCase):
 
     def worker(self, command):
         try:
-            from ISAT.model_development.gui.workers import ToolWorker
+            from yolo_backprop.model_development.gui.workers import ToolWorker
         except ModuleNotFoundError as exc:
             self.fail('Managed PyQt5 workers are not implemented: '+str(exc))
         return ToolWorker(command)

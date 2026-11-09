@@ -6,7 +6,7 @@ from pathlib import Path
 from PIL import Image
 
 try:
-    from ISAT.model_development.dataset import prepare_dataset, DatasetCancelled
+    from yolo_backprop.model_development.dataset import prepare_dataset, DatasetCancelled
 except ImportError:
     prepare_dataset = None
     DatasetCancelled = RuntimeError

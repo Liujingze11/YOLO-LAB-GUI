@@ -9,7 +9,7 @@ from PIL import Image
 
 class ExternalProjectTests(unittest.TestCase):
     def setUp(self):
-        from ISAT.workspaces.store import WorkspaceStore
+        from yolo_backprop.workspaces.store import WorkspaceStore
         self.temp = tempfile.TemporaryDirectory(); self.addCleanup(self.temp.cleanup)
         self.base = Path(self.temp.name)
         self.root = self.base / '外部图片'; self.root.mkdir()
@@ -43,7 +43,7 @@ class ExternalProjectTests(unittest.TestCase):
         self.assertEqual(self.snapshot(), before)
 
     def test_external_state_and_cover_persist_separately_and_source_is_never_deletable(self):
-        from ISAT.workspaces.store import MARKER, WorkspaceStore
+        from yolo_backprop.workspaces.store import MARKER, WorkspaceStore
         image = self.image(); before = self.snapshot()
         self.store.open_location(self.root)
         self.store.update(self.root, state={'training': {'epochs': 39}})
@@ -140,7 +140,7 @@ class ExternalProjectTests(unittest.TestCase):
                 with self.assertRaises(ValueError): self.store.read_existing(self.root)
 
     def test_empty_lookalike_corrupt_images_and_symlinks_are_not_projects(self):
-        from ISAT.workspaces.store import MARKER
+        from yolo_backprop.workspaces.store import MARKER
         (self.root / 'projects').mkdir()
         with self.assertRaises(ValueError): self.store.read_existing(self.root)
         bad = self.root / 'bad.jpg'; bad.write_bytes(b'not an image')

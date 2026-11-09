@@ -5,7 +5,7 @@
 # import os
 # os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
-from ISAT.main import main
+from yolo_backprop.main import main
 
 if __name__ == "__main__":
     main()

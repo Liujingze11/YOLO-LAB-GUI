@@ -11,7 +11,7 @@ class StoreTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(); self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
-        from ISAT.workspaces.store import WorkspaceStore
+        from yolo_backprop.workspaces.store import WorkspaceStore
         self.store = WorkspaceStore(self.root / 'settings' / 'workspaces.json')
 
     def test_new_workspace_lives_under_selected_parent_and_reopens_with_its_own_state(self):
@@ -22,7 +22,7 @@ class StoreTests(unittest.TestCase):
         second = self.store.create(self.root, '零件识别')
         self.assertEqual(self.store.read(second)['state'], {})
         self.assertEqual(self.store.read(root)['state']['training']['epochs'], 27)
-        from ISAT.workspaces.store import WorkspaceStore
+        from yolo_backprop.workspaces.store import WorkspaceStore
         reopened = WorkspaceStore(self.store.path)
         self.assertEqual([v['root'] for v in reopened.recent()], [str(second), str(root)])
 
@@ -42,7 +42,7 @@ class StoreTests(unittest.TestCase):
         self.assertFalse((location / '新项目').exists())
 
     def test_read_existing_requires_a_valid_marker_and_does_not_write_or_register(self):
-        from ISAT.workspaces.store import MARKER
+        from yolo_backprop.workspaces.store import MARKER
         root = self.store.create(self.root, '已存项目')
         marker = (root / MARKER).read_bytes(); history = self.store.path.read_bytes()
         info = self.store.read_existing(root)
@@ -80,7 +80,7 @@ class StoreTests(unittest.TestCase):
         with self.assertRaises(ValueError): self.store.register(self.root)
 
     def test_old_remembered_workspace_remains_in_recent_list_after_first_new_workspace(self):
-        from ISAT.data_screening.workspace import WorkspaceSettings
+        from yolo_backprop.data_screening.workspace import WorkspaceSettings
         old = self.root / 'previous'
         WorkspaceSettings(self.store.path.with_name('workspace.json')).select(old)
         self.assertEqual(self.store.recent()[0]['root'], str(old))
@@ -95,7 +95,7 @@ class StoreTests(unittest.TestCase):
         self.assertEqual(self.store.recent(), [])
 
     def test_removed_project_marker_hides_project_even_when_folder_and_projects_remain(self):
-        from ISAT.workspaces.store import MARKER
+        from yolo_backprop.workspaces.store import MARKER
         root = self.store.create(self.root, '已删除记录')
         (root / MARKER).unlink()
         self.assertTrue((root / 'projects').is_dir())
@@ -104,7 +104,7 @@ class StoreTests(unittest.TestCase):
         self.assertFalse((root / MARKER).exists())
 
     def test_forget_clears_history_and_previous_selection_without_deleting_files(self):
-        from ISAT.data_screening.workspace import WorkspaceSettings
+        from yolo_backprop.data_screening.workspace import WorkspaceSettings
         root = self.store.create(self.root, '移除记录')
         settings = self.store.path.with_name('workspace.json')
         WorkspaceSettings(settings).select(root)
@@ -114,8 +114,8 @@ class StoreTests(unittest.TestCase):
         self.assertTrue(root.is_dir())
 
     def test_desktop_history_is_removed_without_touching_its_files_or_child_projects(self):
-        from ISAT.workspaces.store import MARKER
-        from ISAT.data_screening.workspace import WorkspaceSettings
+        from yolo_backprop.workspaces.store import MARKER
+        from yolo_backprop.data_screening.workspace import WorkspaceSettings
         fake_home = self.root / 'home'; desktop = fake_home / '桌面'; desktop.mkdir(parents=True)
         original = desktop / '重要文件.txt'; original.write_text('must keep')
         (desktop / 'projects').mkdir()
@@ -126,10 +126,10 @@ class StoreTests(unittest.TestCase):
         self.store.path.write_text(json.dumps({'workspaces': [
             {'root': str(desktop), 'name': '桌面'}, {'root': str(child), 'name': '正常命名项目'}]}))
         WorkspaceSettings(self.store.path.with_name('workspace.json')).select(desktop)
-        with patch('ISAT.workspaces.store.Path.home', return_value=fake_home):
+        with patch('yolo_backprop.workspaces.store.Path.home', return_value=fake_home):
             self.assertEqual([row['root'] for row in self.store.recent()], [str(child)])
             self.store.prune_unsafe_locations()
-            from ISAT.workspaces.store import WorkspaceStore
+            from yolo_backprop.workspaces.store import WorkspaceStore
             reopened = WorkspaceStore(self.store.path)
             self.assertEqual([row['root'] for row in reopened.recent()], [str(child)])
             self.assertIsNone(WorkspaceSettings(self.store.path.with_name('workspace.json')).root)
@@ -148,7 +148,7 @@ class StoreTests(unittest.TestCase):
         self.assertTrue(parent.is_dir()); self.assertTrue(child.is_dir())
 
     def test_only_newly_created_project_with_matching_ownership_can_be_deleted(self):
-        from ISAT.workspaces.store import MARKER, WorkspaceStore
+        from yolo_backprop.workspaces.store import MARKER, WorkspaceStore
         created = self.store.create(self.root, '新建项目')
         reopened = WorkspaceStore(self.store.path)
         self.assertEqual(reopened.validate_deletion(created)['root'], str(created))
@@ -167,7 +167,7 @@ class StoreTests(unittest.TestCase):
         with self.assertRaises(ValueError): self.store.validate_deletion(link)
 
     def test_recreated_directory_cannot_inherit_deletion_permission_from_a_copied_marker(self):
-        from ISAT.workspaces.store import MARKER
+        from yolo_backprop.workspaces.store import MARKER
         created = self.store.create(self.root, '目录被替换')
         retired = self.root / '原目录'; created.rename(retired)
         (created / 'projects').mkdir(parents=True)
@@ -196,7 +196,7 @@ class StoreTests(unittest.TestCase):
         self.assertTrue(self.store.read(root)['trained'])
 
     def test_training_cover_resolves_relative_dataset_and_txt_image_list(self):
-        from ISAT.workspaces.store import training_image
+        from yolo_backprop.workspaces.store import training_image
         dataset = self.root / 'dataset'; images = dataset / 'images' / 'train'; images.mkdir(parents=True)
         image = images / 'sample.png'; Image.new('RGB', (80, 60), 'blue').save(image)
         config = self.root / 'data.yaml'
@@ -209,7 +209,7 @@ class StoreTests(unittest.TestCase):
         self.assertIsNone(training_image(config))
 
     def test_corrupt_workspace_metadata_is_reported_without_replacing_it(self):
-        from ISAT.workspaces.store import MARKER
+        from yolo_backprop.workspaces.store import MARKER
         root = self.store.create(self.root, 'broken')
         marker = root / MARKER; marker.write_text('{broken')
         with self.assertRaises(ValueError): self.store.register(root)

@@ -10,7 +10,7 @@ Feature requests are welcome.
 
 Before submit, you should:
 
-1. **Take a moment to find out whether your idea fits with the scope and aims of ISAT.**
+1. **Take a moment to find out whether your idea fits with the scope and aims of yolo_backprop.**
 2. **Make sure there are no simple alternatives.**
 3. **Finally, You should have a strong case to convince ISAT’s developers of the merits of this feature.**
 

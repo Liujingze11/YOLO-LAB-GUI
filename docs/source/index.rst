@@ -1,12 +1,10 @@
-Welcome to ISAT-SAM's documentation!
-====================================
+YOLO-BACKPROP documentation
+==========================
 
-**ISAT-SAM** stands for Interactive Semi-Automatic Annotation Tool with `Segment Anything Model <https://github.com/facebookresearch/segment-anything>`_
+A native desktop workbench for image screening, annotation and YOLO model development.
 
-You can `access the project <https://github.com/yatengLG/ISAT_with_segment_anything>`_ on GitHub and view the source code.
-
-.. image:: ../../display/software.gif
-    :alt: software.gif
+Source: `YOLO-LAB-GUI <https://github.com/Liujingze11/YOLO-LAB-GUI>`_.
+Based on `ISAT <https://github.com/yatengLG/ISAT_with_segment_anything>`_; original attribution and licenses are retained.
 
 Features
 ====================================
